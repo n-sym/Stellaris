@@ -16,9 +16,19 @@ namespace Stellaris
         /// </summary>
         public static T TryGetValue<T>(this T[] array, int index)
         {
+            if (array == null) return default;
+            if (array.Length == 0) return default;
             if (index < 0) return array[0];
             if (index > array.Length - 1) return array[array.Length - 1];
             return array[index];
+        }
+        public static T TryGetValue<T>(this List<T> list, int index)
+        {
+            if (list == null) return default;
+            if (list.Count == 0) return default;
+            if (index < 0) return list[0];
+            if (index > list.Count - 1) return list.Last();
+            return list[index];
         }
         public static string ToStringAlt<T>(this T[] array)
         {
@@ -63,6 +73,10 @@ namespace Stellaris
             float c = (float)Math.Cos(radian);
             float s = (float)Math.Sin(radian);
             return new Vector2(c * length, s * length) + center;
+        }
+        public static float AngleBetween(Vector2 a, Vector2 b)
+        {
+            return Math.Abs(a.Angle() - b.Angle());
         }
         public static Color ToColor(this Vector4 vec)
         {

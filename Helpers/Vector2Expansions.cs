@@ -66,6 +66,10 @@ namespace Stellaris
         {
             return new Vector2((float)Math.Ceiling(vec.X), (float)Math.Ceiling(vec.Y));
         }
+        public static float AngleBetween(this Vector2 a, Vector2 b)
+        {
+            return Math.Abs(a.Angle() - b.Angle());
+        }
         public static Point ToPoint(this Vector2 vec)
         {
             return new Point((int)vec.X, (int)vec.Y);

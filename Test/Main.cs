@@ -43,10 +43,10 @@ namespace Stellaris.Test
             mousePos = new Vector2[15];
             text = new DynamicTextureText(graphicsDevice, new System.Drawing.Font("华文中宋", 100), "Stellaris");
             vertexBatch = new VertexBatch(graphicsDevice);
+            swordFx = new SwordFx(GraphicsDevice, 1);
             base.Initialize();
-            
         }
-        VertexInfo[] vertices;
+        Vertex[] vertices;
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -57,12 +57,11 @@ namespace Stellaris.Test
         {
             Common.Update(this);
             var p = Common.MouseState.position;
-            vertices = new VertexInfo[]
+            vertices = new Vertex[]
             {
-                new VertexInfo(new Vector2(0 + p.X , 71f - p.Y), Color.White, new Vector2(0.5f, 0.5f)),
-                new VertexInfo(new Vector2(100 + p.X, -100f - p.Y), Color.White, new Vector2(0.1f, 0.1f)),
-                new VertexInfo(new Vector2(-100f + p.X, -100f - p.Y), Color.White, new Vector2(0.9f, 0.9f)),
-                new VertexInfo(new Vector2(0 + p.X, -271f - p.Y), Color.White, new Vector2(0.5f, 0.5f))
+                new Vertex(new Vector2(0 + p.X , 0f + p.Y), Color.White, new Vector2(0.5f, 0f)), 
+                new Vertex(new Vector2(5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f)),
+                new Vertex(new Vector2(-5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f))
             };
             timer += 0.15f;
             if (Keyboard.GetState().IsKeyDown(Keys.A))
@@ -103,13 +102,20 @@ namespace Stellaris.Test
         Vector2[] mousePos;
         VertexBatch vertexBatch;
         DynamicTextureText text;
+        SwordFx swordFx;
         protected override void Draw(GameTime gameTime)
         {
             Common.UpdateFPS(gameTime);
-            //Window.Title = Common.Quality.ToString() + "," + Common.FPS.ToString();
             GraphicsDevice.Clear(Color.Black);
-            vertexBatch.Begin(MeteorBullet.flarefx.Texture, PrimitiveType.TriangleList);
-            vertexBatch.Draw(vertices, 0, 1, 2, 3);
+            var z = Common.MouseState.position.Y / Common.Resolution.Y * 1.15f;
+            vertexBatch.Begin(swordFx.Texture, PrimitiveType.TriangleList);
+            var v = new Triangle(vertices).Rotate(timer, TriangleVertexType.A).RotationList(TriangleVertexType.A, z * 6.28f).
+                TransformPosition(Matrix.CreateScale(1f, z, 1f), Common.MouseState.position);
+            v = v.TransformColor(delegate(int index, Color color)
+            {
+                return color * (index * 1f / v.vertex.Length);
+            });
+            vertexBatch.Draw(v);
             vertexBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             text.Draw(spriteBatch, new Vector2(100, 100), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
