@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Stellaris.Curves;
 using Stellaris.Entities;
 using Stellaris.Graphics;
-using Stellaris.IO;
+using Stellaris.UI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -59,10 +59,10 @@ namespace Stellaris.Test
             var p = Common.MouseState.position;
             vertices = new VertexInfo[]
             {
-                new VertexInfo(new Vector2(0 + p.X , 71f - p.Y), Color.Red),
-                new VertexInfo(new Vector2(100 + p.X, -100f - p.Y), Color.Blue),
-                new VertexInfo(new Vector2(-100f + p.X, -100f - p.Y), Color.Green),
-                new VertexInfo(new Vector2(200f + p.X, 71f - p.Y), Color.Purple)
+                new VertexInfo(new Vector2(0 + p.X , 71f - p.Y), Color.White, new Vector2(0.5f, 0.5f)),
+                new VertexInfo(new Vector2(100 + p.X, -100f - p.Y), Color.White, new Vector2(0.1f, 0.1f)),
+                new VertexInfo(new Vector2(-100f + p.X, -100f - p.Y), Color.White, new Vector2(0.9f, 0.9f)),
+                new VertexInfo(new Vector2(0 + p.X, -271f - p.Y), Color.White, new Vector2(0.5f, 0.5f))
             };
             timer += 0.15f;
             if (Keyboard.GetState().IsKeyDown(Keys.A))
@@ -108,11 +108,11 @@ namespace Stellaris.Test
             Common.UpdateFPS(gameTime);
             //Window.Title = Common.Quality.ToString() + "," + Common.FPS.ToString();
             GraphicsDevice.Clear(Color.Black);
-            vertexBatch.Begin();
-            vertexBatch.Draw(vertices[0], vertices[1], vertices[2], vertices[3], vertices[1], vertices[0]);
+            vertexBatch.Begin(MeteorBullet.flarefx.Texture, PrimitiveType.TriangleList);
+            vertexBatch.Draw(vertices, 0, 1, 2, 3);
             vertexBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-            text.Draw(spriteBatch, new Vector2(100, 100), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            text.Draw(spriteBatch, new Vector2(100, 100), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
             for (int i = 0; i < bullets.Count; i++)
             {
                 if (bullets[i] == null) break;

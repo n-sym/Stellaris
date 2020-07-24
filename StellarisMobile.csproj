@@ -74,6 +74,7 @@
     <Compile Include="Graphics\Arrow.cs" />
     <Compile Include="Graphics\DynamicTexture.cs" />
     <Compile Include="Graphics\DynamicTextureManager.cs" />
+    <Compile Include="Graphics\DynamicTextureText.cs" />
     <Compile Include="Graphics\VertexBatch.cs" />
     <Compile Include="Graphics\VertexInfo.cs" />
     <Compile Include="Helpers\ColorExpansions.cs" />

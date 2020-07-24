@@ -16,7 +16,7 @@ namespace Stellaris.Graphics
     {
         Font font;
         string text;
-        public DynamicTextureText(GraphicsDevice graphicsDevice, Font font, string text) : base(graphicsDevice, text.GetHashCode().ToString())
+        public DynamicTextureText(GraphicsDevice graphicsDevice, Font font, string text) : base(graphicsDevice, (text.GetHashCode() * font.Size).ToString())
         {
             this.font = font;
             this.text = text;
