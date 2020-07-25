@@ -1,9 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stellaris.Graphics
 {
@@ -34,26 +30,24 @@ namespace Stellaris.Graphics
         {
             return new Vertex[] { vertexA, vertexB, vertexC };
         }
+        public static Triangle Rotate(Vertex vertexA, Vertex vertexB, Vertex vertexC, float radian)
+        {
+            Vector2 a = vertexA.Position;
+            Vector2 b = vertexB.Position.Rotate(radian, a);
+            Vector2 c = vertexC.Position.Rotate(radian, a);
+            return new Triangle(vertexA, vertexB.ChangePosition(b), vertexC.ChangePosition(c));
+        }
         public Triangle Rotate(float radian, TriangleVertexType center)
         {
             if (center == TriangleVertexType.A)
             {
-                Vector2 a = vertexA.Position;
-                Vector2 b = vertexB.Position.Rotate(radian, a);
-                Vector2 c = vertexC.Position.Rotate(radian, a);
-                return new Triangle(vertexA, vertexB.ChangePosition(b), vertexC.ChangePosition(c));
+                return Rotate(vertexA, vertexB, vertexC, radian);
             }
             if (center == TriangleVertexType.B)
             {
-                Vector2 b = vertexB.Position;
-                Vector2 a = vertexA.Position.Rotate(radian, b); ;
-                Vector2 c = vertexC.Position.Rotate(radian, b);
-                return new Triangle(vertexA.ChangePosition(a), vertexB, vertexC.ChangePosition(c));
+                return Rotate(vertexB, vertexA, vertexC, radian);
             }
-            Vector2 C = vertexC.Position;
-            Vector2 A = vertexA.Position.Rotate(radian, C);
-            Vector2 B = vertexB.Position.Rotate(radian, C);
-            return new Triangle(vertexA.ChangePosition(A), vertexB.ChangePosition(B), vertexC);
+            return Rotate(vertexC, vertexA, vertexB, radian);
         }
         public Triangle Rotate(float radian, Vector2 center)
         {
@@ -66,7 +60,7 @@ namespace Stellaris.Graphics
         {
             return Rotate(radian, (vertexA.Position + vertexB.Position + vertexC.Position) / 3);
         }
-        private static VertexInfo Rotation(Vertex vertexA, Vertex vertexB, Vertex vertexC, float totalRadian)
+        private static VertexInfo RotationList(Vertex vertexA, Vertex vertexB, Vertex vertexC, float totalRadian)
         {
             Vector2 side = vertexB.Position - vertexA.Position;
             Vector2 anoter = vertexC.Position - vertexA.Position;
@@ -83,7 +77,7 @@ namespace Stellaris.Graphics
                 vertexC = cache2;
             }
             int count = (int)Math.Ceiling(totalRadian / theta);
-            if (count < 2) return new VertexInfo(new Vertex[] { vertexA, vertexB, vertexC});
+            if (count < 2) return new VertexInfo(new Vertex[] { vertexA, vertexB, vertexC });
             Vertex[] vertices = new Vertex[count + 2];
             vertices[0] = vertexA;
             vertices[1] = vertexC;
@@ -108,13 +102,13 @@ namespace Stellaris.Graphics
         {
             if (center == TriangleVertexType.A)
             {
-                return Rotation(vertexA, vertexB, vertexC, radian);
+                return RotationList(vertexA, vertexB, vertexC, radian);
             }
             if (center == TriangleVertexType.B)
             {
-                return Rotation(vertexB, vertexA, vertexC, radian);
+                return RotationList(vertexB, vertexA, vertexC, radian);
             }
-            return Rotation(vertexC, vertexA, vertexB, radian);
+            return RotationList(vertexC, vertexA, vertexB, radian);
         }
     }
 }

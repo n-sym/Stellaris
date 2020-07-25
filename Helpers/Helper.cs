@@ -3,8 +3,6 @@ using Stellaris.Curves;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stellaris
 {
@@ -33,7 +31,7 @@ namespace Stellaris
         public static string ToStringAlt<T>(this T[] array)
         {
             string result = "";
-            for(int i = 0; i < array.Length; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 result += array[i].ToString() + ",";
             }
@@ -57,6 +55,13 @@ namespace Stellaris
             }
             return result;
         }
+        public static void Plus(this short[] array, short num)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] += num;
+            }
+        }
         public static Vector2 RandomAngleVec(float length, float min = 0f, float max = 6.283f)
         {
             Random random = seed == 0 ? new Random() : new Random(seed);
@@ -66,7 +71,7 @@ namespace Stellaris
             seed = random.Next();
             return new Vector2(c * length, s * length);
         }
-        public static Vector2 RandomAngleVec(float length, Vector2 center, float min = 0f,  float max = 6.283f)
+        public static Vector2 RandomAngleVec(float length, Vector2 center, float min = 0f, float max = 6.283f)
         {
             Random random = new Random();
             float radian = min.LinearInterpolationTo(max, (float)random.NextDouble(), 1f);
@@ -109,7 +114,7 @@ namespace Stellaris
         public static float LagrangeInterpolation(float[] x, float[] y, float n)
         {
             float result = 0;
-            for(int i = 0; i < x.Length; i++)
+            for (int i = 0; i < x.Length; i++)
             {
                 float item = 1;
                 for (int j = 0; j < x.Length; j++)
@@ -129,7 +134,7 @@ namespace Stellaris
         /// <returns>插值过后的数据</returns>
         public static Vector2[] LagrangeInterpolation(Vector2[] data, int precision)
         {
-            if (precision < 2) return new Vector2[1] { Vector2.Zero};
+            if (precision < 2) return new Vector2[1] { Vector2.Zero };
             Vector2[] result = new Vector2[data.Length * (precision + 1) - 2];
             float[] x = new float[data.Length];
             for (int i = 0; i < data.Length; i++)
@@ -143,7 +148,7 @@ namespace Stellaris
             }
             for (int i = 0; i < data.Length - 1; i++)
             {
-                for(int j = 0; j < precision + 1; j++)
+                for (int j = 0; j < precision + 1; j++)
                 {
                     float n = LinearInterpolation(x[i], x[i + 1], j, precision + 1);
                     result[i * (precision + 1) + j] = new Vector2(n, LagrangeInterpolation(x, y, n));
@@ -186,7 +191,7 @@ namespace Stellaris
         }
         public static float ParabolicInterpolation(float a, float b, float progress, float max, CurveConcavity concavity)
         {
-            if(concavity == CurveConcavity.Convex)
+            if (concavity == CurveConcavity.Convex)
             {
                 return LinearInterpolation(a, b, progress * progress / max, max);
             }

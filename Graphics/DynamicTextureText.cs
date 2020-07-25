@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System.Drawing;
 using Color = Microsoft.Xna.Framework.Color;
 using ColorS = System.Drawing.Color;
 using Graphic = System.Drawing.Graphics;
 using Point = Microsoft.Xna.Framework.Point;
-using Microsoft.Xna.Framework.Graphics;
-using System.Drawing;
 
 namespace Stellaris.Graphics
 {
@@ -22,7 +17,7 @@ namespace Stellaris.Graphics
             this.text = text;
             FontConversion();
         }
-        
+
         private void FontConversion()
         {
             if (!LoadCache())

@@ -1,10 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stellaris.Graphics
 {
@@ -31,7 +27,16 @@ namespace Stellaris.Graphics
             Vertex[] vertices = new Vertex[vertex.Length];
             for (int i = 0; i < vertices.Length; i++)
             {
-                 vertices[i] = vertex[i].ChangePosition(Vector2.Transform(vertex[i].Position - center, matrix) + center);
+                vertices[i] = vertex[i].ChangePosition(Vector2.Transform(vertex[i].Position - center, matrix) + center);
+            }
+            return new VertexInfo(vertices, index);
+        }
+        public VertexInfo TransformPosition(Func<int, Vector2, Vector2> positionFunction)
+        {
+            Vertex[] vertices = new Vertex[vertex.Length];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] = vertex[i].ChangePosition(positionFunction(i, vertex[i].Position));
             }
             return new VertexInfo(vertices, index);
         }
@@ -44,6 +49,24 @@ namespace Stellaris.Graphics
             }
             return new VertexInfo(vertices, index);
         }
+        public VertexInfo TransformCoord(Func<int, Vector2, Vector2> coordFunction)
+        {
+            Vertex[] vertices = new Vertex[vertex.Length];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] = vertex[i].ChangeCoord(coordFunction(i, vertex[i].TextureCoordinate));
+            }
+            return new VertexInfo(vertices, index);
+        }
+        public VertexInfo Transform(Func<int, Vertex, Vertex> vertexFunction)
+        {
+            Vertex[] vertices = new Vertex[vertex.Length];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] = vertexFunction(i, vertex[i]);
+            }
+            return new VertexInfo(vertices, index);
+        }
     }
     public struct Vertex : IVertexType
     {
@@ -51,10 +74,16 @@ namespace Stellaris.Graphics
         public Color Color;
         public Vector2 TextureCoordinate;
         static VertexDeclaration VertexDeclaration = new VertexDeclaration(
-            new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0), 
+            new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
             new VertexElement(8, VertexElementFormat.Color, VertexElementUsage.Color, 0),
             new VertexElement(12, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0));
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
+        public Vertex(Vector2 position)
+        {
+            Position = position;
+            Color = Color.White;
+            TextureCoordinate = Vector2.Zero;
+        }
         public Vertex(Vector2 position, Color color)
         {
             Position = position;
@@ -90,6 +119,14 @@ namespace Stellaris.Graphics
         public Vertex ChangeColor(Color newColor)
         {
             return new Vertex(Position, newColor, TextureCoordinate);
+        }
+        public Vertex AddCrood(Vector2 coord)
+        {
+            return new Vertex(Position, Color, TextureCoordinate + coord);
+        }
+        public Vertex ChangeCoord(Vector2 newCoord)
+        {
+            return new Vertex(Position, Color, newCoord);
         }
     }
 }

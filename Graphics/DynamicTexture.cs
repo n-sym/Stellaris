@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Stellaris.Graphics
 {
@@ -87,7 +87,7 @@ namespace Stellaris.Graphics
         protected virtual List<Color[]> Generate()
         {
             List<Color[]> data = new List<Color[]>();
-            for(int i = 0; i < maxFrame; i++)
+            for (int i = 0; i < maxFrame; i++)
             {
                 data.Add(new Color[_width[i] * _height[i]]);
             }
@@ -161,7 +161,7 @@ namespace Stellaris.Graphics
         }
         protected int PointToIndex(Point point)
         {
-            return point.X - 1 + (point.Y - 1 ) * _width[frame];
+            return point.X - 1 + (point.Y - 1) * _width[frame];
         }
         protected int PointToIndex(int x, int y)
         {
@@ -192,10 +192,8 @@ namespace Stellaris.Graphics
                         binaryWriter.Write(data[i].A);
                     }
                 }
-                Test.Main.instance.Window.Title += memoryStream.Position.ToString() + ";";
                 FileStream fileStream = new FileStream(cachePath + Path.DirectorySeparatorChar + name + ".dynamictexture", FileMode.Create);
                 fileStream.Write(memoryStream.GetBuffer(), 0, (int)memoryStream.Position);
-                Test.Main.instance.Window.Title += fileStream.Position.ToString();
                 fileStream.Close();
             }
             return true;

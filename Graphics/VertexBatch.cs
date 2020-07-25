@@ -1,22 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Stellaris.UI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stellaris.Graphics
 {
     public class VertexBatch : IDisposable
     {
         public GraphicsDevice graphicsDevice;
+        public PrimitiveType primitiveType;
+        public bool begin;
         List<Vertex> vertexData;
         List<short> indexData;
         BasicEffect basicEffect;
-        PrimitiveType primitiveType;
-        bool begin;
         public VertexBatch(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
@@ -31,7 +27,8 @@ namespace Stellaris.Graphics
             if (begin) throw new Exception("Called Begin Twice");
             this.primitiveType = primitiveType;
             RasterizerState rasterizerState = new RasterizerState();
-            this.primitiveType = primitiveType;
+            rasterizerState.CullMode = CullMode.None;
+            graphicsDevice.RasterizerState = rasterizerState;
             basicEffect.TextureEnabled = false;
             basicEffect.View = Matrix.CreateTranslation(-Common.Resolution.X / 2, -Common.Resolution.Y / 2, 0) * Matrix.CreateRotationX(3.141592f);
             basicEffect.Projection = Matrix.CreateOrthographic(Common.Resolution.X, Common.Resolution.Y, -100, 100);
@@ -78,6 +75,7 @@ namespace Stellaris.Graphics
                 indexData = new List<short>();
                 FixIndex();
             }
+            if (vertexData.Count != 0) index.Plus((short)vertexData.Count);
             vertexData.AddRange(vertex);
             indexData.AddRange(index);
             if (vertexData.Count > short.MaxValue) throw new Exception("Vertices Counts Over 32768");
@@ -90,6 +88,7 @@ namespace Stellaris.Graphics
                 indexData = new List<short>();
                 FixIndex();
             }
+            if (vertexData.Count != 0) vertexInfo.index.Plus((short)vertexData.Count);
             vertexData.AddRange(vertexInfo.vertex);
             indexData.AddRange(vertexInfo.index);
             if (vertexData.Count > short.MaxValue) throw new Exception("Vertices Counts Over 32768");
@@ -110,7 +109,7 @@ namespace Stellaris.Graphics
             Vertex[] array = vertexData.ToArray();
             int length = indexData.Count == 0 ? vertexData.Count : indexData.Count;
             length = primitiveType == PrimitiveType.TriangleList ? length / 3 : (primitiveType == PrimitiveType.LineList ? length / 2 : (primitiveType == PrimitiveType.TriangleStrip ? TriangleTripLengthGusser(length) : length - 1));
-            if(indexData.Count == 0)
+            if (indexData.Count == 0)
             {
                 foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
                 {

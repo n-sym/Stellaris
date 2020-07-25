@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace Stellaris
 {
@@ -69,6 +69,18 @@ namespace Stellaris
         public static float AngleBetween(this Vector2 a, Vector2 b)
         {
             return Math.Abs(a.Angle() - b.Angle());
+        }
+        public static Vector2 Plus(this Vector2 vec, float a, float b)
+        {
+            return vec + new Vector2(a, b);
+        }
+        public static Vector2 OnlyX(this Vector2 vec)
+        {
+            return new Vector2(vec.X, 0);
+        }
+        public static Vector2 OnlyY(this Vector2 vec)
+        {
+            return new Vector2(0, vec.Y);
         }
         public static Point ToPoint(this Vector2 vec)
         {

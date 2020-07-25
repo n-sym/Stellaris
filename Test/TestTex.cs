@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Stellaris.Graphics;
+using System.Collections.Generic;
 
 namespace Stellaris.Test
 {
     class TestTex : DynamicTexture
     {
-        public TestTex(GraphicsDevice graphicsDevice, int width, int height, string name = "") : base(graphicsDevice, width, height,  name)
+        public TestTex(GraphicsDevice graphicsDevice, int width, int height, string name = "") : base(graphicsDevice, width, height, name)
         {
         }
         protected override List<Color[]> Generate()

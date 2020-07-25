@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Stellaris.Graphics;
+using System;
+using System.Collections.Generic;
 
 namespace Stellaris.Test
 {
@@ -13,7 +10,7 @@ namespace Stellaris.Test
     {
         static int[] a = { 40, 40 };
         static int[] b = { 200, 200 };
-        public FlareFx(GraphicsDevice graphicsDevice, int width, int height, string name = "") : base(graphicsDevice, width, height,  name)
+        public FlareFx(GraphicsDevice graphicsDevice, int width, int height, string name = "") : base(graphicsDevice, width, height, name)
         {
         }
         protected override List<Color[]> Generate()

@@ -75,12 +75,14 @@
     <Compile Include="Graphics\DynamicTexture.cs" />
     <Compile Include="Graphics\DynamicTextureManager.cs" />
     <Compile Include="Graphics\DynamicTextureText.cs" />
+    <Compile Include="Graphics\Triangle.cs" />
     <Compile Include="Graphics\VertexBatch.cs" />
     <Compile Include="Graphics\VertexInfo.cs" />
     <Compile Include="Helpers\ColorExpansions.cs" />
+    <Compile Include="Helpers\Common.cs" />
     <Compile Include="Helpers\Helper.cs" />
+    <Compile Include="Helpers\PointExpansions.cs" />
     <Compile Include="Helpers\Vector2Expansions.cs" />
-    <Compile Include="IO\Common.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test\Activity.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="Test\MeteorBullet.cs" />
     <Compile Include="Test\Program.cs" />
     <Compile Include="Test\SwordFx.cs" />
+    <Compile Include="UI\UIBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Drawable\Icon.png" />

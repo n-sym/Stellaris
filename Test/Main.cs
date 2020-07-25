@@ -7,9 +7,6 @@ using Stellaris.Graphics;
 using Stellaris.UI;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 
 namespace Stellaris.Test
 {
@@ -41,9 +38,11 @@ namespace Stellaris.Test
             MeteorBullet.flarefx = new FlareFx(graphicsDevice, 40, 40, "Test");
             MeteorBullet.flarefxAlt = a as FlareFxAlt;
             mousePos = new Vector2[15];
-            text = new DynamicTextureText(graphicsDevice, new System.Drawing.Font("华文中宋", 100), "Stellaris");
+            text = new DynamicTextureText(graphicsDevice, new System.Drawing.Font("华文中宋", 50), "Stellaris");
             vertexBatch = new VertexBatch(graphicsDevice);
             swordFx = new SwordFx(GraphicsDevice, 1);
+
+            u = new UIBase();
             base.Initialize();
         }
         Vertex[] vertices;
@@ -59,7 +58,7 @@ namespace Stellaris.Test
             var p = Common.MouseState.position;
             vertices = new Vertex[]
             {
-                new Vertex(new Vector2(0 + p.X , 0f + p.Y), Color.White, new Vector2(0.5f, 0f)), 
+                new Vertex(new Vector2(0 + p.X , 0f + p.Y), Color.White, new Vector2(0.5f, 0f)),
                 new Vertex(new Vector2(5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f)),
                 new Vertex(new Vector2(-5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f))
             };
@@ -103,19 +102,28 @@ namespace Stellaris.Test
         VertexBatch vertexBatch;
         DynamicTextureText text;
         SwordFx swordFx;
+        UIBase u;
         protected override void Draw(GameTime gameTime)
         {
             Common.UpdateFPS(gameTime);
             GraphicsDevice.Clear(Color.Black);
+            u.width = 100;
+            u.height = 100;
+            u.postion = new Vector2(100, 100);
+            u.Update();
+            Window.Title = u.mouseStatus.ToString();
             var z = Common.MouseState.position.Y / Common.Resolution.Y * 1.15f;
             vertexBatch.Begin(swordFx.Texture, PrimitiveType.TriangleList);
-            var v = new Triangle(vertices).Rotate(timer, TriangleVertexType.A).RotationList(TriangleVertexType.A, z * 6.28f).
+            var v = new Triangle(vertices).Rotate(timer, TriangleVertexType.A).RotationList(TriangleVertexType.A, 3.1415f).
                 TransformPosition(Matrix.CreateScale(1f, z, 1f), Common.MouseState.position);
-            v = v.TransformColor(delegate(int index, Color color)
+            v = v.Transform(delegate (int index, Vertex vertex)
             {
-                return color * (index * 1f / v.vertex.Length);
+                return vertex.ChangeColor(vertex.Color * (index * 1.4f / v.vertex.Length));
             });
             vertexBatch.Draw(v);
+            vertexBatch.End();
+            vertexBatch.Begin(PrimitiveType.LineStrip);
+            u.DrawBorder(vertexBatch);
             vertexBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             text.Draw(spriteBatch, new Vector2(100, 100), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
