@@ -67,7 +67,7 @@ namespace Stellaris
         {
             Resolution = new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
             touchCollection = TouchPanel.GetState(game.Window).GetState();
-            touchLocations = (TouchLocation[])touchCollection.GetType().GetProperty("Collection", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(touchCollection);
+            touchLocations = touchCollection.ToArray();
             LastMouseState = MouseState;
             mouseState = Mouse.GetState();
             if (mouseState.Position != default)

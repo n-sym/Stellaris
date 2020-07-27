@@ -1,36 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>library</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net45</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Resources\**" />
-    <Compile Remove="StellarisMobile\**" />
-    <Compile Remove="StellarisTest\**" />
-    <Compile Remove="Test\**" />
     <EmbeddedResource Remove="Resources\**" />
-    <EmbeddedResource Remove="StellarisMobile\**" />
-    <EmbeddedResource Remove="StellarisTest\**" />
-    <EmbeddedResource Remove="Test\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Properties\**" />
     <EmbeddedResource Remove="Properties\**" />
     <None Remove="Properties\**" />
-    <None Remove="StellarisMobile\**" />
-    <None Remove="StellarisTest\**" />
-    <None Remove="Test\**" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Icon.ico" />
-    <None Remove="Icon.bmp" />
+    <Compile Remove="Activity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <MonoGameContentReference Include="Content\Content.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Stellaris.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
-      <HintPath>..\..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

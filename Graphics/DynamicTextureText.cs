@@ -7,44 +7,53 @@ using Point = Microsoft.Xna.Framework.Point;
 
 namespace Stellaris.Graphics
 {
-    public class DynamicTextureText : DynamicTexture
+    public class DynamicTextureTextGDI : DynamicTexture
     {
         Font font;
         string text;
-        public DynamicTextureText(GraphicsDevice graphicsDevice, Font font, string text) : base(graphicsDevice, (text.GetHashCode() * font.Size).ToString())
+        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, Font font, string text) : base(graphicsDevice, (text.GetHashCode() * font.Size).ToString())
         {
             this.font = font;
             this.text = text;
-            FontConversion();
+            GetTexture();
         }
-
-        private void FontConversion()
+        public static Bitmap GetTexture(Font font, string text)
         {
-            if (!LoadCache())
+            Graphic graphic = Graphic.FromImage(new Bitmap(1, 1));
+            SizeF size = graphic.MeasureString(text, font);
+            Bitmap bitmap = new Bitmap((int)size.Width + 1, (int)size.Height + 1);
+            Brush brush = new SolidBrush(ColorS.White);
+            graphic = Graphic.FromImage(bitmap);
+            graphic.DrawString(text, font, brush, 0, 0);
+            graphic.Dispose();
+            return bitmap;
+        }
+        private void GetTexture()
+        {
+            if (LoadCache())
             {
-                Graphic graphic = Graphic.FromImage(new Bitmap(1, 1));
-                SizeF size = graphic.MeasureString(text, font);
-                Bitmap bitmap = new Bitmap((int)size.Width + 1, (int)size.Height + 1);
+                Bitmap bitmap = GetTexture(font, text);
                 int width = bitmap.Width;
                 int height = bitmap.Height;
-                _width[0] = width;
-                _height[0] = height;
-                Brush brush = new SolidBrush(ColorS.White);
-                graphic.Dispose();
-                graphic = Graphic.FromImage(bitmap);
-                graphic.DrawString(text, font, brush, 0, 0);
-                graphic.Save();
                 Color[] data = new Color[width * height];
                 for (int i = 0; i < width * height; i++)
                 {
-                    Point p = IndexToPoint(i);
-                    data[i] = ColorConversion(bitmap.GetPixel(p.X - 1, p.Y - 1));
+                    Point p = IndexToPoint(i, width, height);
+                    data[i] = ColorConversion(bitmap.GetPixel(p.X, p.Y));
                 }
                 Texture2D texture2D = new Texture2D(graphicsDevice, width, height);
                 texture2D.SetData(data);
                 _texture = new Texture2D[] { texture2D };
+                _width[0] = width;
+                _height[0] = height;
                 DoCache();
             }
+        }
+        private Point IndexToPoint(int index, int width, int height)
+        {
+            int y = index / width;
+            int x = y * width;
+            return new Point(index - x, y);
         }
         private Color ColorConversion(ColorS color)
         {

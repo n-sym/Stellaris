@@ -32,31 +32,8 @@ namespace Stellaris.Graphics
         public Texture2D[] _texture;
         public Func<List<Color[]>, int, List<Color[]>> preGenerate;
         public static string cachePath = Environment.CurrentDirectory;
-        public DynamicTexture(GraphicsDevice graphicsDevice, int width, int height, string name = "")
-        {
-            _width = new int[1];
-            _height = new int[1];
-            _texture = new Texture2D[1];
-            this.graphicsDevice = graphicsDevice;
-            this._width[0] = width;
-            this._height[0] = height;
-            this.frame = 0;
-            this.maxFrame = 1;
-            this.name = name;
-        }
-        public DynamicTexture(GraphicsDevice graphicsDevice, int[] width, int[] height, int maxFrame, string name = "")
-        {
-            _width = width;
-            _height = height;
-            _texture = new Texture2D[maxFrame];
-            this.graphicsDevice = graphicsDevice;
-            this._width = width;
-            this._height = height;
-            this.frame = 0;
-            this.maxFrame = maxFrame;
-            this.name = name;
-        }
-        public DynamicTexture(GraphicsDevice graphicsDevice, int[] width, int[] height, int frame, int maxFrame, string name = "")
+        #region Ctor
+        private void Initialize(GraphicsDevice graphicsDevice, int[] width, int[] height, int frame, int maxFrame, string name = "")
         {
             _width = width;
             _height = height;
@@ -68,18 +45,26 @@ namespace Stellaris.Graphics
             this.maxFrame = maxFrame;
             this.name = name;
         }
+        public DynamicTexture(GraphicsDevice graphicsDevice, int width, int height, string name = "")
+        {
+            Initialize(graphicsDevice, new int[] { width }, new int[] { height }, 0, 1, name);
+        }
+        public DynamicTexture(GraphicsDevice graphicsDevice, int[] width, int[] height, int maxFrame, string name = "")
+        {
+            Initialize(graphicsDevice, width, height, 0, maxFrame, name);
+        }
+        public DynamicTexture(GraphicsDevice graphicsDevice, int[] width, int[] height, int frame, int maxFrame, string name = "")
+        {
+            Initialize(graphicsDevice, width, height, frame, maxFrame, name);
+        }
         /// <summary>
         /// 希望DynamicTexture没事----一般不用这个构造方法
         /// </summary>
         public DynamicTexture(GraphicsDevice graphicsDevice, string name = "")
         {
-            _width = new int[] { 0 };
-            _height = new int[] { 0 };
-            this.graphicsDevice = graphicsDevice;
-            this.frame = 0;
-            this.maxFrame = 1;
-            this.name = name;
+            Initialize(graphicsDevice, new int[] { 1 }, new int[] { 1 }, 0, 1, name);
         }
+        #endregion
         /// <summary>
         /// 生成DynamicTexture的数据
         /// </summary>
@@ -122,10 +107,6 @@ namespace Stellaris.Graphics
                 _texture[i].SetData(data[i]);
             }
             return true;
-        }
-        public void Initialize()
-        {
-            PrivateGenerate();
         }
         public void Draw(SpriteBatch spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)
         {

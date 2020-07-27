@@ -5,7 +5,7 @@ using System;
 
 namespace Stellaris.Entities
 {
-    class Bullet : Drawable
+    public class Bullet : Drawable
     {
         public int damage;
         public int timeLeft;
