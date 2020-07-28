@@ -11,13 +11,13 @@ namespace Stellaris.Graphics
     {
         Font font;
         string text;
-        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, Font font, string text) : base(graphicsDevice, (text.GetHashCode() * font.Size).ToString())
+        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, Font font, string text) : base(graphicsDevice, ((text + font.Size.ToString()).GetHashCode()).ToString())
         {
             this.font = font;
             this.text = text;
             GetTexture();
         }
-        public static Bitmap GetTexture(Font font, string text)
+        public static Bitmap GetBitmap(Font font, string text)
         {
             Graphic graphic = Graphic.FromImage(new Bitmap(1, 1));
             SizeF size = graphic.MeasureString(text, font);
@@ -30,9 +30,9 @@ namespace Stellaris.Graphics
         }
         private void GetTexture()
         {
-            if (LoadCache())
+            if (!LoadCache())
             {
-                Bitmap bitmap = GetTexture(font, text);
+                Bitmap bitmap = GetBitmap(font, text);
                 int width = bitmap.Width;
                 int height = bitmap.Height;
                 Color[] data = new Color[width * height];

@@ -7,10 +7,13 @@ using Stellaris.Graphics;
 using Stellaris.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using StbTrueTypeSharp;
+using System.Runtime.InteropServices;
 
 namespace Stellaris.Test
 {
-    public class Main : Game
+    public unsafe class Main : Game
     {
         private GraphicsDeviceManager graphics;
         private GraphicsDevice graphicsDevice => graphics.GraphicsDevice;
@@ -38,14 +41,54 @@ namespace Stellaris.Test
             MeteorBullet.flarefx = new FlareFx(graphicsDevice, 40, 40, "Test");
             MeteorBullet.flarefxAlt = a as FlareFxAlt;
             mousePos = new Vector2[15];
-            text = new DynamicTextureTextGDI(graphicsDevice, new System.Drawing.Font("华文中宋", 50), "Stellaris");
             vertexBatch = new VertexBatch(graphicsDevice);
             swordFx = new SwordFx(GraphicsDevice, 1);
-
             u = new UIBase();
+            using (FileStream fileStream = File.OpenRead(@"C:\Windows\Fonts\arial.ttf"))
+            {
+                var a = ToByteArray(fileStream);
+                byte* aa = (byte*)GCHandle.Alloc(a, GCHandleType.Pinned).AddrOfPinnedObject();
+                x = new StbTrueType.stbtt_fontinfo();
+                StbTrueType.stbtt_InitFont(x, aa, 0);
+                a = new byte[100];
+                int x1, x2, y1, y2;
+                StbTrueType.stbtt_GetGlyphBitmapBox(x, 55, 0.007550335f, 0.007550335f, &x1, &y1, &x2, &y2);
+                RenderGlyphBitmap(a, 9, 10, 9, 55);
+                bool flag = a[10] == 0;
+                sth = y2.ToString();
+            }
+            text = new DynamicTextureTextGDI(graphicsDevice, new System.Drawing.Font("华文中宋", 25), "Stellaris" + sth);
             base.Initialize();
         }
+        string sth;
         Vertex[] vertices;
+        StbTrueType.stbtt_fontinfo x; 
+        public byte[] ToByteArray(Stream stream)
+        {
+            byte[] bytes;
+
+            // Rewind stream if it is at end
+            if (stream.CanSeek && stream.Length == stream.Position)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            // Copy it's data to memory
+            using (var ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                bytes = ms.ToArray();
+            }
+
+            return bytes;
+        }
+        public unsafe void RenderGlyphBitmap(byte[] output, int outWidth, int outHeight, int outStride, int glyph)
+        {
+            fixed (byte* outputPtr = output)
+            {
+                StbTrueType.stbtt_MakeGlyphBitmap(x , outputPtr, outWidth, outHeight, outStride, 1, 1, glyph);
+            }
+        }
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
