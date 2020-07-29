@@ -66,6 +66,7 @@ namespace Stellaris.Graphics
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
                 {
                     y += (int)height;
+                    x = 0;
                     i++;
                 }
                 else

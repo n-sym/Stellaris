@@ -44,7 +44,7 @@ namespace Stellaris.Test
             vertexBatch = new VertexBatch(graphicsDevice);
             swordFx = new SwordFx(GraphicsDevice, 1);
             u = new UIBase();
-            text = new DynamicTextureTextGDI(graphicsDevice, "华文中宋", 40, @"文字绘\n制测试Stellaris");
+            text = new DynamicTextureTextGDI(graphicsDevice, "华文中宋", 40, "文字绘\n制测试Stellaris");
             dtt = new DynamicTextureTextStb(graphicsDevice, @"C:\Windows\Fonts\STZHONGS.ttf", 70, @"文字绘\n制测试Stellaris");
             base.Initialize();
         }
@@ -131,7 +131,7 @@ namespace Stellaris.Test
             vertexBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             //Draw Texts
-            dtt.Draw(spriteBatch, new Vector2(100, 450));
+            dtt.Draw(spriteBatch, new Vector2(100, 500));
             text.Draw(spriteBatch, new Vector2(100, 300), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
             //Draw Bullets
             for (int i = 0; i < bullets.Count; i++)
