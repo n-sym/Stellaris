@@ -11,7 +11,7 @@ namespace Stellaris.Graphics
         {
 
         }
-        protected override List<Color[]> Generate()
+        protected override List<Color[]> Generating()
         {
             var data = new List<Color[]>();
             data.Add(new Color[Width * Height]);
@@ -29,7 +29,7 @@ namespace Stellaris.Graphics
         {
 
         }
-        protected override List<Color[]> Generate()
+        protected override List<Color[]> Generating()
         {
             var data = new List<Color[]>();
             data.Add(new Color[Width * Height]);

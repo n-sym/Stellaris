@@ -66,9 +66,7 @@ namespace Stellaris.Graphics
             Vector2 anoter = vertexC.Position - vertexA.Position;
             bool flag = side.Angle() < anoter.Angle();
             float theta = side.AngleBetween(anoter);
-            bool flag2 = (side.Angle() + theta >= 6.283f) || (anoter.Angle() + theta >= 6.283f);
-            flag = flag2 ? !flag : flag;
-            theta = flag2 ? 6.283f - theta : theta;
+            if ((side.Angle() + theta >= 6.283f) || (anoter.Angle() + theta >= 6.283f)) theta = 6.283f - theta;
             if (flag)
             {
                 side = anoter;
@@ -80,14 +78,10 @@ namespace Stellaris.Graphics
             if (count < 2) return new VertexInfo(new Vertex[] { vertexA, vertexB, vertexC });
             Vertex[] vertices = new Vertex[count + 2];
             vertices[0] = vertexA;
-            vertices[1] = vertexC;
-            vertices[2] = vertexB;
-            bool isEven = false;
-            for (int i = 3; i < count + 2; i++)
+            for (int i = 1; i < count + 2; i++)
             {
+                vertices[i] = vertexC.ChangePosition(side + vertexA.Position);
                 side = side.Rotate(theta);
-                vertices[i] = vertexB.ChangePosition(side + vertexA.Position);
-                isEven = !isEven;
             }
             short[] index = new short[count * 3];
             for (int i = 0; i < count * 3; i += 3)
@@ -109,6 +103,18 @@ namespace Stellaris.Graphics
                 return RotationList(vertexB, vertexA, vertexC, radian);
             }
             return RotationList(vertexC, vertexA, vertexB, radian);
+        }
+        public static Triangle operator +(Triangle left, Triangle right)
+        {
+            return new Triangle(left.vertexA.AddPosition(right.vertexA.Position), left.vertexB.AddPosition(right.vertexB.Position), left.vertexC.AddPosition(right.vertexC.Position));
+        }
+        public static Triangle operator -(Triangle left, Triangle right)
+        {
+            return new Triangle(left.vertexA.AddPosition(-right.vertexA.Position), left.vertexB.AddPosition(-right.vertexB.Position), left.vertexC.AddPosition(-right.vertexC.Position));
+        }
+        public static Triangle operator *(Triangle left, float right)
+        {
+            return new Triangle(left.vertexA.ChangePosition(left.vertexA.Position * right), left.vertexB.ChangePosition(left.vertexB.Position * right), left.vertexC.ChangePosition(left.vertexC.Position * right));
         }
     }
 }

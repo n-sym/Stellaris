@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Stellaris.Curves;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Stellaris
@@ -10,40 +12,81 @@ namespace Stellaris
     {
         static int seed = 0;
         /// <summary>
-        /// 读取数组中索引为index那一项的值，如果越界则返回第一项或最后一项的值
+        /// 读取IList中索引为index那一项的值，如果越界则返回第一项或最后一项的值
         /// </summary>
-        public static T TryGetValue<T>(this T[] array, int index)
+        public static T TryGetValue<T>(this IList<T> array, int index)
         {
             if (array == null) return default;
-            if (array.Length == 0) return default;
+            if (array.Count == 0) return default;
             if (index < 0) return array[0];
-            if (index > array.Length - 1) return array[array.Length - 1];
+            if (index > array.Count - 1) return array[array.Count - 1];
             return array[index];
         }
-        public static T TryGetValue<T>(this List<T> list, int index)
-        {
-            if (list == null) return default;
-            if (list.Count == 0) return default;
-            if (index < 0) return list[0];
-            if (index > list.Count - 1) return list.Last();
-            return list[index];
-        }
-        public static string ToStringAlt<T>(this T[] array)
+        /// <summary>
+        /// 将每一项转换成字符串然后相加
+        /// </summary>
+        public static string ToStringAlt<T>(this IList<T> array)
         {
             string result = "";
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < array.Count - 1; i++)
             {
                 result += array[i].ToString() + ",";
             }
+            result += array[array.Count - 1].ToString();
             return result;
         }
-        public static string[] ToStringArray<T>(this T[] array)
+        /// <summary>
+        /// 将每一项转换成字符串然后保存到新数组中
+        /// </summary>
+        public static string[] ToStringArray<T>(this IList<T> array)
         {
-            string[] result = new string[array.Length];
-            for (int i = 0; i < array.Length; i++)
+            string[] result = new string[array.Count];
+            for (int i = 0; i < array.Count; i++)
             {
                 result[i] = array[i].ToString();
             }
+            return result;
+        }
+        public static byte[] ToByteArray(this Stream stream)
+        {
+            if (!stream.CanSeek) return new byte[] { 0 };
+            byte[] bytes;
+            stream.Position = 0;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                bytes = memoryStream.ToArray();
+            }
+            return bytes;
+        }
+        public static T[] InitializeArrayFromValue<T>(T value, int length)
+        {
+            T[] result = new T[length];
+            for(int i = 0; i < length; i++)
+            {
+                result[i] = value;
+            }
+            return result;
+        }
+        public static T[] InitializeArrayFromValue<T>(Func<int, T> func, int length)
+        {
+            T[] result = new T[length];
+            for (int i = 0; i < length; i++)
+            {
+                result[i] = func(i);
+            }
+            return result;
+        }
+        public static Texture2D ByteDataToTexture2D(GraphicsDevice graphicsDevice, byte[] bitmap, int width, int height)
+        {
+            Color[] colors = new Color[bitmap.Length];
+            for (var i = 0; i < colors.Length; i++)
+            {
+                byte b = bitmap[i];
+                colors[i].R = colors[i].G = colors[i].B = colors[i].A = b;
+            }
+            Texture2D result = new Texture2D(graphicsDevice, width, height);
+            result.SetData(colors);
             return result;
         }
         public static T[] CutOut<T>(this T[] array, int start, int end)
@@ -55,33 +98,76 @@ namespace Stellaris
             }
             return result;
         }
-        public static void Plus(this short[] array, short num)
+        public static void PlusAll(this short[] array, short num)
         {
             for (int i = 0; i < array.Length; i++)
             {
                 array[i] += num;
             }
         }
-        public static Vector2 RandomAngleVec(float length, float min = 0f, float max = 6.283f)
+        public static Vector2 CenterTypeToVector2(CenterType centerType)
         {
-            Random random = seed == 0 ? new Random() : new Random(seed);
+            switch(centerType)
+            {
+                case CenterType.TopLeft:
+                    return new Vector2(0f, 0f);
+                case CenterType.TopCenter:
+                    return new Vector2(0f, 0.5f);
+                case CenterType.TopRight:
+                    return new Vector2(0f, 1f);
+                case CenterType.MiddleLeft:
+                    return new Vector2(0.5f, 0f);
+                case CenterType.MiddleCenter:
+                    return new Vector2(0.5f, 0.5f);
+                case CenterType.MiddleRight:
+                    return new Vector2(0.5f, 1f);
+                case CenterType.BottomLeft:
+                    return new Vector2(1f, 0f);
+                case CenterType.BottomCenter:
+                    return new Vector2(1f, 0.5f);
+                case CenterType.BottomRight:
+                    return new Vector2(1f, 1f);
+                default:
+                    return default;
+            }
+        }
+        /// <summary>
+        /// 随机角度的向量
+        /// </summary>
+        public static Vector2 RandomAngleVec(float length, Vector2 center = default, float min = 0f, float max = 6.283f)
+        {
+            Random random = new Random(seed);
             float radian = min.LinearInterpolationTo(max, (float)random.NextDouble(), 1f);
             float c = (float)Math.Cos(radian);
             float s = (float)Math.Sin(radian);
             seed = random.Next();
-            return new Vector2(c * length, s * length);
-        }
-        public static Vector2 RandomAngleVec(float length, Vector2 center, float min = 0f, float max = 6.283f)
-        {
-            Random random = new Random();
-            float radian = min.LinearInterpolationTo(max, (float)random.NextDouble(), 1f);
-            float c = (float)Math.Cos(radian);
-            float s = (float)Math.Sin(radian);
             return new Vector2(c * length, s * length) + center;
         }
+        public static byte[] IntToByteArray(int i)
+        {
+            byte[] result = new byte[4];
+            result[0] = (byte)((i >> 24) & 0xFF);
+            result[1] = (byte)((i >> 16) & 0xFF);
+            result[2] = (byte)((i >> 8) & 0xFF);
+            result[3] = (byte)(i & 0xFF);
+            return result;
+        }
+        public static int ByteArrayToInt(byte[] bytes)
+        {
+            int value = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                int shift = (3 - i) * 8;
+                value += (bytes[i] & 0x000000FF) << shift;
+            }
+            return value;
+        }
+        /// <summary>
+        /// 求两向量角度平均值
+        /// </summary>
         public static float AngleBetween(Vector2 a, Vector2 b)
         {
-            return Math.Abs(a.Angle() - b.Angle());
+            return (a + b).Angle();
         }
         public static Color ToColor(this Vector4 vec)
         {

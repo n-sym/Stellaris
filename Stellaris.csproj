@@ -5,6 +5,12 @@
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Resources\**" />
     <Compile Remove="StellarisMobile\**" />
@@ -35,6 +41,7 @@
     <Reference Include="StbTrueTypeSharp">
       <HintPath>..\..\..\Desktop\StbTrueTypeSharp.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />

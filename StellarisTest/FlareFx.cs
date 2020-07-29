@@ -13,7 +13,7 @@ namespace Stellaris.Test
         public FlareFx(GraphicsDevice graphicsDevice, int width, int height, string name = "") : base(graphicsDevice, width, height, name)
         {
         }
-        protected override List<Color[]> Generate()
+        protected override List<Color[]> Generating()
         {
             var data = new List<Color[]>();
             data.Add(new Color[Width * Height]);

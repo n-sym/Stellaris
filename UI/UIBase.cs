@@ -67,10 +67,10 @@ namespace Stellaris.UI
         public void DrawBorder(VertexBatch vertexBatch)
         {
             Vector2 size = Size;
-            if (vertexBatch.primitiveType == PrimitiveType.TriangleList) vertexBatch.Draw(new Vertex[] { new Vertex(postion), new Vertex(postion + size.OnlyX()), new Vertex(postion + size.OnlyY()), new Vertex(postion + size) }, 0, 1, 2, 1, 2, 3);
-            if (vertexBatch.primitiveType == PrimitiveType.TriangleStrip) vertexBatch.Draw(new Vertex[] { new Vertex(postion), new Vertex(postion + size.OnlyX()), new Vertex(postion + size.OnlyY()), new Vertex(postion + size) }, 0, 1, 2, 3);
-            if (vertexBatch.primitiveType == PrimitiveType.LineList) vertexBatch.Draw(new Vertex[] { new Vertex(postion), new Vertex(postion + size.OnlyX()), new Vertex(postion + size.OnlyY()), new Vertex(postion + size) }, 0, 1, 1, 3, 3, 2, 2, 0);
-            if (vertexBatch.primitiveType == PrimitiveType.LineStrip) vertexBatch.Draw(new Vertex[] { new Vertex(postion), new Vertex(postion + size.OnlyX()), new Vertex(postion + size.OnlyY()), new Vertex(postion + size) }, 0, 1, 3, 2, 0);
+            if (vertexBatch.primitiveType == PrimitiveType.TriangleList) vertexBatch.Draw(new Vertex[] { new Vertex(postion), new Vertex(postion + size.X_Vector()), new Vertex(postion + size.Y_Vector()), new Vertex(postion + size) }, 0, 1, 2, 1, 2, 3);
+            if (vertexBatch.primitiveType == PrimitiveType.TriangleStrip) vertexBatch.Draw(new Vertex[] { new Vertex(postion), new Vertex(postion + size.X_Vector()), new Vertex(postion + size.Y_Vector()), new Vertex(postion + size) }, 0, 1, 2, 3);
+            if (vertexBatch.primitiveType == PrimitiveType.LineList) vertexBatch.Draw(new Vertex[] { new Vertex(postion), new Vertex(postion + size.X_Vector()), new Vertex(postion + size.Y_Vector()), new Vertex(postion + size) }, 0, 1, 1, 3, 3, 2, 2, 0);
+            if (vertexBatch.primitiveType == PrimitiveType.LineStrip) vertexBatch.Draw(new Vertex[] { new Vertex(postion), new Vertex(postion + size.X_Vector()), new Vertex(postion + size.Y_Vector()), new Vertex(postion + size) }, 0, 1, 3, 2, 0);
         }
         protected virtual void LeftClick()
         {

@@ -44,51 +44,12 @@ namespace Stellaris.Test
             vertexBatch = new VertexBatch(graphicsDevice);
             swordFx = new SwordFx(GraphicsDevice, 1);
             u = new UIBase();
-            using (FileStream fileStream = File.OpenRead(@"C:\Windows\Fonts\arial.ttf"))
-            {
-                var a = ToByteArray(fileStream);
-                byte* aa = (byte*)GCHandle.Alloc(a, GCHandleType.Pinned).AddrOfPinnedObject();
-                x = new StbTrueType.stbtt_fontinfo();
-                StbTrueType.stbtt_InitFont(x, aa, 0);
-                a = new byte[100];
-                int x1, x2, y1, y2;
-                StbTrueType.stbtt_GetGlyphBitmapBox(x, 55, 0.007550335f, 0.007550335f, &x1, &y1, &x2, &y2);
-                RenderGlyphBitmap(a, 9, 10, 9, 55);
-                bool flag = a[10] == 0;
-                sth = y2.ToString();
-            }
-            text = new DynamicTextureTextGDI(graphicsDevice, new System.Drawing.Font("华文中宋", 25), "Stellaris" + sth);
+            text = new DynamicTextureTextGDI(graphicsDevice, "华文中宋", 40, @"文字绘\n制测试Stellaris");
+            dtt = new DynamicTextureTextStb(graphicsDevice, @"C:\Windows\Fonts\STZHONGS.ttf", 70, @"文字绘\n制测试Stellaris");
             base.Initialize();
         }
-        string sth;
+        DynamicTextureTextStb dtt;
         Vertex[] vertices;
-        StbTrueType.stbtt_fontinfo x; 
-        public byte[] ToByteArray(Stream stream)
-        {
-            byte[] bytes;
-
-            // Rewind stream if it is at end
-            if (stream.CanSeek && stream.Length == stream.Position)
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-            }
-
-            // Copy it's data to memory
-            using (var ms = new MemoryStream())
-            {
-                stream.CopyTo(ms);
-                bytes = ms.ToArray();
-            }
-
-            return bytes;
-        }
-        public unsafe void RenderGlyphBitmap(byte[] output, int outWidth, int outHeight, int outStride, int glyph)
-        {
-            fixed (byte* outputPtr = output)
-            {
-                StbTrueType.stbtt_MakeGlyphBitmap(x , outputPtr, outWidth, outHeight, outStride, 1, 1, glyph);
-            }
-        }
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -101,7 +62,7 @@ namespace Stellaris.Test
             var p = Common.MouseState.position;
             vertices = new Vertex[]
             {
-                new Vertex(new Vector2(0 + p.X , 0f + p.Y), Color.White, new Vector2(0.5f, 0f)),
+                new Vertex(new Vector2(0 + p.X , 0f + p.Y), Color.White, new Vector2(0.5f, 0.5f)),
                 new Vertex(new Vector2(5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f)),
                 new Vertex(new Vector2(-5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f))
             };
@@ -169,12 +130,16 @@ namespace Stellaris.Test
             u.DrawBorder(vertexBatch);
             vertexBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-            text.Draw(spriteBatch, new Vector2(100, 100), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
+            //Draw Texts
+            dtt.Draw(spriteBatch, new Vector2(100, 450));
+            text.Draw(spriteBatch, new Vector2(100, 300), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
+            //Draw Bullets
             for (int i = 0; i < bullets.Count; i++)
             {
                 if (bullets[i] == null) break;
                 bullets[i].Draw(spriteBatch);
             }
+            //Draw Mouse
             for (int k = 0; k < 1; k++)
             {
                 for (int i = 0; i < 15; i++)
@@ -182,18 +147,6 @@ namespace Stellaris.Test
                     if (mousePos[i] != Vector2.Zero)
                     {
                         float m = (mousePos[i] - mousePos.TryGetValue(i + 1)).Length() * 0.3f;
-                        /*try
-                        {
-                            Vector2[] v = Helper.LagrangeInterpolation(mousePos.CutOut(i - 1, i + 1), (int)(m));
-                            for (int j = 0; j < v.Length; j++)
-                            {
-                                a.Draw(spriteBatch, v[j] + k * new Vector2(10, 10), null, Color.White * (1.5f - (float)(Math.Sqrt(i) / Math.Sqrt(14))), 0.7853f, new Vector2(20, 20), 1.3f * (1 - (float)(Math.Sqrt(i) / Math.Sqrt(14))), SpriteEffects.None, 0f);
-                            }
-                        }
-                        catch
-                        {
-
-                        }*/
                         for (int j = 0; j < m; j++)
                         {
                             a.Draw(spriteBatch, mousePos[i].LinearInterpolationTo(mousePos.TryGetValue(i + 1), j, m) + k * new Vector2(10, 10), null, Color.White * (1.1f - (float)(Math.Sqrt(i) / Math.Sqrt(14))), 0.7853f, new Vector2(20, 20), 0.9f * (1 - (float)(Math.Sqrt(i) / Math.Sqrt(14))), SpriteEffects.None, 0f);

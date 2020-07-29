@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System.Drawing;
+using System.Drawing.Text;
 using Color = Microsoft.Xna.Framework.Color;
 using ColorS = System.Drawing.Color;
 using Graphic = System.Drawing.Graphics;
@@ -13,9 +14,37 @@ namespace Stellaris.Graphics
         string text;
         public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, Font font, string text) : base(graphicsDevice, ((text + font.Size.ToString()).GetHashCode()).ToString())
         {
+            Initialize(font, text);
+        }
+        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, string name, float emSize, string text) : base(graphicsDevice, ((text + emSize.ToString()).GetHashCode()).ToString())
+        {
+            Initialize(new Font(name, emSize), text);
+        }
+        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, float emSize, string path, string text) : base(graphicsDevice, ((text + emSize.ToString()).GetHashCode()).ToString())
+        {
+            PrivateFontCollection fontCollection = new PrivateFontCollection();
+            fontCollection.AddFontFile(path);
+            Initialize(new Font(fontCollection.Families[0], emSize), text);
+        }
+        private void Initialize(Font font, string text)
+        {
             this.font = font;
             this.text = text;
             GetTexture();
+        }
+        public void Refresh(Font font, string text)
+        {
+            Initialize(font, text);
+        }
+        public void Refresh(string name, float emSize, string text)
+        {
+            Initialize(new Font(name, emSize), text);
+        }
+        public void Refresh(float emSize, string path, string text)
+        {
+            PrivateFontCollection fontCollection = new PrivateFontCollection();
+            fontCollection.AddFontFile(path);
+            Initialize(new Font(fontCollection.Families[0], emSize), text);
         }
         public static Bitmap GetBitmap(Font font, string text)
         {

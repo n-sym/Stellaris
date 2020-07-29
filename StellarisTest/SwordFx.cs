@@ -12,7 +12,7 @@ namespace Stellaris.Test
         public SwordFx(GraphicsDevice graphicsDevice, int maxFrame, string name = "") : base(graphicsDevice, a, b, maxFrame, name)
         {
         }
-        protected override List<Color[]> Generate()
+        protected override List<Color[]> Generating()
         {
             var data = new List<Color[]>();
             data.Add(new Color[Width * Height]);

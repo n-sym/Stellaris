@@ -15,7 +15,7 @@ namespace Stellaris.Test
         {
             timeLeft = 150;
             size = new Vector2(12, 12);
-            velocity = Helper.RandomAngleVec(10, radian - 0.85f, radian + 0.85f);
+            velocity = Helper.RandomAngleVec(10, Vector2.Zero, radian - 0.85f, radian + 0.85f);
             v = velocity;
             end = Common.MouseState.position;
         }

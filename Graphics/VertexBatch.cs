@@ -72,7 +72,7 @@ namespace Stellaris.Graphics
                 indexData = new List<short>();
                 FixIndex();
             }
-            if (vertexData.Count != 0) index.Plus((short)vertexData.Count);
+            if (vertexData.Count != 0) index.PlusAll((short)vertexData.Count);
             vertexData.AddRange(vertex);
             indexData.AddRange(index);
             if (vertexData.Count > short.MaxValue) throw new Exception("Vertices Counts Over 32768");
@@ -81,22 +81,24 @@ namespace Stellaris.Graphics
         {
             Draw(vertexInfo.vertex, vertexInfo.index);
         }
+        public static int LengthGusser(int length, PrimitiveType primitiveType)
+        {
+            return primitiveType == PrimitiveType.TriangleList ? length / 3 : (primitiveType == PrimitiveType.LineList ? length / 2 : (primitiveType == PrimitiveType.TriangleStrip ? length - 2 : length - 1));
+        }
         public void DoDraw()
         {
             if (!begin) throw new Exception("Called Draw Before Begin");
             Vertex[] array = vertexData.ToArray();
             int length = indexData.Count == 0 ? vertexData.Count : indexData.Count;
-            length = primitiveType == PrimitiveType.TriangleList ? length / 3 : (primitiveType == PrimitiveType.LineList ? length / 2 : (primitiveType == PrimitiveType.TriangleStrip ? length - 2 : length - 1));
+            length = LengthGusser(length, primitiveType);
+            basicEffect.CurrentTechnique.Passes[0].Apply(); 
             if (indexData.Count == 0)
             {
-                basicEffect.CurrentTechnique.Passes[0].Apply();
                 graphicsDevice.DrawUserPrimitives(primitiveType, array, 0, length);
             }
             else
             {
-                basicEffect.CurrentTechnique.Passes[0].Apply();
                 graphicsDevice.DrawUserIndexedPrimitives(primitiveType, array, 0, array.Length, indexData.ToArray(), 0, length);
-
             }
             vertexData.Clear();
             indexData.Clear();

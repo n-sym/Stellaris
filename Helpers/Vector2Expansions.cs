@@ -74,13 +74,17 @@ namespace Stellaris
         {
             return vec + new Vector2(a, b);
         }
-        public static Vector2 OnlyX(this Vector2 vec)
+        public static Vector2 X_Vector(this Vector2 vec)
         {
             return new Vector2(vec.X, 0);
         }
-        public static Vector2 OnlyY(this Vector2 vec)
+        public static Vector2 Y_Vector(this Vector2 vec)
         {
             return new Vector2(0, vec.Y);
+        }
+        public static Vector2 MutiplyXY(this Vector2 a, Vector2 b)
+        {
+            return new Vector2(a.X * b.X, a.Y * b.Y);
         }
         public static Point ToPoint(this Vector2 vec)
         {

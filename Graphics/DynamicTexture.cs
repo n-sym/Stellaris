@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 
 namespace Stellaris.Graphics
 {
@@ -20,8 +21,8 @@ namespace Stellaris.Graphics
         {
             get
             {
-                if (PrivateGenerate()) return _texture[frame];
-                return null;
+                EnsureGenerated();
+                return _texture[frame];
             }
             set
             {
@@ -30,10 +31,9 @@ namespace Stellaris.Graphics
         }
         public GraphicsDevice graphicsDevice;
         public Texture2D[] _texture;
-        public Func<List<Color[]>, int, List<Color[]>> preGenerate;
         public static string cachePath = Environment.CurrentDirectory;
         #region Ctor
-        private void Initialize(GraphicsDevice graphicsDevice, int[] width, int[] height, int frame, int maxFrame, string name = "")
+        private void Initialize(GraphicsDevice graphicsDevice, int[] width, int[] height, int frame, int maxFrame, string name)
         {
             _width = width;
             _height = height;
@@ -66,68 +66,95 @@ namespace Stellaris.Graphics
         }
         #endregion
         /// <summary>
-        /// 生成DynamicTexture的数据
+        /// DynamicTexture Generating
         /// </summary>
-        /// <returns>数据</returns>
-        protected virtual List<Color[]> Generate()
+        /// <returns>Color Data</returns>
+        protected virtual List<Color[]> Generating()
         {
             List<Color[]> data = new List<Color[]>();
             for (int i = 0; i < maxFrame; i++)
             {
                 data.Add(new Color[_width[i] * _height[i]]);
-            }
-            if (preGenerate != null)
-            {
-                data = preGenerate.Invoke(data, frame);
-                //执行了自定义的生成函数了，无需进行默认生成
-                return data;
-            }
-            //默认生成光球
-            for (int i = 0; i < maxFrame; i++)
-            {
-                Vector2 vector2 = new Vector2(_width[i], _height[i]) / 2;
-                float length = vector2.Length() / 1.41f;
                 for (int j = 0; j < data[i].Length; j++)
                 {
-                    data[i][j] = Color.White * (1 - (Vector2.Distance(IndexToPoint(j).ToVector2(), vector2) / length));
+                    data[i][j] = Color.White;
                 }
             }
             return data;
         }
-        bool PrivateGenerate()
+        /// <summary>
+        /// Generate dynamictexture immediatly
+        /// </summary>
+        public void Generate()
         {
-            if (_texture[frame] != null) return true; //有贴图了，无需进行生成
+            List<Color[]> data = Generating();
             for (int i = 0; i < maxFrame; i++)
             {
                 _texture[i] = new Texture2D(graphicsDevice, _width[i], _height[i]);
-            }
-            List<Color[]> data = Generate();
-            for (int i = 0; i < maxFrame; i++)
-            {
                 _texture[i].SetData(data[i]);
             }
-            return true;
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)
+        public void EnsureGenerated()
         {
-            PrivateGenerate();
-            spriteBatch.Draw(Texture, position, source, color, rotation, origin, scale, effects, layerDepth);
+            if (_texture[frame] == null)
+            {
+                Generate();
+            }
         }
-        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)
+        /// <summary>
+        /// The Actual Call of Draw methods, can be overriden
+        /// </summary>
+        protected virtual void PrivateDraw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
-            PrivateGenerate();
+            EnsureGenerated();
             spriteBatch.Draw(_texture[frame], position, source, color, rotation, origin, scale, effects, layerDepth);
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, float scale = 1f)
         {
-            PrivateGenerate();
-            spriteBatch.Draw(Texture, position, source, color, rotation, origin, scale, effects, layerDepth);
+            PrivateDraw(spriteBatch, frame, position, null, Color.White, 0f, default, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
-        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float scale = 1f)
         {
-            PrivateGenerate();
-            spriteBatch.Draw(_texture[frame], position, source, color, rotation, origin, scale, effects, layerDepth);
+            PrivateDraw(spriteBatch, frame, position, null, color, 0f, default, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float scale = 1f, float rotation = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, null, color, rotation, default, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
+        }
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, Vector2 origin, float scale = 1f, float rotation = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, null, color, rotation, origin, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
+        }
+        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Color color, Vector2 origin, float scale = 1f, float rotation = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, null, color, rotation, origin, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
+        }
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, CenterType centerType, float scale = 1f, float rotation = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, null, color, rotation, Size.MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
+        }
+        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Color color, CenterType centerType, float scale = 1f, float rotation = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, null, color, rotation, Size.MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
+        }
+        #region XNA-Like Draw Methods
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation = 0, Vector2 origin = default, float scale = 1f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, source, color, rotation, origin, new Vector2(scale, scale), effects, layerDepth);
+        }
+        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation = 0, Vector2 origin = default, float scale = 1f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, source, color, rotation, origin, new Vector2(scale, scale), effects, layerDepth);
+        }
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, source, color, rotation, origin, scale, effects, layerDepth);
+        }
+        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, source, color, rotation, origin, scale, effects, layerDepth);
+        }
+        #endregion
         protected Point IndexToPoint(int index)
         {
             int y = index / _width[frame];
