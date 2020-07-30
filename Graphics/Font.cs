@@ -50,10 +50,10 @@ namespace Stellaris.Graphics
             stbtt_InitFont(font, bytePtr, 0);
             GC.Collect();
         }
-        public int[] GetGlyphIndex(char[] chars)
+        public int[] GetGlyphIndex(IList<char> chars)
         {
-            int[] result = new int[chars.Length];
-            for (int i = 0; i < chars.Length; i++)
+            int[] result = new int[chars.Count];
+            for (int i = 0; i < chars.Count; i++)
             {
                 result[i] = stbtt_FindGlyphIndex(font, (int)chars[i]);
             }
@@ -63,7 +63,11 @@ namespace Stellaris.Graphics
         {
             return GetGlyphIndex(str.ToCharArray());
         }
-        public Glygh[] GetGlyphs(float height, int[] glyph, float scaleX, float scaleY)
+        public int GetGlyphIndex(char c)
+        {
+            return stbtt_FindGlyphIndex(font, (int)c);
+        }
+        public Glygh[] GetGlyphsFromIndex(float height, int[] glyph, float scaleX, float scaleY)
         {
             float scale = stbtt_ScaleForPixelHeight(font, height);
             Glygh[] result = new Glygh[glyph.Length];
@@ -89,7 +93,32 @@ namespace Stellaris.Graphics
             GC.Collect();
             return result;
         }
-
+        public Glygh[] GetGlyphsFromCodepoint(float height, int[] codepoint, float scaleX, float scaleY)
+        {
+            float scale = stbtt_ScaleForPixelHeight(font, height);
+            Glygh[] result = new Glygh[codepoint.Length];
+            if (graphicsDevice == null) return result;
+            for (int i = 0; i < codepoint.Length; i++)
+            {
+                int x0, x1, y0, y1;
+                stbtt_GetCodepointBitmapBox(font, codepoint[i], scale * scaleX, scale * scaleY, &x0, &y0, &x1, &y1);
+                int w = x1 - x0;
+                int h = y1 - y0;
+                if (w == 0 && h == 0)
+                {
+                    w = 1;
+                    h = 1;
+                }
+                byte[] bitmap = new byte[w * h];
+                fixed (byte* bytePtr = bitmap)
+                {
+                    stbtt_MakeCodepointBitmap(font, bytePtr, w, h, w, scale * scaleX, scale * scaleY, codepoint[i]);
+                }
+                result[i] = new Glygh(Helper.ByteDataToTexture2D(graphicsDevice, bitmap, w, h), x0, x1, y0, y1);
+            }
+            GC.Collect();
+            return result;
+        }
         public void Dispose()
         {
             font = null;

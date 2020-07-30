@@ -44,11 +44,11 @@ namespace Stellaris.Test
             vertexBatch = new VertexBatch(graphicsDevice);
             swordFx = new SwordFx(GraphicsDevice, 1);
             u = new UIBase();
-            text = new DynamicTextureTextGDI(graphicsDevice, "华文中宋", 40, "文字绘\n制测试Stellaris");
-            dtt = new DynamicTextureTextStb(graphicsDevice, @"C:\Windows\Fonts\STZHONGS.ttf", 70, @"文字绘\n制测试Stellaris");
+            text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris");
+            dtt = new DynamicTextureFont(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 80);
             base.Initialize();
         }
-        DynamicTextureTextStb dtt;
+        DynamicTextureFont dtt;
         Vertex[] vertices;
         protected override void LoadContent()
         {
@@ -113,12 +113,12 @@ namespace Stellaris.Test
             GraphicsDevice.Clear(Color.Black);
             u.width = 100;
             u.height = 100;
-            u.postion = new Vector2(100, 100);
+            u.postion = new Vector2(100, 500);
             u.Update();
             Window.Title = u.mouseStatus.ToString();
             var z = Common.MouseState.position.Y / Common.Resolution.Y * 1.15f;
             vertexBatch.Begin(swordFx.Texture, PrimitiveType.TriangleList);
-            var v = new Triangle(vertices).Rotate(timer, TriangleVertexType.A).RotationList(TriangleVertexType.A, 3.1415f).
+            var v = new VertexTriangle(vertices).Rotate(timer, TriangleVertexType.A).RotationList(TriangleVertexType.A, 3.1415f).
                 TransformPosition(Matrix.CreateScale(1f, z, 1f), Common.MouseState.position);
             v = v.Transform(delegate (int index, Vertex vertex)
             {
@@ -131,8 +131,8 @@ namespace Stellaris.Test
             vertexBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             //Draw Texts
-            dtt.Draw(spriteBatch, new Vector2(100, 500));
-            text.Draw(spriteBatch, new Vector2(100, 300), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
+            dtt.DrawString(spriteBatch, "***ABCD文字绘制测试\nStellaris", new Vector2(0, 150), Color.White);
+            text.Draw(spriteBatch, new Vector2(0, 0), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
             //Draw Bullets
             for (int i = 0; i < bullets.Count; i++)
             {

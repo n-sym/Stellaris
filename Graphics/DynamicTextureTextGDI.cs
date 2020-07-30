@@ -12,15 +12,15 @@ namespace Stellaris.Graphics
     {
         Font font;
         string text;
-        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, Font font, string text) : base(graphicsDevice, ((text + font.Size.ToString()).GetHashCode()).ToString())
+        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, Font font, string text) : base(graphicsDevice, (text + font.Name + font.Size.ToString()).GetHashCode().ToString())
         {
             Initialize(font, text);
         }
-        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, string name, float emSize, string text) : base(graphicsDevice, ((text + emSize.ToString()).GetHashCode()).ToString())
+        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, float emSize, string name, string text) : base(graphicsDevice, (text + name + emSize.ToString()).GetHashCode().ToString())
         {
             Initialize(new Font(name, emSize), text);
         }
-        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, float emSize, string path, string text) : base(graphicsDevice, ((text + emSize.ToString()).GetHashCode()).ToString())
+        public DynamicTextureTextGDI(GraphicsDevice graphicsDevice, string path, float emSize, string text) : base(graphicsDevice, (text + path + emSize.ToString()).GetHashCode().ToString())
         {
             PrivateFontCollection fontCollection = new PrivateFontCollection();
             fontCollection.AddFontFile(path);
@@ -34,14 +34,17 @@ namespace Stellaris.Graphics
         }
         public void Refresh(Font font, string text)
         {
+            name = (text + font.Name + font.Size.ToString()).GetHashCode().ToString();
             Initialize(font, text);
         }
-        public void Refresh(string name, float emSize, string text)
+        public void Refresh(float emSize, string name, string text)
         {
+            name = (text + name + emSize.ToString()).GetHashCode().ToString();
             Initialize(new Font(name, emSize), text);
         }
-        public void Refresh(float emSize, string path, string text)
+        public void Refresh(string path, float emSize, string text)
         {
+            path = (text + path + emSize.ToString()).GetHashCode().ToString();
             PrivateFontCollection fontCollection = new PrivateFontCollection();
             fontCollection.AddFontFile(path);
             Initialize(new Font(fontCollection.Families[0], emSize), text);

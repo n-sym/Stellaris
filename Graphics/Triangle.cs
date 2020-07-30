@@ -9,18 +9,18 @@ namespace Stellaris.Graphics
         B = 2,
         C = 3
     }
-    public struct Triangle
+    public struct VertexTriangle
     {
         Vertex vertexA;
         Vertex vertexB;
         Vertex vertexC;
-        public Triangle(Vertex vertexA, Vertex vertexB, Vertex vertexC)
+        public VertexTriangle(Vertex vertexA, Vertex vertexB, Vertex vertexC)
         {
             this.vertexA = vertexA;
             this.vertexB = vertexB;
             this.vertexC = vertexC;
         }
-        public Triangle(Vertex[] vertices)
+        public VertexTriangle(Vertex[] vertices)
         {
             vertexA = vertices.TryGetValue(0);
             vertexB = vertices.TryGetValue(1);
@@ -30,14 +30,14 @@ namespace Stellaris.Graphics
         {
             return new Vertex[] { vertexA, vertexB, vertexC };
         }
-        public static Triangle Rotate(Vertex vertexA, Vertex vertexB, Vertex vertexC, float radian)
+        public static VertexTriangle Rotate(Vertex vertexA, Vertex vertexB, Vertex vertexC, float radian)
         {
             Vector2 a = vertexA.Position;
             Vector2 b = vertexB.Position.Rotate(radian, a);
             Vector2 c = vertexC.Position.Rotate(radian, a);
-            return new Triangle(vertexA, vertexB.ChangePosition(b), vertexC.ChangePosition(c));
+            return new VertexTriangle(vertexA, vertexB.ChangePosition(b), vertexC.ChangePosition(c));
         }
-        public Triangle Rotate(float radian, TriangleVertexType center)
+        public VertexTriangle Rotate(float radian, TriangleVertexType center)
         {
             if (center == TriangleVertexType.A)
             {
@@ -49,14 +49,14 @@ namespace Stellaris.Graphics
             }
             return Rotate(vertexC, vertexA, vertexB, radian);
         }
-        public Triangle Rotate(float radian, Vector2 center)
+        public VertexTriangle Rotate(float radian, Vector2 center)
         {
             Vector2 a = vertexA.Position.Rotate(radian, center);
             Vector2 b = vertexB.Position.Rotate(radian, center);
             Vector2 c = vertexC.Position.Rotate(radian, center);
-            return new Triangle(vertexA.ChangePosition(a), vertexB.ChangePosition(b), vertexC.ChangePosition(c));
+            return new VertexTriangle(vertexA.ChangePosition(a), vertexB.ChangePosition(b), vertexC.ChangePosition(c));
         }
-        public Triangle Rotate(float radian)
+        public VertexTriangle Rotate(float radian)
         {
             return Rotate(radian, (vertexA.Position + vertexB.Position + vertexC.Position) / 3);
         }
@@ -104,17 +104,17 @@ namespace Stellaris.Graphics
             }
             return RotationList(vertexC, vertexA, vertexB, radian);
         }
-        public static Triangle operator +(Triangle left, Triangle right)
+        public static VertexTriangle operator +(VertexTriangle left, VertexTriangle right)
         {
-            return new Triangle(left.vertexA.AddPosition(right.vertexA.Position), left.vertexB.AddPosition(right.vertexB.Position), left.vertexC.AddPosition(right.vertexC.Position));
+            return new VertexTriangle(left.vertexA.AddPosition(right.vertexA.Position), left.vertexB.AddPosition(right.vertexB.Position), left.vertexC.AddPosition(right.vertexC.Position));
         }
-        public static Triangle operator -(Triangle left, Triangle right)
+        public static VertexTriangle operator -(VertexTriangle left, VertexTriangle right)
         {
-            return new Triangle(left.vertexA.AddPosition(-right.vertexA.Position), left.vertexB.AddPosition(-right.vertexB.Position), left.vertexC.AddPosition(-right.vertexC.Position));
+            return new VertexTriangle(left.vertexA.AddPosition(-right.vertexA.Position), left.vertexB.AddPosition(-right.vertexB.Position), left.vertexC.AddPosition(-right.vertexC.Position));
         }
-        public static Triangle operator *(Triangle left, float right)
+        public static VertexTriangle operator *(VertexTriangle left, float right)
         {
-            return new Triangle(left.vertexA.ChangePosition(left.vertexA.Position * right), left.vertexB.ChangePosition(left.vertexB.Position * right), left.vertexC.ChangePosition(left.vertexC.Position * right));
+            return new VertexTriangle(left.vertexA.ChangePosition(left.vertexA.Position * right), left.vertexB.ChangePosition(left.vertexB.Position * right), left.vertexC.ChangePosition(left.vertexC.Position * right));
         }
     }
 }

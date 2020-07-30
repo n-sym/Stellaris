@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Stellaris.Curves;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Stellaris
 {
@@ -58,6 +56,24 @@ namespace Stellaris
                 bytes = memoryStream.ToArray();
             }
             return bytes;
+        }
+        public static int[] ToCodePointArray(this IList<char> charArray)
+        {
+            int[] result = new int[charArray.Count];
+            for(int i = 0; i < charArray.Count; i++)
+            {
+                result[i] = (int)charArray[i];
+            }
+            return result;
+        }
+        public static int[] ToCodePointArray(this string str)
+        {
+            int[] result = new int[str.Length];
+            for (int i = 0; i < str.Length; i++)
+            {
+                result[i] = (int)str[i];
+            }
+            return result;
         }
         public static T[] InitializeArrayFromValue<T>(T value, int length)
         {
@@ -274,18 +290,6 @@ namespace Stellaris
             }
             result[result.Length - 1] = data[end];
             return result;
-        }
-        public static float ParabolicInterpolation(float a, float b, float progress, float max, CurveConcavity concavity)
-        {
-            if (concavity == CurveConcavity.Convex)
-            {
-                return LinearInterpolation(a, b, progress * progress / max, max);
-            }
-            else
-            {
-                progress -= max;
-                return LinearInterpolation(a, b, -progress * progress / max + max, max);
-            }
         }
     }
 }

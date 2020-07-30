@@ -12,7 +12,7 @@ namespace Stellaris.Graphics
         FontStb font;
         string text;
         float height;
-        Glygh[] glyths;
+        Glygh[] glyghs;
         public DynamicTextureTextStb(GraphicsDevice graphicsDevice, FontStb font, float height, string text) : base(graphicsDevice, ((text + height.ToString()).GetHashCode()).ToString())
         {
             Initialize(graphicsDevice, font, height, text);
@@ -54,25 +54,32 @@ namespace Stellaris.Graphics
         }
         private void GetGlygh()
         {
-            glyths = font.GetGlyphs(height, font.GetGlyphIndex(text), 1f, 1f);
+            glyghs = font.GetGlyphsFromCodepoint(height, text.ToCodePointArray(), 1f, 1f);
         }
         protected override void PrivateDraw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
-            int x = 0;
-            int y = 0;
-            char[] chars = text.ToCharArray();
-            for (int i = 0; i < glyths.Length; i++)
+            int defaultX = (int)((glyghs[0].x1 + glyghs[0].x0) * 0.25f);
+            int x = defaultX;
+            int y = (int)(height * 0.75f);
+            char[] chars = text.ToArray();
+            for (int i = 0; i < glyghs.Length; i++)
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
                 {
                     y += (int)height;
-                    x = 0;
+                    x = defaultX;
                     i++;
+                }
+                else if (chars[i] == '\n')
+                {
+                    y += (int)height;
+                    x = defaultX;
                 }
                 else
                 {
-                    spriteBatch.Draw(glyths[i].texture, new Vector2(x + glyths[i].x0, y + glyths[i].y0) * scale + position, null, Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 1f);
-                    x += glyths[i].x1 + glyths[i].x0;
+                    Glygh glygh = glyghs[i];
+                    spriteBatch.Draw(glygh.texture, new Vector2(x + glygh.x0, y + glygh.y0) * scale + position, null, color, 0, origin + new Vector2(glygh.x0, glygh.x1), scale, SpriteEffects.None, 1f);
+                    x += glygh.x1 + glygh.x0;
                 }
             }
         }

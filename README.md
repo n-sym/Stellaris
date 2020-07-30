@@ -1,2 +1,2 @@
 # Stellaris
- A library for monoGame
+A library for MonoGame/XNA development
