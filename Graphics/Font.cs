@@ -119,6 +119,16 @@ namespace Stellaris.Graphics
             GC.Collect();
             return result;
         }
+        public static bool IsCn(char c)
+        {
+            if (c >= 0x43ee && c <= 0x9fff) return true;
+            return false;
+        }
+        public static bool IsRu(char c)
+        {
+            if (c >= 0x0400 && c <= 0x052f) return true;
+            return false;
+        }
         public void Dispose()
         {
             font = null;

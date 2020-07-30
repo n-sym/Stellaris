@@ -44,7 +44,7 @@ namespace Stellaris.Test
             vertexBatch = new VertexBatch(graphicsDevice);
             swordFx = new SwordFx(GraphicsDevice, 1);
             u = new UIBase();
-            text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris");
+            text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
             dtt = new DynamicTextureFont(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 80);
             base.Initialize();
         }
@@ -113,9 +113,9 @@ namespace Stellaris.Test
             GraphicsDevice.Clear(Color.Black);
             u.width = 100;
             u.height = 100;
-            u.postion = new Vector2(100, 500);
+            u.postion = new Vector2(100, 700);
             u.Update();
-            Window.Title = u.mouseStatus.ToString();
+            Window.Title = u.mouseStatus.ToString() + mousePos[0].ToString();
             var z = Common.MouseState.position.Y / Common.Resolution.Y * 1.15f;
             vertexBatch.Begin(swordFx.Texture, PrimitiveType.TriangleList);
             var v = new VertexTriangle(vertices).Rotate(timer, TriangleVertexType.A).RotationList(TriangleVertexType.A, 3.1415f).
@@ -131,7 +131,7 @@ namespace Stellaris.Test
             vertexBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             //Draw Texts
-            dtt.DrawString(spriteBatch, "***ABCD文字绘制测试\nStellaris", new Vector2(0, 150), Color.White);
+            dtt.DrawString(spriteBatch, "***ABCD文字绘制测试\nStellaris\nСтелларис\nステラリス", new Vector2(0, 300), Color.White);
             text.Draw(spriteBatch, new Vector2(0, 0), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
             //Draw Bullets
             for (int i = 0; i < bullets.Count; i++)

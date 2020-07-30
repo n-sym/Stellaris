@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace Stellaris.Entities
 {
@@ -19,18 +20,18 @@ namespace Stellaris.Entities
         }
         public void Update()
         {
-            BasicBehavior();
             if (!active) return;
+            BasicBehavior();
             CustomBehavior();
         }
         public virtual void BasicBehavior()
         {
-            if (!active) return;
             position += velocity;
             box = new Rectangle(ActualPos, ActualSize);
         }
         public virtual void CustomBehavior()
         {
         }
+
     }
 }

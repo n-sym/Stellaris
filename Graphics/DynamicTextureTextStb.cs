@@ -79,7 +79,9 @@ namespace Stellaris.Graphics
                 {
                     Glygh glygh = glyghs[i];
                     spriteBatch.Draw(glygh.texture, new Vector2(x + glygh.x0, y + glygh.y0) * scale + position, null, color, 0, origin + new Vector2(glygh.x0, glygh.x1), scale, SpriteEffects.None, 1f);
-                    x += glygh.x1 + glygh.x0;
+                    if (FontStb.IsCn(chars[i])) x += (int)(height * 0.7f);
+                    else if (FontStb.IsRu(chars[i])) x += (int)(height * 0.04f) + glygh.x1;
+                    else x += glygh.x0 + glygh.x1;
                 }
             }
         }
