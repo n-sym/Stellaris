@@ -11,7 +11,9 @@ namespace Stellaris.Graphics
     {
         FontStb font;
         float height;
-        Dictionary<char, Glygh> glyghs;
+        Dictionary<char, Glyph> Glyphs;
+        Glyph defaultGlyph;
+        Glyph defaultGlyphCn;
         public DynamicTextureFont(GraphicsDevice graphicsDevice, FontStb font, float height) : base(graphicsDevice)
         {
             Initialize(graphicsDevice, font, height);
@@ -32,7 +34,10 @@ namespace Stellaris.Graphics
             this.graphicsDevice = graphicsDevice;
             this.font = font; 
             this.height = height;
-            glyghs = new Dictionary<char, Glygh>();
+            Glyphs = new Dictionary<char, Glyph>();
+            Glyph[] Glyph = font.GetGlyphsFromCodepoint(height, new int[] { 'A', '国' }, 1f, 1f);
+            defaultGlyph = Glyph[0];
+            defaultGlyphCn = Glyph[1];
         }
         public void Refresh(FontStb font, float height)
         {
@@ -45,26 +50,26 @@ namespace Stellaris.Graphics
                 Initialize(graphicsDevice, new FontStb(path, graphicsDevice), height);
             }
         }
-        public void ReFresh(Stream stream, float height, string text)
+        public void ReFresh(Stream stream, float height)
         {
             Initialize(graphicsDevice, new FontStb(stream, graphicsDevice), height);
         }
-        private void GetGlygh(char[] charArray)
+        private void GetGlyph(char[] charArray)
         {
             List<char> chars = charArray.ToList();
             for (int i = 0; i < chars.Count; i++)
             {
-                if (glyghs.ContainsKey(chars[i]) || chars.IndexOf(chars[i]) < i)
+                if (Glyphs.ContainsKey(chars[i]) || chars.IndexOf(chars[i]) < i)
                 {
                     chars.RemoveAt(i);
                     i--;
                 }
             }
             if (chars.Count == 0) return;
-            Glygh[] glyghArray = font.GetGlyphsFromCodepoint(height, chars.ToCodePointArray(), 1f, 1f);
+            Glyph[] GlyphArray = font.GetGlyphsFromCodepoint(height, chars.ToCodePointArray(), 1f, 1f);
             for (int i = 0; i < chars.Count; i++)
             {
-                glyghs.Add(chars[i], glyghArray[i]);
+                Glyphs.Add(chars[i], GlyphArray[i]);
             }
         }
         public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position)
@@ -75,13 +80,17 @@ namespace Stellaris.Graphics
         {
             DrawString(spriteBatch, text, position, color, default, new Vector2(1, 1));
         }
-        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color,  Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        {
+            DrawString(spriteBatch, text, position, color, origin, new Vector2(scale, scale), effects, layerDepth);
+        }
+        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             char[] chars = text.ToCharArray();
-            GetGlygh(chars);
-            int defaultX = (int)((glyghs[text[0]].x1 + glyghs[text[0]].x0) * 0.25f);
+            GetGlyph(chars);
+            int defaultX = (int)((defaultGlyph.WidthAlt) * 0.25f);
             int x = defaultX;
-            int y = (int)(height * 0.75f);
+            int y = (int)(height * 0.5f);
             for (int i = 0; i < chars.Length; i++)
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
@@ -95,18 +104,66 @@ namespace Stellaris.Graphics
                     y += (int)height;
                     x = defaultX;
                 }
+                else if (chars[i] == ' ')
+                {
+                    x += defaultGlyph.WidthAlt;
+                }
                 else
                 {
-                    Glygh glygh = glyghs[chars[i]];
-                    spriteBatch.Draw(glygh.texture, new Vector2(x + glygh.x0, y + glygh.y0) * scale + position, null, color, 0, origin, scale, SpriteEffects.None, 1f);
-                    if (FontStb.IsCn(chars[i])) x += (int)(height * 0.7f);
-                    else if (FontStb.IsRu(chars[i])) x += (int)(height * 0.04f) + glygh.x1;
-                    else x += glygh.x0 + glygh.x1;
+                    Glyph Glyph = Glyphs[chars[i]];
+                    spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, 0, origin, scale, SpriteEffects.None, 1f);
+                    if (FontHelper.IsCn(chars[i])) x += (int)(defaultGlyphCn.Width * 1.2f);
+                    else if (FontHelper.IsRu(chars[i])) x += (int)(height * 0.04f) + Glyph.x1;
+                    else x += Glyph.x0 + Glyph.x1;
                 }
             }
         }
+        public Vector2 MeasureString(string text, Vector2 scale)
+        {
+            char[] chars = text.ToCharArray();
+            GetGlyph(chars); 
+            int defaultX = (int)((defaultGlyph.WidthAlt) * 0.25f);
+            int x = defaultX;
+            int maxX = 0;
+            int y = (int)(height * 0.5f); 
+            for (int i = 0; i < chars.Length; i++)
+            {
+                if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
+                {
+                    y += (int)height;
+                    x = defaultX;
+                    i++;
+                }
+                else if (chars[i] == '\n')
+                {
+                    y += (int)height;
+                    x = defaultX;
+                }
+                else if (chars[i] == ' ')
+                {
+                    x += defaultGlyph.WidthAlt;
+                }
+                else
+                {
+                    Glyph Glyph = Glyphs[chars[i]];
+                    if (FontHelper.IsCn(chars[i])) x += (int)(defaultGlyphCn.Width * 1.05f);
+                    else if (FontHelper.IsRu(chars[i])) x += (int)(height * 0.04f) + Glyph.x1;
+                    else x += Glyph.x0 + Glyph.x1;
+                }
+                if (x > maxX) maxX = x;
+            }
+            return new Vector2(maxX, y).MutiplyXY(scale);
+        }
+        public Vector2 MeasureString(string text, float scale)
+        {
+            return MeasureString(text, new Vector2(scale, scale));
+        }
         protected override void PrivateDraw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
+        }
+        protected override List<Color[]> Generating()
+        {
+            return new List<Color[]>();
         }
     }
 }

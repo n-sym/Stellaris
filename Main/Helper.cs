@@ -93,18 +93,6 @@ namespace Stellaris
             }
             return result;
         }
-        public static Texture2D ByteDataToTexture2D(GraphicsDevice graphicsDevice, byte[] bitmap, int width, int height)
-        {
-            Color[] colors = new Color[bitmap.Length];
-            for (var i = 0; i < colors.Length; i++)
-            {
-                byte b = bitmap[i];
-                colors[i].R = colors[i].G = colors[i].B = colors[i].A = b;
-            }
-            Texture2D result = new Texture2D(graphicsDevice, width, height);
-            result.SetData(colors);
-            return result;
-        }
         public static T[] CutOut<T>(this T[] array, int start, int end)
         {
             T[] result = new T[end - start + 1];

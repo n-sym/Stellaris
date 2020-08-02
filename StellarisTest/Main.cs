@@ -1,19 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Stellaris.Curves;
 using Stellaris.Entities;
 using Stellaris.Graphics;
 using Stellaris.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using StbTrueTypeSharp;
 using System.Runtime.InteropServices;
 
 namespace Stellaris.Test
 {
-    public unsafe class Main : Game
+    public class Main : Game
     {
         private GraphicsDeviceManager graphics;
         private GraphicsDevice graphicsDevice => graphics.GraphicsDevice;
@@ -54,7 +52,6 @@ namespace Stellaris.Test
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
         }
-        Ellipse ellipse = new Ellipse(200, 200);
         float timer = 0;
         protected override void Update(GameTime gameTime)
         {
@@ -82,16 +79,7 @@ namespace Stellaris.Test
             {
                 timer = 0;
             }
-            for (int i = 0; i < bullets.Count; i++)
-            {
-                if (bullets[i] == null) break;
-                if (!bullets[i].active)
-                {
-                    bullets.RemoveAt(i);
-                    continue;
-                }
-                bullets[i].Update();
-            }
+            EntityManager.Update(bullets);
             for (int i = 14; i > 0; i--)
             {
                 mousePos[i] = mousePos[i - 1];
@@ -113,7 +101,7 @@ namespace Stellaris.Test
             GraphicsDevice.Clear(Color.Black);
             u.width = 100;
             u.height = 100;
-            u.postion = new Vector2(100, 700);
+            u.postion = (Common.Resolution - u.Size) / 2;
             u.Update();
             Window.Title = u.mouseStatus.ToString() + mousePos[0].ToString();
             var z = Common.MouseState.position.Y / Common.Resolution.Y * 1.15f;
@@ -131,14 +119,10 @@ namespace Stellaris.Test
             vertexBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             //Draw Texts
-            dtt.DrawString(spriteBatch, "***ABCD文字绘制测试\nStellaris\nСтелларис\nステラリス", new Vector2(0, 300), Color.White);
+            dtt.DrawString(spriteBatch, "开始游戏", (Common.Resolution - dtt.MeasureString("Stellaris", 1)) / 2, Color.White, default, 1);
             text.Draw(spriteBatch, new Vector2(0, 0), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
             //Draw Bullets
-            for (int i = 0; i < bullets.Count; i++)
-            {
-                if (bullets[i] == null) break;
-                bullets[i].Draw(spriteBatch);
-            }
+            EntityManager.Draw(bullets, spriteBatch);
             //Draw Mouse
             for (int k = 0; k < 1; k++)
             {

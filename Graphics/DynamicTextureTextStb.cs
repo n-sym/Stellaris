@@ -12,7 +12,7 @@ namespace Stellaris.Graphics
         FontStb font;
         string text;
         float height;
-        Glygh[] glyghs;
+        Glyph[] Glyphs;
         public DynamicTextureTextStb(GraphicsDevice graphicsDevice, FontStb font, float height, string text) : base(graphicsDevice, ((text + height.ToString()).GetHashCode()).ToString())
         {
             Initialize(graphicsDevice, font, height, text);
@@ -35,7 +35,7 @@ namespace Stellaris.Graphics
             this.font = font; 
             this.text = text;
             this.height = height;
-            GetGlygh();
+            GetGlyph();
         }
         public void Refresh(FontStb font, float height, string text)
         {
@@ -52,17 +52,17 @@ namespace Stellaris.Graphics
         {
             Initialize(graphicsDevice, new FontStb(stream, graphicsDevice), height, text);
         }
-        private void GetGlygh()
+        private void GetGlyph()
         {
-            glyghs = font.GetGlyphsFromCodepoint(height, text.ToCodePointArray(), 1f, 1f);
+            Glyphs = font.GetGlyphsFromCodepoint(height, text.ToCodePointArray(), 1f, 1f);
         }
         protected override void PrivateDraw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
-            int defaultX = (int)((glyghs[0].x1 + glyghs[0].x0) * 0.25f);
+            int defaultX = (int)((Glyphs[0].x1 + Glyphs[0].x0) * 0.25f);
             int x = defaultX;
             int y = (int)(height * 0.75f);
             char[] chars = text.ToArray();
-            for (int i = 0; i < glyghs.Length; i++)
+            for (int i = 0; i < Glyphs.Length; i++)
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
                 {
@@ -77,11 +77,11 @@ namespace Stellaris.Graphics
                 }
                 else
                 {
-                    Glygh glygh = glyghs[i];
-                    spriteBatch.Draw(glygh.texture, new Vector2(x + glygh.x0, y + glygh.y0) * scale + position, null, color, 0, origin + new Vector2(glygh.x0, glygh.x1), scale, SpriteEffects.None, 1f);
-                    if (FontStb.IsCn(chars[i])) x += (int)(height * 0.7f);
-                    else if (FontStb.IsRu(chars[i])) x += (int)(height * 0.04f) + glygh.x1;
-                    else x += glygh.x0 + glygh.x1;
+                    Glyph Glyph = Glyphs[i];
+                    spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0) * scale + position, null, color, 0, origin + new Vector2(Glyph.x0, Glyph.x1), scale, SpriteEffects.None, 1f);
+                    if (FontHelper.IsCn(chars[i])) x += (int)(height * 0.7f);
+                    else if (FontHelper.IsRu(chars[i])) x += (int)(height * 0.04f) + Glyph.x1;
+                    else x += Glyph.x0 + Glyph.x1;
                 }
             }
         }
