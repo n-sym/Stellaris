@@ -60,7 +60,7 @@ namespace Stellaris.Graphics
         {
             return Rotate(radian, (vertexA.Position + vertexB.Position + vertexC.Position) / 3);
         }
-        private static VertexInfo RotationList(Vertex vertexA, Vertex vertexB, Vertex vertexC, float totalRadian)
+        private static VertexInfo RotationList(Vertex vertexA, Vertex vertexB, Vertex vertexC, float totalRadian, Func<int, Vertex, Vertex> vertexFunc = null)
         {
             Vector2 side = vertexB.Position - vertexA.Position;
             Vector2 anoter = vertexC.Position - vertexA.Position;
@@ -77,10 +77,12 @@ namespace Stellaris.Graphics
             int count = (int)Math.Ceiling(totalRadian / theta);
             if (count < 2) return new VertexInfo(new Vertex[] { vertexA, vertexB, vertexC });
             Vertex[] vertices = new Vertex[count + 2];
-            vertices[0] = vertexA;
+            if (vertexFunc == null) vertices[0] = vertexA;
+            else vertices[0] = vertexFunc(0, vertexA);
             for (int i = 1; i < count + 2; i++)
             {
-                vertices[i] = vertexC.ChangePosition(side + vertexA.Position);
+                if(vertexFunc == null)vertices[i] = vertexC.ChangePosition(side + vertexA.Position);
+                else vertices[i] = vertexFunc(i, vertexC.ChangePosition(side + vertexA.Position));
                 side = side.Rotate(theta);
             }
             short[] index = new short[count * 3];
@@ -91,6 +93,10 @@ namespace Stellaris.Graphics
                 index[i] = (short)(i / 3 + 2);
             }
             return new VertexInfo(vertices, index);
+        }
+        public static VertexInfo RotationList(VertexTriangle triangle, float totalRadian, Func<int, Vertex, Vertex> vertexFunc = null)
+        {
+            return RotationList(triangle.vertexA, triangle.vertexB, triangle.vertexC, totalRadian, vertexFunc);
         }
         public VertexInfo RotationList(TriangleVertexType center, float radian = 6.283f)
         {
@@ -103,6 +109,26 @@ namespace Stellaris.Graphics
                 return RotationList(vertexB, vertexA, vertexC, radian);
             }
             return RotationList(vertexC, vertexA, vertexB, radian);
+        }
+        public static VertexInfo TriangleStrip(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
+        {
+            Vertex[] result = new Vertex[pos.Length * 2];
+            for(int i = 0; i < pos.Length; i++)
+            {
+                float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size, 0).RotateTo(theta);
+                if(vertexFunc == null)
+                {
+                    result[i * 2] = new Vertex(pos[i] + vec);
+                    result[i * 2 + 1] = new Vertex(pos[i] - vec);
+                }
+                else
+                {
+                    result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
+                    result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i] - vec));
+                }
+            }
+            return new VertexInfo(result, Helper.FromAToB(0, (short)result.Length));
         }
         public static VertexTriangle operator +(VertexTriangle left, VertexTriangle right)
         {

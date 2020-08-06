@@ -96,6 +96,12 @@ namespace Stellaris.Graphics
             Color = color;
             TextureCoordinate = textureCoord;
         }
+        public Vertex(Vector2 position, Vector2 textureCoord)
+        {
+            Position = position;
+            Color = Color.White;
+            TextureCoordinate = textureCoord;
+        }
         public static Vertex operator +(Vertex left, Vertex right)
         {
             return new Vertex(left.Position + right.Position, (left.Color.ToVector4() + right.Color.ToVector4()).ToColor(), left.TextureCoordinate + right.TextureCoordinate);
@@ -127,6 +133,14 @@ namespace Stellaris.Graphics
         public Vertex ChangeCoord(Vector2 newCoord)
         {
             return new Vertex(Position, Color, newCoord);
+        }
+        public Vertex ChangeCoord(float newCoordX, float newCoordY)
+        {
+            return new Vertex(Position, Color, new Vector2(newCoordX, newCoordY));
+        }
+        public override string ToString()
+        {
+            return Position.ToString();
         }
     }
 }

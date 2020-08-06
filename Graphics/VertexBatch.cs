@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Stellaris.Graphics
 {
@@ -47,31 +48,11 @@ namespace Stellaris.Graphics
         public void Draw(params Vertex[] vertex)
         {
             if (!begin) throw new Exception("Called Draw Before Begin");
-            vertexData.AddRange(vertex);
-        }
-        private void FixIndex()
-        {
-            if (vertexData.Count > short.MaxValue) throw new Exception("Vertices Counts Over 32768");
-            if (indexData.Count == 0)
-            {
-                for (short i = 0; i < vertexData.Count; i++)
-                {
-                    indexData.Add(i);
-                }
-            }
-            else
-            {
-                throw new Exception("Try to use unindexed mode after using indexed mode");
-            }
+            Draw(vertex, Helper.FromAToB((short)(vertexData.Count), (short)(vertexData.Count + vertex.Length)));
         }
         public void Draw(Vertex[] vertex, params short[] index)
         {
             if (!begin) throw new Exception("Called Draw Before Begin");
-            if (indexData.Count == 0)
-            {
-                indexData = new List<short>();
-                FixIndex();
-            }
             if (vertexData.Count != 0) index.PlusAll((short)vertexData.Count);
             vertexData.AddRange(vertex);
             indexData.AddRange(index);
@@ -88,18 +69,12 @@ namespace Stellaris.Graphics
         public void DoDraw()
         {
             if (!begin) throw new Exception("Called Draw Before Begin");
+            if (vertexData.Count == 0) return;
             Vertex[] array = vertexData.ToArray();
             int length = indexData.Count == 0 ? vertexData.Count : indexData.Count;
             length = LengthGusser(length, primitiveType);
-            basicEffect.CurrentTechnique.Passes[0].Apply(); 
-            if (indexData.Count == 0)
-            {
-                graphicsDevice.DrawUserPrimitives(primitiveType, array, 0, length);
-            }
-            else
-            {
-                graphicsDevice.DrawUserIndexedPrimitives(primitiveType, array, 0, array.Length, indexData.ToArray(), 0, length);
-            }
+            basicEffect.CurrentTechnique.Passes[0].Apply();
+            graphicsDevice.DrawUserIndexedPrimitives(primitiveType, array, 0, array.Length, indexData.ToArray(), 0, length);
             vertexData.Clear();
             indexData.Clear();
         }

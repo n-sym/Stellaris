@@ -44,6 +44,8 @@ namespace Stellaris.Test
             u = new UIBase();
             text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
             dtt = new DynamicTextureFont(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 80);
+            tex = Texture2D.FromStream(graphicsDevice, File.OpenRead(Environment.CurrentDirectory + @"\Extra_194.png"));
+            tt = new TestTex(graphicsDevice, 70, 70);
             base.Initialize();
         }
         DynamicTextureFont dtt;
@@ -56,13 +58,6 @@ namespace Stellaris.Test
         protected override void Update(GameTime gameTime)
         {
             Common.Update(this);
-            var p = Common.MouseState.position;
-            vertices = new Vertex[]
-            {
-                new Vertex(new Vector2(0 + p.X , 0f + p.Y), Color.White, new Vector2(0.5f, 0.5f)),
-                new Vertex(new Vector2(5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f)),
-                new Vertex(new Vector2(-5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f))
-            };
             timer += 0.15f;
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
@@ -73,7 +68,7 @@ namespace Stellaris.Test
             }
             if (Common.MouseState.left == ButtonState.Pressed)
             {
-                bullets.Add(new MeteorBullet(new Vector2(960, 540), (Common.MouseState.position - new Vector2(960, 540)).Angle(), 0));
+                //bullets.Add(new MeteorBullet(new Vector2(960, 540), (Common.MouseState.position - new Vector2(960, 540)).Angle(), 0));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.B))
             {
@@ -95,6 +90,8 @@ namespace Stellaris.Test
         DynamicTextureTextGDI text;
         SwordFx swordFx;
         UIBase u;
+        TestTex tt;
+        Texture2D tex;
         protected override void Draw(GameTime gameTime)
         {
             Common.UpdateFPS(gameTime);
@@ -103,45 +100,53 @@ namespace Stellaris.Test
             u.height = 100;
             u.postion = (Common.Resolution - u.Size) / 2;
             u.Update();
-            Window.Title = u.mouseStatus.ToString() + mousePos[0].ToString();
+            //Window.Title = u.mouseStatus.ToString() + mousePos[0].ToString();
+            /*
+            var p = Common.MouseState.position;
+            vertices = new Vertex[]
+            {
+                new Vertex(new Vector2(0 + p.X , 0f + p.Y), Color.White, new Vector2(0.5f, 0f)),
+                new Vertex(new Vector2(5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f)),
+                new Vertex(new Vector2(-5f + p.X, 200f + p.Y), Color.White, new Vector2(0.5f, 1f))
+            };
             var z = Common.MouseState.position.Y / Common.Resolution.Y * 1.15f;
             vertexBatch.Begin(swordFx.Texture, PrimitiveType.TriangleList);
+            //准备绘制，用到一个材质，顶点的类型是TriangleList
             var v = new VertexTriangle(vertices).Rotate(timer, TriangleVertexType.A).RotationList(TriangleVertexType.A, 3.1415f).
                 TransformPosition(Matrix.CreateScale(1f, z, 1f), Common.MouseState.position);
+            //声明新的三角形，将三角形绕点A（第一个点）旋转timer rad，从这个三角形生成RotationList，RotationList包含有序的经过旋转的三角形，索引增加三角形旋转的度数也增加，这里最多转3.1415 rad（也就是半圈）
+            //对Vertex进行变换，每个顶点x不变，y乘以z，这里z是小于1的
             v = v.Transform(delegate (int index, Vertex vertex)
             {
-                return vertex.ChangeColor(vertex.Color * (index * 1.4f / v.vertex.Length));
+                return vertex.ChangeColor(vertex.Color * (index * 1f / v.vertex.Length));
             });
+            //对Vertex进行变换，索引数值小的透明度低
             vertexBatch.Draw(v);
+            //进行绘制
             vertexBatch.End();
+            //真正地将它绘制到屏幕上，释放资源
             vertexBatch.Begin(PrimitiveType.LineStrip);
-            u.DrawBorder(vertexBatch);
+            //u.DrawBorder(vertexBatch);
             vertexBatch.End();
+            */
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             //Draw Texts
-            dtt.DrawString(spriteBatch, "开始游戏", (Common.Resolution - dtt.MeasureString("Stellaris", 1)) / 2, Color.White, default, 1);
-            text.Draw(spriteBatch, new Vector2(0, 0), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
+            //dtt.DrawString(spriteBatch, "开始游戏\n啥也开始不了", (Common.Resolution - dtt.MeasureString("开始游戏\n啥也开始不了", 1)) / 2, Color.White, default, 1);
             //Draw Bullets
             EntityManager.Draw(bullets, spriteBatch);
+            MeteorBullet.flarefx.Draw(spriteBatch, mousePos[0], Color.White, CenterType.MiddleCenter, 1.5f, 1.571f / 2);
+            spriteBatch.End();
             //Draw Mouse
-            for (int k = 0; k < 1; k++)
+            vertexBatch.Begin(tex, PrimitiveType.TriangleStrip);
+            var v = Helper.CatmullRom(mousePos, 3);
+            if (Keyboard.GetState().IsKeyDown(Keys.Z)) throw new Exception(v.ToStringAlt());
+            vertexBatch.Draw(VertexTriangle.TriangleStrip(v, 30, delegate(int index, Vertex vertex)
             {
-                for (int i = 0; i < 15; i++)
-                {
-                    if (mousePos[i] != Vector2.Zero)
-                    {
-                        float m = (mousePos[i] - mousePos.TryGetValue(i + 1)).Length() * 0.3f;
-                        for (int j = 0; j < m; j++)
-                        {
-                            a.Draw(spriteBatch, mousePos[i].LinearInterpolationTo(mousePos.TryGetValue(i + 1), j, m) + k * new Vector2(10, 10), null, Color.White * (1.1f - (float)(Math.Sqrt(i) / Math.Sqrt(14))), 0.7853f, new Vector2(20, 20), 0.9f * (1 - (float)(Math.Sqrt(i) / Math.Sqrt(14))), SpriteEffects.None, 0f);
-
-                        }
-                    }
-                }
-                MeteorBullet.flarefx.Draw(spriteBatch, mousePos[0], null, Color.White * 0.9f, 0.7853f, new Vector2(20, 20), 1.4f, SpriteEffects.None, 0f);
-                spriteBatch.End();
-                base.Draw(gameTime);
+                return vertex.ChangeCoord(index * 0.25f / v.Length + (float)(Math.Sin(timer) + 1) / 4, index % 2 == 0 ? 0.3f : 0.7f).ChangeColor(Color.White * (-index * 0.5f / v.Length + 1) * (-index * 0.5f / v.Length + 1) * 1.3f);
             }
+            ));
+            vertexBatch.End(); 
+            base.Draw(gameTime);
         }
     }
 }

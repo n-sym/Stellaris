@@ -36,7 +36,7 @@ namespace Stellaris.Test
                 if (k == 1 || k == -1) data[0][i] *= 0.95f;
                 if (p.Length() <= 1) data[0][i] *= 0.95f;
                 if (p == Vector2.Zero) data[0][i] = Color.White * 0.6f;
-                data[0][i] = data[0][i].LinearInterpolationTo(Color.White * ((1 - (p.Length() / c.Length())) / 2), 2, 5);
+                data[0][i] = data[0][i].LinearTo(Color.White * ((1 - (p.Length() / c.Length())) / 2), 2, 5);
             }
             return data;
         }

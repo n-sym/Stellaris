@@ -4,6 +4,9 @@
     <TargetFramework>net45</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
+    <AssemblyVersion>1009.0.0.0</AssemblyVersion>
+    <FileVersion>1009.0.0.0</FileVersion>
+    <Version>1009</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -41,7 +44,6 @@
     <Reference Include="StbTrueTypeSharp">
       <HintPath>..\..\..\Desktop\StbTrueTypeSharp.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />

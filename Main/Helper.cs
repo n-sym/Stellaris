@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -109,6 +108,15 @@ namespace Stellaris
                 array[i] += num;
             }
         }
+        public static short[] FromAToB(short a, short b)
+        {
+            short[] result = new short[b - a];
+            for (short i = a; i < b; i++)
+            {
+                result[i - a] = i;
+            }
+            return result;
+        }
         public static Vector2 CenterTypeToVector2(CenterType centerType)
         {
             switch(centerType)
@@ -141,7 +149,7 @@ namespace Stellaris
         public static Vector2 RandomAngleVec(float length, Vector2 center = default, float min = 0f, float max = 6.283f)
         {
             Random random = new Random(seed);
-            float radian = min.LinearInterpolationTo(max, (float)random.NextDouble(), 1f);
+            float radian = min.LinearTo(max, (float)random.NextDouble(), 1f);
             float c = (float)Math.Cos(radian);
             float s = (float)Math.Sin(radian);
             seed = random.Next();
@@ -180,28 +188,28 @@ namespace Stellaris
         /// <summary>
         /// 线性插值
         /// </summary>
-        public static float LinearInterpolation(float a, float b, float progress, float max)
+        public static float Linear(float a, float b, float progress, float max)
         {
             return progress / max * b + (max - progress) / max * a;
         }
         /// <summary>
         /// 线性插值
         /// </summary>
-        public static float LinearInterpolationTo(this float a, float b, float progress, float max)
+        public static float LinearTo(this float a, float b, float progress, float max)
         {
             return progress / max * b + (max - progress) / max * a;
         }
         /// <summary>
         /// 线性插值
         /// </summary>
-        public static Vector2 LinearInterpolation(Vector2 a, Vector2 b, float progress, float max)
+        public static Vector2 Linear(Vector2 a, Vector2 b, float progress, float max)
         {
             return progress / max * b + (max - progress) / max * a;
         }
         /// <summary>
         /// 拉格朗日插值
         /// </summary>
-        public static float LagrangeInterpolation(float[] x, float[] y, float n)
+        public static float Lagrange(float[] x, float[] y, float n)
         {
             float result = 0;
             for (int i = 0; i < x.Length; i++)
@@ -222,10 +230,10 @@ namespace Stellaris
         /// <param name="data">样本数据</param>
         /// <param name="precision">精度</param>
         /// <returns>插值过后的数据</returns>
-        public static Vector2[] LagrangeInterpolation(Vector2[] data, int precision)
+        public static Vector2[] Lagrange(Vector2[] data, int precision)
         {
             if (precision < 2) return new Vector2[1] { Vector2.Zero };
-            Vector2[] result = new Vector2[data.Length * (precision + 1) - 2];
+            Vector2[] result = new Vector2[data.Length * (precision + 1) - precision];
             float[] x = new float[data.Length];
             for (int i = 0; i < data.Length; i++)
             {
@@ -240,43 +248,37 @@ namespace Stellaris
             {
                 for (int j = 0; j < precision + 1; j++)
                 {
-                    float n = LinearInterpolation(x[i], x[i + 1], j, precision + 1);
-                    result[i * (precision + 1) + j] = new Vector2(n, LagrangeInterpolation(x, y, n));
+                    float n = Linear(x[i], x[i + 1], j, precision + 1);
+                    result[i * (precision + 1) + j] = new Vector2(n, Lagrange(x, y, n));
                 }
             }
             result[result.Length - 1] = data[data.Length - 1];
             return result;
         }
-        /// <summary>
-        /// 拉格朗日插值
-        /// </summary>
-        /// <param name="data">样本数据</param>
-        /// <param name="start">首项索引</param>
-        /// <param name="end">末项索引</param>
-        /// <param name="precision">精度</param>
-        /// <returns></returns>
-        public static Vector2[] LagrangeInterpolation(Vector2[] data, int start, int end, int precision)
+        public static Vector2[] CatmullRom(Vector2[] data, int precision)
         {
-            Vector2[] result = new Vector2[(end + 1 - start) * (precision + 1) - 2];
-            float[] x = new float[data.Length];
+            Vector2[] result = new Vector2[data.Length * (precision + 1) - precision];
+            float delta = 1f / precision;
             for (int i = 0; i < data.Length; i++)
             {
-                x[i] = data[i].X;
-            }
-            float[] y = new float[data.Length];
-            for (int i = 0; i < data.Length; i++)
-            {
-                y[i] = data[i].Y;
-            }
-            for (int i = start; i < end; i++)
-            {
-                for (int j = 0; j < precision + 1; j++)
+                Vector2 v1 = data.TryGetValue(i - 1);
+                Vector2 v2 = data[i];
+                Vector2 v3 = data.TryGetValue(i + 1);
+                Vector2 v4 = data.TryGetValue(i + 2);
+                for (int j = 0; j < precision; j++)
                 {
-                    float n = LinearInterpolation(x[i], x[i + 1], j, precision + 1);
-                    result[(i - start) * (precision + 1) + j] = new Vector2(n, LagrangeInterpolation(x, y, n));
+                    result[i * precision + j] = CatmullRom(v1, v2, v3, v4, delta * j);
                 }
             }
-            result[result.Length - 1] = data[end];
+            return result;
+        }
+        public static Vector2 CatmullRom(Vector2 value1, Vector2 value2, Vector2 value3, Vector2 value4, float amount)
+        {
+            float num = amount * amount;
+            float num2 = amount * num;
+            Vector2 result = default;
+            result.X = 0.5f * (2f * value2.X + (0f - value1.X + value3.X) * amount + (2f * value1.X - 5f * value2.X + 4f * value3.X - value4.X) * num + (0f - value1.X + 3f * value2.X - 3f * value3.X + value4.X) * num2);
+            result.Y = 0.5f * (2f * value2.Y + (0f - value1.Y + value3.Y) * amount + (2f * value1.Y - 5f * value2.Y + 4f * value3.Y - value4.Y) * num + (0f - value1.Y + 3f * value2.Y - 3f * value3.Y + value4.Y) * num2);
             return result;
         }
     }

@@ -29,6 +29,9 @@
     <Compile Remove="Activity.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Extra_194.png" />
+  </ItemGroup>
+  <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
