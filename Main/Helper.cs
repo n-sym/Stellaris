@@ -267,18 +267,9 @@ namespace Stellaris
                 Vector2 v4 = data.TryGetValue(i + 2);
                 for (int j = 0; j < precision; j++)
                 {
-                    result[i * precision + j] = CatmullRom(v1, v2, v3, v4, delta * j);
+                    result[i * precision + j] = Vector2.CatmullRom(v1, v2, v3, v4, delta * j);
                 }
             }
-            return result;
-        }
-        public static Vector2 CatmullRom(Vector2 value1, Vector2 value2, Vector2 value3, Vector2 value4, float amount)
-        {
-            float num = amount * amount;
-            float num2 = amount * num;
-            Vector2 result = default;
-            result.X = 0.5f * (2f * value2.X + (0f - value1.X + value3.X) * amount + (2f * value1.X - 5f * value2.X + 4f * value3.X - value4.X) * num + (0f - value1.X + 3f * value2.X - 3f * value3.X + value4.X) * num2);
-            result.Y = 0.5f * (2f * value2.Y + (0f - value1.Y + value3.Y) * amount + (2f * value1.Y - 5f * value2.Y + 4f * value3.Y - value4.Y) * num + (0f - value1.Y + 3f * value2.Y - 3f * value3.Y + value4.Y) * num2);
             return result;
         }
     }
