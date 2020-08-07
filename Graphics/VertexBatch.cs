@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Stellaris.Graphics
 {
@@ -14,6 +13,7 @@ namespace Stellaris.Graphics
         List<Vertex> vertexData;
         List<short> indexData;
         BasicEffect basicEffect;
+        VertexBuffer vertexBuffer;
         public VertexBatch(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
@@ -83,6 +83,9 @@ namespace Stellaris.Graphics
             int length = indexData.Count == 0 ? vertexData.Count : indexData.Count;
             length = LengthGusser(length, primitiveType);
             basicEffect.CurrentTechnique.Passes[0].Apply();
+            if (vertexBuffer != null) vertexBuffer.Dispose();
+            vertexBuffer = new VertexBuffer(graphicsDevice, typeof(Vertex), array.Length, BufferUsage.None);
+            graphicsDevice.SetVertexBuffer(vertexBuffer);
             graphicsDevice.DrawUserIndexedPrimitives(primitiveType, array, 0, array.Length, indexData.ToArray(), 0, length);
             vertexData.Clear();
             indexData.Clear();

@@ -114,16 +114,16 @@ namespace Stellaris.Test
             var z = Common.MouseState.position.Y / Common.Resolution.Y * 1.15f;
             vertexBatch.Begin(swordFx.Texture, PrimitiveType.TriangleList);
             //准备绘制，用到一个材质，顶点的类型是TriangleList
-            var v = new VertexTriangle(vertices).Rotate(timer, TriangleVertexType.A).RotationList(TriangleVertexType.A, 3.1415f).
+            var vv = new VertexTriangle(vertices).Rotate(timer, TriangleVertexType.A).RotationList(TriangleVertexType.A, 3.1415f).
                 TransformPosition(Matrix.CreateScale(1f, z, 1f), Common.MouseState.position);
             //声明新的三角形，将三角形绕点A（第一个点）旋转timer rad，从这个三角形生成RotationList，RotationList包含有序的经过旋转的三角形，索引增加三角形旋转的度数也增加，这里最多转3.1415 rad（也就是半圈）
             //对Vertex进行变换，每个顶点x不变，y乘以z，这里z是小于1的
-            v = v.Transform(delegate (int index, Vertex vertex)
+            vv = vv.Transform(delegate (int index, Vertex vertex)
             {
-                return vertex.ChangeColor(vertex.Color * (index * 1f / v.vertex.Length));
+                return vertex.ChangeColor(vertex.Color * (index * 1f / vv.vertex.Length));
             });
             //对Vertex进行变换，索引数值小的透明度低
-            vertexBatch.Draw(v);
+            vertexBatch.Draw(vv);
             //进行绘制
             vertexBatch.End();
             //真正地将它绘制到屏幕上，释放资源
@@ -131,10 +131,10 @@ namespace Stellaris.Test
             //u.DrawBorder(vertexBatch);
             vertexBatch.End();
             */
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             //Draw Texts
             //dtt.DrawString(spriteBatch, "开始游戏\n啥也开始不了", (Common.Resolution - dtt.MeasureString("开始游戏\n啥也开始不了", 1)) / 2, Color.White, default, 1);
             //Draw Bullets
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             EntityManager.Draw(bullets, spriteBatch);
             if (mousePos[0] != mousePos[1])
             {
@@ -151,7 +151,6 @@ namespace Stellaris.Test
             spriteBatch.End();
             //Draw Mouse
             var v = Helper.CatmullRom(mousePos, 3);
-            if (Keyboard.GetState().IsKeyDown(Keys.Z)) throw new Exception(v.ToStringAlt()); 
             vertexBatch.Begin(tex, BlendState.Additive, PrimitiveType.TriangleStrip);
             vertexBatch.Draw(VertexTriangle.Strip(v, 20, delegate(int index, Vertex vertex)
             {
