@@ -110,7 +110,7 @@ namespace Stellaris.Graphics
             }
             return RotationList(vertexC, vertexA, vertexB, radian);
         }
-        public static VertexInfo TriangleStrip(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
+        public static VertexInfo Strip(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
         {
             Vertex[] result = new Vertex[pos.Length * 2];
             for(int i = 0; i < pos.Length; i++)
@@ -118,6 +118,26 @@ namespace Stellaris.Graphics
                 float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
                 Vector2 vec = new Vector2(size, 0).RotateTo(theta);
                 if(vertexFunc == null)
+                {
+                    result[i * 2] = new Vertex(pos[i] + vec);
+                    result[i * 2 + 1] = new Vertex(pos[i] - vec);
+                }
+                else
+                {
+                    result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
+                    result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i] - vec));
+                }
+            }
+            return new VertexInfo(result, Helper.FromAToB(0, (short)result.Length));
+        }
+        public static VertexInfo Strip(Vector2[] pos, float[] size, Func<int, Vertex, Vertex> vertexFunc = null)
+        {
+            Vertex[] result = new Vertex[pos.Length * 2];
+            for (int i = 0; i < pos.Length; i++)
+            {
+                float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size[i], 0).RotateTo(theta);
+                if (vertexFunc == null)
                 {
                     result[i * 2] = new Vertex(pos[i] + vec);
                     result[i * 2 + 1] = new Vertex(pos[i] - vec);

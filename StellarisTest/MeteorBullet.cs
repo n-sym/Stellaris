@@ -11,7 +11,7 @@ namespace Stellaris.Test
         public static FlareFxAlt flarefxAlt;
         Vector2 v;
         Vector2 end;
-        public MeteorBullet(Vector2 position, float radian, int damage) : base(flarefx, position, Vector2.Zero, damage, new Color(18, 52, 203), null, 40)
+        public MeteorBullet(Vector2 position, float radian, int damage) : base(flarefx, position, Vector2.Zero, damage, new Color(68, 112, 223), null, 40)
         {
             timeLeft = 150;
             size = new Vector2(12, 12);
@@ -24,8 +24,9 @@ namespace Stellaris.Test
             velocity = velocity.LinearTo(velocity * 0.9f, 1.3f - Math.Abs(v.Angle()), 30f);
             velocity = velocity.LinearTo(((end - new Vector2(960, 540)).NormalizeAlt() * 350 + new Vector2(960, 540) - position).NormalizeAlt() * velocity.Length(), 1, 35);
         }
-        //Color drawColor = new Color(166, 201, 255);
-        Color drawColor = new Color(255, 250, 126);
+        //public static Color drawColor = new Color(186, 221, 255);
+        public static Color drawColor2 = new Color(128, 162, 233);
+        public static Color drawColor = new Color(255, 250, 206);
         public override bool CustomDraw(SpriteBatch spriteBatch)
         {
             float t = 1;
