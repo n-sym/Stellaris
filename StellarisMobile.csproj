@@ -31,6 +31,9 @@
     <None Remove="Test\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Main\CommonPC.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
@@ -39,7 +42,7 @@
       <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v9.0\Mono.Android.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework">
-      <HintPath>..\..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Android\MonoGame.Framework.dll</HintPath>
+      <HintPath>Library\Android\MonoGame.Framework_Android.dll</HintPath>
     </Reference>
     <Reference Include="StbTrueTypeSharp">
       <HintPath>..\TerrariaLauncher\Library\StbTrueTypeSharp.dll</HintPath>

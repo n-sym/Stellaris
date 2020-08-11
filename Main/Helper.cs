@@ -7,7 +7,7 @@ namespace Stellaris
 {
     public static class Helper
     {
-        static int seed = 0;
+        static int seed = new Random().Next();
         /// <summary>
         /// 读取IList中索引为index那一项的值，如果越界则返回第一项或最后一项的值
         /// </summary>
@@ -124,19 +124,19 @@ namespace Stellaris
                 case CenterType.TopLeft:
                     return new Vector2(0f, 0f);
                 case CenterType.TopCenter:
-                    return new Vector2(0f, 0.5f);
+                    return new Vector2(0.5f, 0.5f);
                 case CenterType.TopRight:
-                    return new Vector2(0f, 1f);
+                    return new Vector2(1f, 0f);
                 case CenterType.MiddleLeft:
-                    return new Vector2(0.5f, 0f);
+                    return new Vector2(0f, 0.5f);
                 case CenterType.MiddleCenter:
                     return new Vector2(0.5f, 0.5f);
                 case CenterType.MiddleRight:
-                    return new Vector2(0.5f, 1f);
-                case CenterType.BottomLeft:
-                    return new Vector2(1f, 0f);
-                case CenterType.BottomCenter:
                     return new Vector2(1f, 0.5f);
+                case CenterType.BottomLeft:
+                    return new Vector2(0f, 1f);
+                case CenterType.BottomCenter:
+                    return new Vector2(0.5f, 1f);
                 case CenterType.BottomRight:
                     return new Vector2(1f, 1f);
                 default:
@@ -154,6 +154,19 @@ namespace Stellaris
             float s = (float)Math.Sin(radian);
             seed = random.Next();
             return new Vector2(c * length, s * length) + center;
+        }
+        /// <summary>
+        /// 随机向量
+        /// </summary>
+        public static Vector2 RandomVec(Vector2 min, Vector2 max)
+        {
+            Random random = new Random(seed);
+            float x = min.X.LinearTo(max.X, (float)random.NextDouble(), 1);
+            seed = random.Next();
+            random = new Random(seed);
+            float y = min.Y.LinearTo(max.Y, (float)random.NextDouble(), 1);
+            seed = random.Next();
+            return new Vector2(x, y);
         }
         public static byte[] IntToByteArray(int i)
         {

@@ -42,11 +42,11 @@ namespace Stellaris.Test
             vertexBatch = new VertexBatch(graphicsDevice);
             swordFx = new SwordFx(GraphicsDevice, 1);
             u = new UIBase();
-            text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
-            dtt = new DynamicTextureFont(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 80);
-            tex3 = Texture2D.FromStream(graphicsDevice, File.OpenRead(Environment.CurrentDirectory + @"\trail1.png"));
-            tex = Texture2D.FromStream(graphicsDevice, File.OpenRead(Environment.CurrentDirectory + @"\trail3.png"));
-            tex2 = Texture2D.FromStream(graphicsDevice, File.OpenRead(Environment.CurrentDirectory + @"\trail2.png"));
+            //text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
+            dtt = new DynamicTextureFont(graphicsDevice, Common.GetAsset("SourceHanSansCN-Regular.ttf"), 80);
+            tex3 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail1.png"));
+            tex = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail3.png"));
+            tex2 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail2.png"));
             tt = new TestTex(graphicsDevice, 70, 70);
             base.Initialize();
         }
@@ -59,7 +59,7 @@ namespace Stellaris.Test
         float timer = 0;
         protected override void Update(GameTime gameTime)
         {
-            Common.Update(this);
+            Common.Update();
             timer += 0.15f;
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
@@ -89,7 +89,6 @@ namespace Stellaris.Test
         }
         Vector2[] mousePos;
         VertexBatch vertexBatch;
-        DynamicTextureTextGDI text;
         SwordFx swordFx;
         UIBase u;
         TestTex tt;
@@ -102,7 +101,7 @@ namespace Stellaris.Test
             GraphicsDevice.Clear(Color.Black);
             u.width = 100;
             u.height = 100;
-            u.postion = (Common.Resolution - u.Size) / 2;
+            u.position = (Common.Resolution - u.Size) / 2;
             u.Update();
             //Window.Title = u.mouseStatus.ToString() + mousePos[0].ToString();
             /*
@@ -137,6 +136,10 @@ namespace Stellaris.Test
             //dtt.DrawString(spriteBatch, "开始游戏\n啥也开始不了", (Common.Resolution - dtt.MeasureString("开始游戏\n啥也开始不了", 1)) / 2, Color.White, default, 1);
             //Draw Bullets
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+            dtt.DrawString(spriteBatch, "Stellaris测试", new Vector2(50, 50));
+            //vertexBatch.Begin(PrimitiveType.LineStrip);
+            //UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1) + new Vector2(50, 50));
+            //vertexBatch.End();
             EntityManager.Draw(bullets, spriteBatch);
             if (mousePos[0] != mousePos[1])
             {

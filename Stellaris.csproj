@@ -34,6 +34,9 @@
     <None Remove="Test\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Main\CommonAndroid.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>

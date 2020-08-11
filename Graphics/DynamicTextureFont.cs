@@ -84,13 +84,17 @@ namespace Stellaris.Graphics
         {
             DrawString(spriteBatch, text, position, color, origin, new Vector2(scale, scale), effects, layerDepth);
         }
+        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, CenterType centerType, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        {
+            DrawString(spriteBatch, text, position, color, MeasureString(text, 1).MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(scale, scale), effects, layerDepth);
+        }
         public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             char[] chars = text.ToCharArray();
             GetGlyph(chars);
-            int defaultX = (int)((defaultGlyph.WidthAlt) * 0.25f);
+            int defaultX = 0;
             int x = defaultX;
-            int y = (int)(height * 0.5f);
+            int y = (int)(height * 0.6f);
             for (int i = 0; i < chars.Length; i++)
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
@@ -106,15 +110,15 @@ namespace Stellaris.Graphics
                 }
                 else if (chars[i] == ' ')
                 {
-                    x += defaultGlyph.WidthAlt;
+                    x += (int)(defaultGlyph.WidthAlt * 0.8f);
                 }
                 else
                 {
                     Glyph Glyph = Glyphs[chars[i]];
                     spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, 0, origin, scale, SpriteEffects.None, 1f);
                     if (FontHelper.IsCn(chars[i])) x += (int)(defaultGlyphCn.Width * 1.2f);
-                    else if (FontHelper.IsRu(chars[i])) x += (int)(height * 0.04f) + Glyph.x1;
-                    else x += Glyph.x0 + Glyph.x1;
+                    else if (FontHelper.IsRu(chars[i])) x += Glyph.Width + Glyph.x0 + Glyph.x0;
+                    else x += Glyph.WidthAlt;
                 }
             }
         }
@@ -122,10 +126,10 @@ namespace Stellaris.Graphics
         {
             char[] chars = text.ToCharArray();
             GetGlyph(chars); 
-            int defaultX = (int)((defaultGlyph.WidthAlt) * 0.25f);
+            int defaultX = 0;
             int x = defaultX;
             int maxX = 0;
-            int y = (int)(height * 0.5f); 
+            int y = (int)(height * 0.6f); 
             for (int i = 0; i < chars.Length; i++)
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
@@ -141,14 +145,14 @@ namespace Stellaris.Graphics
                 }
                 else if (chars[i] == ' ')
                 {
-                    x += defaultGlyph.WidthAlt;
+                    x += (int)(defaultGlyph.WidthAlt * 0.8f);
                 }
                 else
                 {
                     Glyph Glyph = Glyphs[chars[i]];
-                    if (FontHelper.IsCn(chars[i])) x += (int)(defaultGlyphCn.Width * 1.05f);
-                    else if (FontHelper.IsRu(chars[i])) x += (int)(height * 0.04f) + Glyph.x1;
-                    else x += Glyph.x0 + Glyph.x1;
+                    if (FontHelper.IsCn(chars[i])) x += (int)(defaultGlyphCn.Width * 1.2f);
+                    else if (FontHelper.IsRu(chars[i])) x += Glyph.Width + Glyph.x0 + Glyph.x0;
+                    else x += Glyph.WidthAlt;
                 }
                 if (x > maxX) maxX = x;
             }

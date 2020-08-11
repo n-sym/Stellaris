@@ -82,9 +82,21 @@ namespace Stellaris
         {
             return new Vector2(0, vec.Y);
         }
+        public static Vector2 X_Vector(this Vector2 vec, Vector2 xVec)
+        {
+            return new Vector2(vec.X + xVec.X, 0);
+        }
+        public static Vector2 Y_Vector(this Vector2 vec, Vector2 yVec)
+        {
+            return new Vector2(0, vec.Y + yVec.Y);
+        }
         public static Vector2 MutiplyXY(this Vector2 a, Vector2 b)
         {
             return new Vector2(a.X * b.X, a.Y * b.Y);
+        }
+        public static Vector2 SwapXY(this Vector2 a)
+        {
+            return new Vector2(a.Y, a.X);
         }
         public static Point ToPoint(this Vector2 vec)
         {

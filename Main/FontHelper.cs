@@ -10,7 +10,7 @@ namespace Stellaris
 {
     public static class FontHelper
     {
-        public static string WinFontFolder = Environment.GetEnvironmentVariable("windir") + "\\Fonts";
+        public static string WinFontFolder = Environment.GetEnvironmentVariable("windir") + "\\Fonts\\";
         public static string AndroidFontFolder = "/System/fonts/";
         public static bool IsCn(char c)
         {
