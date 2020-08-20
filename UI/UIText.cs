@@ -8,11 +8,11 @@ namespace Stellaris.UI
     public class UIText : UIBase
     {
         public string text;
-        public DynamicTextureFont font;
+        public DynamicSpriteFont font;
         public float scale;
         public Color color;
         public CenterType centerType;
-        public UIText(string text, DynamicTextureFont font)
+        public UIText(string text, DynamicSpriteFont font)
         {
             this.text = text;
             this.font = font;

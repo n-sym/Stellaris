@@ -7,25 +7,26 @@ using System.IO;
 
 namespace Stellaris.Graphics
 {
-    public class DynamicTextureFont : DynamicTexture
+    public class DynamicSpriteFont
     {
+        GraphicsDevice graphicsDevice;
         FontStb font;
         float height;
         Dictionary<char, Glyph> Glyphs;
         Glyph defaultGlyph;
         Glyph defaultGlyphCn;
-        public DynamicTextureFont(GraphicsDevice graphicsDevice, FontStb font, float height) : base(graphicsDevice)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, FontStb font, float height)
         {
             Initialize(graphicsDevice, font, height);
         }
-        public DynamicTextureFont(GraphicsDevice graphicsDevice, string path, float height) : base(graphicsDevice)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, string path, float height)
         {
             using (FileStream fileStream = File.OpenRead(path))
             {
                 Initialize(graphicsDevice, new FontStb(path, graphicsDevice), height);
             }
         }
-        public DynamicTextureFont(GraphicsDevice graphicsDevice, Stream stream, float height) : base(graphicsDevice)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, Stream stream, float height)
         {
             Initialize(graphicsDevice, new FontStb(stream, graphicsDevice), height);
         }
@@ -99,13 +100,13 @@ namespace Stellaris.Graphics
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
                 {
-                    y += (int)height;
+                    y += (int)(height * 0.8f);
                     x = defaultX;
                     i++;
                 }
                 else if (chars[i] == '\n')
                 {
-                    y += (int)height;
+                    y += (int)(height * 0.8f);
                     x = defaultX;
                 }
                 else if (chars[i] == ' ')
@@ -134,13 +135,13 @@ namespace Stellaris.Graphics
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
                 {
-                    y += (int)height;
+                    y += (int)(height * 0.6f);
                     x = defaultX;
                     i++;
                 }
                 else if (chars[i] == '\n')
                 {
-                    y += (int)height;
+                    y += (int)(height * 0.6f);
                     x = defaultX;
                 }
                 else if (chars[i] == ' ')
@@ -161,13 +162,6 @@ namespace Stellaris.Graphics
         public Vector2 MeasureString(string text, float scale)
         {
             return MeasureString(text, new Vector2(scale, scale));
-        }
-        protected override void PrivateDraw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
-        {
-        }
-        protected override List<Color[]> Generating()
-        {
-            return new List<Color[]>();
         }
     }
 }

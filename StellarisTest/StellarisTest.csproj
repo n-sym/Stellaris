@@ -16,8 +16,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="obj\**" />
     <Compile Remove="Resources\**" />
+    <EmbeddedResource Remove="obj\**" />
     <EmbeddedResource Remove="Resources\**" />
+    <None Remove="obj\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
   <ItemGroup>
@@ -49,17 +52,11 @@
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Assets\SourceHanSansCN-Regular.ttf">
+    <None Update="Assets\aaa28.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\trail1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\trail2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\trail3.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="Assets\new.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Asset\SourceHanSansCN-Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

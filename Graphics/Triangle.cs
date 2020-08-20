@@ -128,7 +128,47 @@ namespace Stellaris.Graphics
                     result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i] - vec));
                 }
             }
+            if (vertexFunc == null)
+            {
+                result[result.Length - 2] = result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
+                result[result.Length - 1] = result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
+            }
+            else
+            {
+                result[result.Length - 2] = vertexFunc(result.Length - 2, result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
+                result[result.Length - 1] = vertexFunc(result.Length - 1, result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
+            }
             return new VertexInfo(result, Helper.FromAToB(0, (short)result.Length));
+        }
+        public static VertexInfo StripOneSide(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
+        {
+            Vertex[] result = new Vertex[pos.Length * 2];
+            for (int i = 0; i < pos.Length; i++)
+            {
+                float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size, 0).RotateTo(theta) * (size > 0 ? 1 : -1);
+                if (vertexFunc == null)
+                {
+                    result[i * 2] = new Vertex(pos[i] + vec);
+                    result[i * 2 + 1] = new Vertex(pos[i]);
+                }
+                else
+                {
+                    result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
+                    result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i]));
+                }
+            }
+            if (vertexFunc == null)
+            {
+                result[result.Length - 2] = result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
+                result[result.Length - 1] = result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
+            }
+            else
+            {
+                result[result.Length - 2] = vertexFunc(result.Length - 2, result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
+                result[result.Length - 1] = vertexFunc(result.Length - 1, result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
+            }
+            return new VertexInfo(result, Helper.FromAToB(0, (short)(result.Length - 1)));
         }
         public static VertexInfo Strip(Vector2[] pos, float[] size, Func<int, Vertex, Vertex> vertexFunc = null)
         {
@@ -147,6 +187,20 @@ namespace Stellaris.Graphics
                     result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
                     result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i] - vec));
                 }
+            }
+            if (vertexFunc == null)
+            {
+                float theta = (pos[pos.Length - 1] - pos[pos.Length - 2]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size[size.Length - 1], 0).RotateTo(theta);
+                result[result.Length - 2] = new Vertex(pos[pos.Length - 1] + vec);
+                result[result.Length - 1] = new Vertex(pos[pos.Length - 1] - vec);
+            }
+            else
+            {
+                float theta = (pos[pos.Length - 1] - pos[pos.Length - 2]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size[size.Length - 1], 0).RotateTo(theta);
+                result[result.Length - 2] = vertexFunc(result.Length - 2, new Vertex(pos[pos.Length - 1] + vec));
+                result[result.Length - 1] = vertexFunc(result.Length - 1, new Vertex(pos[pos.Length - 1] - vec));
             }
             return new VertexInfo(result, Helper.FromAToB(0, (short)result.Length));
         }

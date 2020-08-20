@@ -43,14 +43,14 @@ namespace Stellaris.Test
             swordFx = new SwordFx(GraphicsDevice, 1);
             u = new UIBase();
             //text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
-            dtt = new DynamicTextureFont(graphicsDevice, Common.GetAsset("SourceHanSansCN-Regular.ttf"), 80);
-            tex3 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail1.png"));
-            tex = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail3.png"));
-            tex2 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail2.png"));
+            dtt = new DynamicSpriteFont(graphicsDevice, Common.GetAsset("SourceHanSansCN-Regular.ttf"), 80);
+            tex3 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("aaa28.png"));
+            tex = Texture2D.FromStream(graphicsDevice, Common.GetAsset("aaa28.png"));
+            tex2 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("aaa28.png"));
             tt = new TestTex(graphicsDevice, 70, 70);
             base.Initialize();
         }
-        DynamicTextureFont dtt;
+        DynamicSpriteFont dtt;
         Vertex[] vertices;
         protected override void LoadContent()
         {
@@ -81,9 +81,9 @@ namespace Stellaris.Test
             {
                 mousePos[i] = mousePos[i - 1];
             }
-            mousePos[0] = Common.MouseState.position;
+            //mousePos[0] = Common.MouseState.position;
             //mousePos[0] = Mouse.GetState().Position.ToVector2() + ellipse.Get(timer);
-            //mousePos[0] = ellipse.Get(timer) + new Vector2(960, 540);
+            mousePos[0] = new Vector2((float)Math.Cos(timer * 2.5f), (float)Math.Sin(timer * 2.5f)) * 200 + new Vector2(960, 540);
             //mousePos[0] = new Vector2(timer * 200, timer * timer * 10);
             base.Update(gameTime);
         }
@@ -141,7 +141,7 @@ namespace Stellaris.Test
             //UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1) + new Vector2(50, 50));
             //vertexBatch.End();
             EntityManager.Draw(bullets, spriteBatch);
-            if (mousePos[0] != mousePos[1])
+            /*if (mousePos[0] != mousePos[1])
             {
                 float t = (mousePos[0] - mousePos[1]).Angle() + 0.7853f;
                 Color c = Color.White.LinearTo(MeteorBullet.drawColor, 1, 2);
@@ -153,18 +153,32 @@ namespace Stellaris.Test
                 MeteorBullet.flarefxAlt.Draw(spriteBatch, mousePos[4], c * 0.55f, CenterType.MiddleCenter, 5f, t);
                 MeteorBullet.flarefxAlt.Draw(spriteBatch, mousePos[6], c * 0.55f, CenterType.MiddleCenter, 5f, t);
             }
-            else MeteorBullet.flarefx.Draw(spriteBatch, mousePos[0], Color.White, CenterType.MiddleCenter, 1.5f, 0.7853f);
-            spriteBatch.End();
+            else MeteorBullet.flarefx.Draw(spriteBatch, mousePos[0], Color.White, CenterType.MiddleCenter, 1.5f, 0.7853f);*/
             //Draw Mouse
-            var v = Helper.CatmullRom(mousePos, 3);
-            var vi = VertexTriangle.Strip(v, 24, delegate (int index, Vertex vertex)
+            var v = Helper.CatmullRom(mousePos, 10);
+            /*foreach (var vvv in v)
+            {
+                MeteorBullet.flarefx.Draw(spriteBatch, vvv, Color.White, CenterType.MiddleCenter);
+            }*/
+            /*var vi = VertexTriangle.StripOnSide(v, 100, delegate (int index, Vertex vertex)
             {
                 return vertex.ChangeCoord(index % 2 == 0 ? 0.25f : 0.75f, (float)(Math.Sin(timer) + Math.Sin(index * 8f / v.Length) + 2) / 4).ChangeColor(MeteorBullet.drawColor.LinearTo(MeteorBullet.drawColor2, index, v.Length * 0.8f) * (-index * 0.5f / v.Length + 1) * (-index * 0.5f / v.Length + 1));
             }
-            );
-            vertexBatch.Begin(tex3, BlendState.Additive, PrimitiveType.TriangleStrip);
+            );*/
+            var vi = VertexTriangle.StripOneSide(v, -150, delegate (int index, Vertex vertex)
+            {
+                return vertex.ChangeCoord(index % 2 == 0 ? 1f : 0f, index * -1f / v.Length + 1f).ChangeColor(Color.White * (index % 2 == 0 ? 1f : 1f));
+            }
+            ); 
+            /*foreach (var vvv in vi.vertex)
+            {
+                MeteorBullet.flarefx.Draw(spriteBatch, vvv.Position, Color.White, CenterType.MiddleCenter);
+            }*/
+            spriteBatch.End();
+            /*vertexBatch.Begin(tex3, BlendState.Additive, PrimitiveType.TriangleStrip);
             vertexBatch.Draw(vi);
-            vertexBatch.End();
+            vertexBatch.End();*/
+            Window.Title = vi.vertex[15].Position.ToString() + vi.vertex[16].Position.ToString();
             vertexBatch.Begin(tex2, BlendState.Additive, PrimitiveType.TriangleStrip);
             vertexBatch.Draw(vi);
             vertexBatch.End(); 

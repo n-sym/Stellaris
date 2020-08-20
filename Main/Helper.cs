@@ -270,9 +270,10 @@ namespace Stellaris
         }
         public static Vector2[] CatmullRom(Vector2[] data, int precision)
         {
-            Vector2[] result = new Vector2[data.Length * (precision + 1) - precision];
+            precision += 1;
+            Vector2[] result = new Vector2[(data.Length - 1) * precision + 1];
             float delta = 1f / precision;
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < data.Length - 1; i++)
             {
                 Vector2 v1 = data.TryGetValue(i - 1);
                 Vector2 v2 = data[i];
@@ -283,6 +284,7 @@ namespace Stellaris
                     result[i * precision + j] = Vector2.CatmullRom(v1, v2, v3, v4, delta * j);
                 }
             }
+            result[result.Length - 1] = data[data.Length - 1];
             return result;
         }
     }
