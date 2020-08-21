@@ -9,6 +9,7 @@ namespace Stellaris.Graphics
     {
         public GraphicsDevice graphicsDevice;
         public PrimitiveType primitiveType;
+        public bool drawImmediately;
         private bool _begin;
         List<Vertex> vertexData;
         List<short> indexData;
@@ -26,6 +27,7 @@ namespace Stellaris.Graphics
         private void OnBeginning(PrimitiveType primitiveType, BlendState blendState)
         {
             if (_begin) throw new Exception("Called Begin Twice");
+            if (primitiveType == PrimitiveType.TriangleStrip || primitiveType == PrimitiveType.LineStrip) drawImmediately = true;
             this.primitiveType = primitiveType;
             graphicsDevice.BlendState = blendState;
             RasterizerState rasterizerState = new RasterizerState();
@@ -62,6 +64,17 @@ namespace Stellaris.Graphics
         public void Draw(Vertex[] vertex, params short[] index)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
+            if(drawImmediately)
+            {
+                int length = index.Length == 0 ? vertex.Length : index.Length;
+                length = LengthGusser(length, primitiveType);
+                basicEffect.CurrentTechnique.Passes[0].Apply();
+                if (vertexBuffer != null) vertexBuffer.Dispose();
+                vertexBuffer = new VertexBuffer(graphicsDevice, typeof(Vertex), vertex.Length, BufferUsage.None);
+                graphicsDevice.SetVertexBuffer(vertexBuffer);
+                graphicsDevice.DrawUserIndexedPrimitives(primitiveType, vertex, 0, vertex.Length, index, 0, length);
+                return;
+            }
             if (vertexData.Count != 0) index.PlusAll((short)vertexData.Count);
             vertexData.AddRange(vertex);
             indexData.AddRange(index);
@@ -92,7 +105,7 @@ namespace Stellaris.Graphics
         }
         public void End()
         {
-            DoDraw();
+            if (!drawImmediately) DoDraw();
             _begin = false;
         }
         public void Dispose()
