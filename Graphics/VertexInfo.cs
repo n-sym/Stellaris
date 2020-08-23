@@ -138,9 +138,18 @@ namespace Stellaris.Graphics
         {
             return new Vertex(Position, Color, new Vector2(newCoordX, newCoordY));
         }
+        public static Vertex[] GetVertices(int length, Func<int, Vertex> vertexFunction)
+        {
+            Vertex[] result = new Vertex[length];
+            for(int i = 0; i < length; i++)
+            {
+                result[i] = vertexFunction(i);
+            }
+            return result;
+        }
         public override string ToString()
         {
-            return Position.ToString();
+            return string.Format("Position:{0},Color:{1},Coord:{2}", Position, Color, TextureCoordinate);
         }
     }
 }

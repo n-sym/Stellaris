@@ -4,6 +4,9 @@
     <TargetFramework>net45</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
+    <AssemblyVersion>1010.0.0.0</AssemblyVersion>
+    <FileVersion>1010.0.0.0</FileVersion>
+    <Version>1010</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

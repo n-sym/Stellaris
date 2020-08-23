@@ -84,6 +84,11 @@ namespace Stellaris.Graphics
         {
             Draw(vertexInfo.vertex, vertexInfo.index);
         }
+        public void ChangeTexture(Texture2D texture2D)
+        {
+            basicEffect.TextureEnabled = true;
+            basicEffect.Texture = texture2D;
+        }
         public static int LengthGusser(int length, PrimitiveType primitiveType)
         {
             return primitiveType == PrimitiveType.TriangleList ? length / 3 : (primitiveType == PrimitiveType.LineList ? length / 2 : (primitiveType == PrimitiveType.TriangleStrip ? length - 2 : length - 1));

@@ -246,7 +246,7 @@ namespace Stellaris
         public static Vector2[] Lagrange(Vector2[] data, int precision)
         {
             if (precision < 2) return new Vector2[1] { Vector2.Zero };
-            Vector2[] result = new Vector2[data.Length * (precision + 1) - precision];
+            Vector2[] result = new Vector2[(data.Length - 1) * precision + 1];
             float[] x = new float[data.Length];
             for (int i = 0; i < data.Length; i++)
             {
@@ -286,6 +286,76 @@ namespace Stellaris
             }
             result[result.Length - 1] = data[data.Length - 1];
             return result;
+        }
+        public static Vector2[] GetEllipse(float a, float b, float startRadian, float endRadian, float deltaRadian, Vector2 center = default)
+        {
+            Vector2[] result = new Vector2[(int)Math.Ceiling(Math.Abs((endRadian - startRadian) / deltaRadian))];
+            for(int i = 0; i < result.Length; i++)
+            {
+                result[i] = new Vector2((float)Math.Cos(i * deltaRadian + startRadian) * a, (float)Math.Sin(i * deltaRadian + startRadian) * b) + center;
+            }
+            return result;
+        }
+        /// <summary>
+        /// From Internet
+        /// </summary>
+        public static Color HslToRgb(float hue, float saturation, float lightness)
+        {
+            float num4 = 0f;
+            float num5 = 0f;
+            float num6 = 0f;
+            float num = hue % 360f;
+            float num2 = saturation / 100f;
+            float num3 = lightness / 100f;
+            if (num2 == 0.0)
+            {
+                num4 = num3;
+                num5 = num3;
+                num6 = num3;
+            }
+            else
+            {
+                float d = num / 60f;
+                int num11 = (int)Math.Floor(d);
+                float num10 = d - num11;
+                float num7 = num3 * (1f - num2);
+                float num8 = num3 * (1f - (num2 * num10));
+                float num9 = num3 * (1f - (num2 * (1f - num10)));
+                switch (num11)
+                {
+                    case 0:
+                        num4 = num3;
+                        num5 = num9;
+                        num6 = num7;
+                        break;
+                    case 1:
+                        num4 = num8;
+                        num5 = num3;
+                        num6 = num7;
+                        break;
+                    case 2:
+                        num4 = num7;
+                        num5 = num3;
+                        num6 = num9;
+                        break;
+                    case 3:
+                        num4 = num7;
+                        num5 = num8;
+                        num6 = num3;
+                        break;
+                    case 4:
+                        num4 = num9;
+                        num5 = num7;
+                        num6 = num3;
+                        break;
+                    case 5:
+                        num4 = num3;
+                        num5 = num7;
+                        num6 = num8;
+                        break;
+                }
+            }
+            return new Color(num4, num5, num6);
         }
     }
 }
