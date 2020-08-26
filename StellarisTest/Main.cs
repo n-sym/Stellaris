@@ -135,8 +135,11 @@ namespace Stellaris.Test
             //dtt.DrawString(spriteBatch, "开始游戏\n啥也开始不了", (Common.Resolution - dtt.MeasureString("开始游戏\n啥也开始不了", 1)) / 2, Color.White, default, 1);
             //Draw Bullets
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-            dtt.DrawString(spriteBatch, "Stellaris测试", new Vector2(50, 50));
-            //vertexBatch.Begin(PrimitiveType.LineStrip);
+            dtt.DrawString(spriteBatch, "Stellaris测试", new Vector2(50, 50), Color.White, Vector2.Zero, 1.2f);
+            dtt.DrawString(spriteBatch, "Stellaris测试", new Vector2(50, 50) + dtt.MeasureString("Stellaris测试", 1.2f).Y_Vector());
+            vertexBatch.Begin(PrimitiveType.LineStrip);
+            UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1.2f));//vertexBatch.Begin(PrimitiveType.LineStrip);
+            vertexBatch.End();
             //UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1) + new Vector2(50, 50));
             //vertexBatch.End();
             EntityManager.Draw(bullets, spriteBatch);
@@ -183,14 +186,14 @@ namespace Stellaris.Test
                 return vertex.ChangeCoord(index % 2 == 0 ? 1f : 0f, index * -0.5f / v.Length + 1f).ChangeColor(c);
             }
             );
-            vertexBatch.Draw(vi); 
+            //vertexBatch.Draw(vi); 
             v = Helper.GetEllipse(190, 190, begin, angle + begin, -0.01f, Common.Resolution / 2);
             vi = VertexTriangle.StripOneSide(v, -135, delegate (int index, Vertex vertex)
             {
                 return vertex.ChangeCoord(index % 2 == 0 ? 1f : 0f, (index * -0.5f / v.Length + 0.9f) * 1.15f).ChangeColor(c);
             }
             );
-            vertexBatch.Draw(vi);
+            //vertexBatch.Draw(vi);
             v = Helper.GetEllipse(180, 180, begin, angle + begin, -0.01f, Common.Resolution / 2);
             vi = VertexTriangle.StripOneSide(v, -120, delegate (int index, Vertex vertex)
             {

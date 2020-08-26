@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Input.Touch;
 using System;
 using System.IO;
 using System.Linq;
@@ -30,8 +29,6 @@ namespace Stellaris
     public static class Common
     {
         public static Platform platform = Platform.Windows;
-        private static TouchCollection touchCollection;
-        private static TouchLocation[] touchLocations;
         private static MouseState mouseState;
         private static float lastScrollWheel;
         private static GraphicsDeviceManager graphics;
@@ -67,27 +64,10 @@ namespace Stellaris
         }
         public static void Update()
         {
-            Resolution = game.Window.ClientBounds.Size.ToVector2();
-            touchCollection = TouchPanel.GetState(game.Window).GetState();
-            touchLocations = touchCollection.ToArray();
+            Resolution = new Vector2(game.Window.ClientBounds.Width, game.Window.ClientBounds.Height);
             LastMouseState = MouseState;
             mouseState = Mouse.GetState();
-            if (mouseState.Position != default)
-            {
-                MouseState = new CommonMouseState(mouseState.Position.ToVector2(), mouseState.LeftButton, mouseState.RightButton, mouseState.ScrollWheelValue - lastScrollWheel);
-            }
-            else
-            {
-                if (touchLocations.Length == 0)
-                {
-                    MouseState = new CommonMouseState(MouseState.position, ButtonState.Released, ButtonState.Released, 0);
-                }
-                else
-                {
-                    MouseState = new CommonMouseState(touchLocations[0].Position, touchLocations.Length == 1 ? ButtonState.Pressed : ButtonState.Released, touchLocations.Length == 1 ? ButtonState.Released : ButtonState.Pressed, 0);
-                }
-            }
-            lastScrollWheel = mouseState.ScrollWheelValue;
+            MouseState = new CommonMouseState(new Vector2(mouseState.X, mouseState.Y), mouseState.LeftButton, mouseState.RightButton, mouseState.ScrollWheelValue - lastScrollWheel);
         }
         public static Stream GetAsset(string path)
         {

@@ -24,6 +24,7 @@ namespace Stellaris
         /// </summary>
         public static string ToStringAlt<T>(this IList<T> array)
         {
+            if (array.Count == 0) return "";
             string result = "";
             for (int i = 0; i < array.Count - 1; i++)
             {

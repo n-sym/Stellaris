@@ -44,7 +44,7 @@ namespace Stellaris
         public static void Initialize(Game game)
         {
             Common.game = game;
-            graphics = game.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).First(m => m.FieldType == typeof(GraphicsDeviceManager)).GetValue(game) as GraphicsDeviceManager;
+            graphics = game.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static).First(m => m.FieldType == typeof(GraphicsDeviceManager)).GetValue(game) as GraphicsDeviceManager;
         }
         private static DateTime lastTime;
         public static void UpdateFPS(GameTime gameTime)

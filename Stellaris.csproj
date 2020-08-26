@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Main\CommonAndroid.cs" />
+    <Compile Remove="Main\CommonXNA.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />

@@ -168,7 +168,7 @@ namespace Stellaris.Graphics
                 result[result.Length - 2] = vertexFunc(result.Length - 2, result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
                 result[result.Length - 1] = vertexFunc(result.Length - 1, result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
             }
-            return new VertexInfo(result, Helper.FromAToB(0, (short)(result.Length - 1)));
+            return new VertexInfo(result, Helper.FromAToB(0, (short)result.Length));
         }
         public static VertexInfo Strip(Vector2[] pos, float[] size, Func<int, Vertex, Vertex> vertexFunc = null)
         {

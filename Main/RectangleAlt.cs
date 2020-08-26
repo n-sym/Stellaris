@@ -30,6 +30,14 @@ namespace Stellaris
             if ((X + Width <= rectangle.X) || (Y + Height <= rectangle.Y)) return false;
             return true;
         }
+        public bool Contains(Vector2 vector)
+        {
+            if (vector.X < X) return false;
+            if (vector.Y < Y) return false;
+            if (vector.X > X + Width) return false;
+            if (vector.Y > Y + Height) return false;
+            return true;
+        }
         public Rectangle ToXNA()
         {
             return new Rectangle((int)X, (int)Y, (int)(Width), (int)Height);

@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Stellaris.Graphics
 {
-    public class DynamicSpriteFont
+    public class DynamicSpriteFont : IDisposable
     {
         GraphicsDevice graphicsDevice;
         FontStb font;
@@ -33,7 +33,7 @@ namespace Stellaris.Graphics
         private void Initialize(GraphicsDevice graphicsDevice, FontStb font, float height)
         {
             this.graphicsDevice = graphicsDevice;
-            this.font = font; 
+            this.font = font;
             this.height = height;
             Glyphs = new Dictionary<char, Glyph>();
             Glyph[] Glyph = font.GetGlyphsFromCodepoint(height, new int[] { 'A', '国' }, 1f, 1f);
@@ -126,22 +126,22 @@ namespace Stellaris.Graphics
         public Vector2 MeasureString(string text, Vector2 scale)
         {
             char[] chars = text.ToCharArray();
-            GetGlyph(chars); 
+            GetGlyph(chars);
             int defaultX = 0;
             int x = defaultX;
             int maxX = 0;
-            int y = (int)(height * 0.6f); 
+            int y = (int)(height * 0.6f);
             for (int i = 0; i < chars.Length; i++)
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
                 {
-                    y += (int)(height * 0.6f);
+                    y += (int)(height * 0.8f);
                     x = defaultX;
                     i++;
                 }
                 else if (chars[i] == '\n')
                 {
-                    y += (int)(height * 0.6f);
+                    y += (int)(height * 0.8f);
                     x = defaultX;
                 }
                 else if (chars[i] == ' ')
@@ -162,6 +162,11 @@ namespace Stellaris.Graphics
         public Vector2 MeasureString(string text, float scale)
         {
             return MeasureString(text, new Vector2(scale, scale));
+        }
+
+        public void Dispose()
+        {
+            font.Dispose();
         }
     }
 }
