@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using System.Linq;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Stellaris.Graphics
 {
@@ -166,6 +166,10 @@ namespace Stellaris.Graphics
 
         public void Dispose()
         {
+            Glyphs.Clear();
+            Glyphs = null;
+            defaultGlyph = null;
+            defaultGlyphCn = null;
             font.Dispose();
         }
     }

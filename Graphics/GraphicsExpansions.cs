@@ -1,6 +1,13 @@
-﻿using Stellaris;
+﻿
+/* 项目“StellarisMobile”的未合并的更改
+在此之前:
+using Stellaris;
 using Microsoft.Xna.Framework;
+在此之后:
+using Microsoft.Xna.Framework;
+*/
 using Microsoft.Xna.Framework.Graphics;
+using Stellaris;
 
 namespace Stellaris.Graphics
 {

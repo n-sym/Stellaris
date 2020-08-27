@@ -3,11 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 
 namespace Stellaris.Graphics
 {
-    public class DynamicTexture
+    public class DynamicTexture : IDisposable
     {
         public string name;
         public int Width => _width[frame];
@@ -251,6 +250,14 @@ namespace Stellaris.Graphics
                 _texture = ReadTexture(binaryReader).ToArray();
             }
             return true;
+        }
+
+        public void Dispose()
+        {
+            foreach (Texture2D t in _texture)
+            {
+                t.Dispose();
+            }
         }
     }
 }

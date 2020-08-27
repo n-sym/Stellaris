@@ -81,7 +81,7 @@ namespace Stellaris.Graphics
             else vertices[0] = vertexFunc(0, vertexA);
             for (int i = 1; i < count + 2; i++)
             {
-                if(vertexFunc == null)vertices[i] = vertexC.ChangePosition(side + vertexA.Position);
+                if (vertexFunc == null) vertices[i] = vertexC.ChangePosition(side + vertexA.Position);
                 else vertices[i] = vertexFunc(i, vertexC.ChangePosition(side + vertexA.Position));
                 side = side.Rotate(theta);
             }
@@ -113,11 +113,11 @@ namespace Stellaris.Graphics
         public static VertexInfo Strip(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
         {
             Vertex[] result = new Vertex[pos.Length * 2];
-            for(int i = 0; i < pos.Length; i++)
+            for (int i = 0; i < pos.Length; i++)
             {
                 float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
                 Vector2 vec = new Vector2(size, 0).RotateTo(theta);
-                if(vertexFunc == null)
+                if (vertexFunc == null)
                 {
                     result[i * 2] = new Vertex(pos[i] + vec);
                     result[i * 2 + 1] = new Vertex(pos[i] - vec);

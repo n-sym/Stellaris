@@ -7,7 +7,7 @@ namespace Stellaris
 {
     public static class Helper
     {
-        static int seed = new Random().Next(); 
+        static int seed = new Random().Next();
         /// <summary>
         /// 如果Value不在(min, max)，返回最接近的一段的值
         /// </summary>
@@ -78,7 +78,7 @@ namespace Stellaris
         public static int[] ToCodePointArray(this IList<char> charArray)
         {
             int[] result = new int[charArray.Count];
-            for(int i = 0; i < charArray.Count; i++)
+            for (int i = 0; i < charArray.Count; i++)
             {
                 result[i] = (int)charArray[i];
             }
@@ -96,7 +96,7 @@ namespace Stellaris
         public static T[] InitializeArrayFromValue<T>(T value, int length)
         {
             T[] result = new T[length];
-            for(int i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 result[i] = value;
             }
@@ -138,7 +138,7 @@ namespace Stellaris
         }
         public static Vector2 CenterTypeToVector2(CenterType centerType)
         {
-            switch(centerType)
+            switch (centerType)
             {
                 case CenterType.TopLeft:
                     return new Vector2(0f, 0f);
@@ -309,7 +309,7 @@ namespace Stellaris
         public static Vector2[] GetEllipse(float a, float b, float startRadian, float endRadian, float deltaRadian, Vector2 center = default)
         {
             Vector2[] result = new Vector2[(int)Math.Ceiling(Math.Abs((endRadian - startRadian) / deltaRadian))];
-            for(int i = 0; i < result.Length; i++)
+            for (int i = 0; i < result.Length; i++)
             {
                 result[i] = new Vector2((float)Math.Cos(i * deltaRadian + startRadian) * a, (float)Math.Sin(i * deltaRadian + startRadian) * b) + center;
             }

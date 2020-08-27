@@ -1,9 +1,20 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+
+/* 项目“StellarisMobile”的未合并的更改
+在此之前:
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using System.Linq;
 using System;
+在此之后:
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 using System.IO;
+*/
+using Microsoft.Xna.Framework.Graphics;
+using System.IO;
+using System.Linq;
 
 namespace Stellaris.Graphics
 {
@@ -34,7 +45,7 @@ namespace Stellaris.Graphics
         {
             name = (text + height.ToString()).GetHashCode().ToString();
             this.graphicsDevice = graphicsDevice;
-            this.font = font; 
+            this.font = font;
             this.text = text;
             this.height = height;
             GetGlyph();

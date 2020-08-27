@@ -141,7 +141,7 @@ namespace Stellaris.Graphics
         public static Vertex[] GetVertices(int length, Func<int, Vertex> vertexFunction)
         {
             Vertex[] result = new Vertex[length];
-            for(int i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 result[i] = vertexFunction(i);
             }

@@ -1,8 +1,8 @@
-﻿using System;
-using static StbTrueTypeSharp.StbTrueType;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.Xna.Framework.Graphics;
+using static StbTrueTypeSharp.StbTrueType;
 
 namespace Stellaris
 {

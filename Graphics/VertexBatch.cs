@@ -64,7 +64,7 @@ namespace Stellaris.Graphics
         public void Draw(Vertex[] vertex, params short[] index)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
-            if(drawImmediately)
+            if (drawImmediately)
             {
                 int length = index.Length == 0 ? vertex.Length : index.Length;
                 length = LengthGusser(length, primitiveType);
@@ -117,6 +117,8 @@ namespace Stellaris.Graphics
         {
             vertexData.Clear();
             indexData.Clear();
+            vertexBuffer.Dispose();
+            basicEffect.Dispose();
             basicEffect = null;
         }
     }

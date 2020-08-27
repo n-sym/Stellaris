@@ -21,7 +21,7 @@ namespace Stellaris.Test
             for (int i = 0; i < data[0].Length; i++)
             {
                 var p = IndexToVector(i);
-                if(p.Y != ly)
+                if (p.Y != ly)
                 {
                     ly = p.Y;
                     d = new Random(seed).Next(0, 2) == 1;

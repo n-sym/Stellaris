@@ -6,8 +6,6 @@ using Stellaris.Graphics;
 using Stellaris.UI;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
 
 namespace Stellaris.Test
 {
