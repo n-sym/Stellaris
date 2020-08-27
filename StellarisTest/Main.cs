@@ -44,9 +44,9 @@ namespace Stellaris.Test
             u = new UIBase();
             //text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
             dtt = new DynamicSpriteFont(graphicsDevice, Common.GetAsset("SourceHanSansCN-Regular.ttf"), 80);
-            tex3 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail1.png"));
+            tex3 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail3.png"));
             tex = Texture2D.FromStream(graphicsDevice, Common.GetAsset("aaa28.png"));
-            tex2 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail2.png"));
+            tex2 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail3.png"));
             tt = new TestTex(graphicsDevice, 70, 70);
             base.Initialize();
         }
@@ -135,10 +135,10 @@ namespace Stellaris.Test
             //dtt.DrawString(spriteBatch, "开始游戏\n啥也开始不了", (Common.Resolution - dtt.MeasureString("开始游戏\n啥也开始不了", 1)) / 2, Color.White, default, 1);
             //Draw Bullets
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-            dtt.DrawString(spriteBatch, "Stellaris测试", new Vector2(50, 50), Color.White, Vector2.Zero, 1.2f);
+            dtt.DrawString(spriteBatch, "Stellaris测试", new Vector2(0, 0), Color.White, Vector2.Zero, 1);
             dtt.DrawString(spriteBatch, "Stellaris测试", new Vector2(50, 50) + dtt.MeasureString("Stellaris测试", 1.2f).Y_Vector());
             vertexBatch.Begin(PrimitiveType.LineStrip);
-            UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1.2f));//vertexBatch.Begin(PrimitiveType.LineStrip);
+            UIBase.DrawBorder(vertexBatch, new Vector2(0, 0), dtt.MeasureString("Stellaris测试", 1));//vertexBatch.Begin(PrimitiveType.LineStrip);
             vertexBatch.End();
             //UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1) + new Vector2(50, 50));
             //vertexBatch.End();
@@ -200,12 +200,12 @@ namespace Stellaris.Test
                 return vertex.ChangeCoord(index % 2 == 0 ? 1f : 0f, (index * -0.5f / v.Length + 0.8f) * 1.3f).ChangeColor(Color.White);
             }
             );
-            vertexBatch.Draw(vi);
+            //vertexBatch.Draw(vi);
             vertexBatch.End();
             v = Helper.CatmullRom(mousePos, 4);
             vi = VertexTriangle.Strip(v, 30, delegate (int index, Vertex vertex)
             {
-                return vertex.ChangeCoord(index % 2 == 0 ? 0.3f : 0.7f, 1f - (float)(Math.Sin(timer) + Math.Sin(index * 8f / v.Length) + 2) / 4).ChangeColor(MeteorBullet.drawColor.LinearTo(MeteorBullet.drawColor2, index, v.Length * 0.8f) * (-index * 0.5f / v.Length + 1) * (-index * 0.5f / v.Length + 1) * 0.9f);
+                return vertex.ChangeCoord(index % 2 == 0 ? 0.3f : 0.7f, 1f - (float)(Math.Sin(timer) + index * 4f / v.Length + 1) / 4).ChangeColor(MeteorBullet.drawColor.LinearTo(MeteorBullet.drawColor2, index, v.Length * 0.8f) * (-index * 0.5f / v.Length + 1) * (-index * 0.5f / v.Length + 1) * 0.9f);
             }
             );
             vertexBatch.Begin(tex2, BlendState.Additive, PrimitiveType.TriangleStrip);

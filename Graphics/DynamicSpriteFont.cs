@@ -9,51 +9,53 @@ namespace Stellaris.Graphics
 {
     public class DynamicSpriteFont : IDisposable
     {
+        public float height;
+        public Vector2 spacing;
         GraphicsDevice graphicsDevice;
         FontStb font;
-        float height;
         Dictionary<char, Glyph> Glyphs;
         Glyph defaultGlyph;
         Glyph defaultGlyphCn;
-        public DynamicSpriteFont(GraphicsDevice graphicsDevice, FontStb font, float height)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, FontStb font, float height, Vector2 spacing = default)
         {
-            Initialize(graphicsDevice, font, height);
+            Initialize(graphicsDevice, font, height, spacing);
         }
-        public DynamicSpriteFont(GraphicsDevice graphicsDevice, string path, float height)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, string path, float height, Vector2 spacing = default)
         {
             using (FileStream fileStream = File.OpenRead(path))
             {
-                Initialize(graphicsDevice, new FontStb(path, graphicsDevice), height);
+                Initialize(graphicsDevice, new FontStb(path, graphicsDevice), height, spacing);
             }
         }
-        public DynamicSpriteFont(GraphicsDevice graphicsDevice, Stream stream, float height)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, Stream stream, float height, Vector2 spacing = default)
         {
-            Initialize(graphicsDevice, new FontStb(stream, graphicsDevice), height);
+            Initialize(graphicsDevice, new FontStb(stream, graphicsDevice), height, spacing);
         }
-        private void Initialize(GraphicsDevice graphicsDevice, FontStb font, float height)
+        private void Initialize(GraphicsDevice graphicsDevice, FontStb font, float height, Vector2 spacing)
         {
             this.graphicsDevice = graphicsDevice;
             this.font = font;
             this.height = height;
+            this.spacing = spacing;
             Glyphs = new Dictionary<char, Glyph>();
             Glyph[] Glyph = font.GetGlyphsFromCodepoint(height, new int[] { 'A', '国' }, 1f, 1f);
             defaultGlyph = Glyph[0];
             defaultGlyphCn = Glyph[1];
         }
-        public void Refresh(FontStb font, float height)
+        public void Refresh(FontStb font, float height, Vector2 spacing = default)
         {
-            Initialize(graphicsDevice, font, height);
+            Initialize(graphicsDevice, font, height, spacing);
         }
-        public void Refresh(string path, float height)
+        public void Refresh(string path, float height, Vector2 spacing = default)
         {
             using (FileStream fileStream = File.OpenRead(path))
             {
-                Initialize(graphicsDevice, new FontStb(path, graphicsDevice), height);
+                Initialize(graphicsDevice, new FontStb(path, graphicsDevice), height, spacing);
             }
         }
-        public void ReFresh(Stream stream, float height)
+        public void ReFresh(Stream stream, float height, Vector2 spacing = default)
         {
-            Initialize(graphicsDevice, new FontStb(stream, graphicsDevice), height);
+            Initialize(graphicsDevice, new FontStb(stream, graphicsDevice), height, spacing);
         }
         private void GetGlyph(char[] charArray)
         {
@@ -94,32 +96,31 @@ namespace Stellaris.Graphics
             char[] chars = text.ToCharArray();
             GetGlyph(chars);
             int defaultX = 0;
-            int x = defaultX;
-            int y = (int)(height * 0.6f);
+            float x = defaultX;
+            float y = (int)(height * 0.6f);
             for (int i = 0; i < chars.Length; i++)
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
                 {
-                    y += (int)(height * 0.8f);
+                    y += height * 0.8f + spacing.Y;
                     x = defaultX;
                     i++;
                 }
                 else if (chars[i] == '\n')
                 {
-                    y += (int)(height * 0.8f);
+                    y += height * 0.8f + spacing.Y;
                     x = defaultX;
                 }
                 else if (chars[i] == ' ')
                 {
-                    x += (int)(defaultGlyph.WidthAlt * 0.8f);
+                    x += defaultGlyph.Width * 0.5f + spacing.X;
                 }
                 else
                 {
                     Glyph Glyph = Glyphs[chars[i]];
                     spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, 0, origin, scale, SpriteEffects.None, 1f);
-                    if (FontHelper.IsCn(chars[i])) x += (int)(defaultGlyphCn.Width * 1.2f);
-                    else if (FontHelper.IsRu(chars[i])) x += Glyph.Width + Glyph.x0 + Glyph.x0;
-                    else x += Glyph.WidthAlt;
+                    if (FontHelper.IsCn(chars[i])) x += defaultGlyphCn.Width * 1.2f + spacing.X;
+                    else x += Glyph.WidthAlt + spacing.X;
                 }
             }
         }
@@ -128,32 +129,31 @@ namespace Stellaris.Graphics
             char[] chars = text.ToCharArray();
             GetGlyph(chars);
             int defaultX = 0;
-            int x = defaultX;
-            int maxX = 0;
-            int y = (int)(height * 0.6f);
+            float x = defaultX;
+            float maxX = 0;
+            float y = height * 0.6f;
             for (int i = 0; i < chars.Length; i++)
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
                 {
-                    y += (int)(height * 0.8f);
+                    y += height * 0.8f + spacing.Y;
                     x = defaultX;
                     i++;
                 }
                 else if (chars[i] == '\n')
                 {
-                    y += (int)(height * 0.8f);
+                    y += height * 0.8f + spacing.Y;
                     x = defaultX;
                 }
                 else if (chars[i] == ' ')
                 {
-                    x += (int)(defaultGlyph.WidthAlt * 0.8f);
+                    x += defaultGlyph.Width * 0.5f + spacing.X;
                 }
                 else
                 {
                     Glyph Glyph = Glyphs[chars[i]];
-                    if (FontHelper.IsCn(chars[i])) x += (int)(defaultGlyphCn.Width * 1.2f);
-                    else if (FontHelper.IsRu(chars[i])) x += Glyph.Width + Glyph.x0 + Glyph.x0;
-                    else x += Glyph.WidthAlt;
+                    if (FontHelper.IsCn(chars[i])) x += defaultGlyphCn.Width * 1.2f + spacing.X;
+                    else x += Glyph.WidthAlt + spacing.X;
                 }
                 if (x > maxX) maxX = x;
             }

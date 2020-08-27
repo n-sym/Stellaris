@@ -137,6 +137,14 @@ namespace Stellaris.Graphics
         {
             PrivateDraw(spriteBatch, frame, position, null, color, rotation, Size.MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, CenterType centerType, Vector2 scale, float rotation = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, null, color, rotation, Size.MutiplyXY(Helper.CenterTypeToVector2(centerType)), scale, SpriteEffects.None, 0f);
+        }
+        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Color color, CenterType centerType, Vector2 scale, float rotation = 0f)
+        {
+            PrivateDraw(spriteBatch, frame, position, null, color, rotation, Size.MutiplyXY(Helper.CenterTypeToVector2(centerType)), scale, SpriteEffects.None, 0f);
+        }
         #region XNA-Like Draw Methods
         public void Draw(SpriteBatch spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation = 0, Vector2 origin = default, float scale = 1f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
         {

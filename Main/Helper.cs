@@ -7,7 +7,25 @@ namespace Stellaris
 {
     public static class Helper
     {
-        static int seed = new Random().Next();
+        static int seed = new Random().Next(); 
+        /// <summary>
+        /// 如果Value不在(min, max)，返回最接近的一段的值
+        /// </summary>
+        public static float TryGetValue(float min, float max, float value)
+        {
+            if (value < min) return min;
+            if (value > max) return max;
+            return value;
+        }
+        /// <summary>
+        /// 周期函数，取不到max的值
+        /// </summary>
+        public static float GetLoopedValue(float min, float max, float value)
+        {
+            if (value < min) return value % (max - min) + max;
+            if (value >= max) return value % (max - min) + min;
+            return value;
+        }
         /// <summary>
         /// 读取IList中索引为index那一项的值，如果越界则返回第一项或最后一项的值
         /// </summary>
