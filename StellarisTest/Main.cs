@@ -138,7 +138,7 @@ namespace Stellaris.Test
             //Draw Bullets
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             var text = "DynamicSpriteFontTest";
-            var rotation = 3.14f / 4;
+            var rotation = Ste.MouseState.Position.Angle();
             if (refresh)
             {
                 dtt.Refresh();
@@ -151,7 +151,13 @@ namespace Stellaris.Test
             var timer1 = stopwatch.ElapsedMilliseconds;
             stopwatch.Reset();
             stopwatch.Start();
-            dtt2.DrawString(spriteBatch, text, Ste.MouseState.Position + new Vector2(170, 370), Color.White, CenterType.MiddleCenter, 1, rotation);
+            dtt2.onlyUseUserSpcacing = true;
+            dtt2.spacing = new Vector2(50, 50);
+            dtt2.DrawString(spriteBatch, "测试Stellaris\n功能：字体间距", Ste.MouseState.Position + new Vector2(0, 200), Color.White, CenterType.MiddleCenter, 1, 0);
+            dtt2.onlyUseUserSpcacing = false;
+            dtt2.DrawString(spriteBatch, "测试Stellaris\n功能：字体间距", Ste.MouseState.Position + new Vector2(0, 400), Color.White, CenterType.MiddleCenter, 1, 0);
+            dtt2.spacing = Vector2.Zero;
+            dtt2.DrawString(spriteBatch, "测试Stellaris\n功能：字体间距", Ste.MouseState.Position + new Vector2(0, 600), Color.White, CenterType.MiddleCenter, 1, 0);
             stopwatch.Stop();
             var timer2 = stopwatch.ElapsedMilliseconds;
             Window.Title = string.Format("C#:{0}, C++:{1}, C++ / C#:{2}, 不缓存字体:{3}, 空格键切换", timer1, timer2, timer2 * 1f / timer1, refresh);
