@@ -17,7 +17,7 @@ namespace Stellaris.Test
             size = new Vector2(12, 12);
             velocity = Helper.RandomAngleVec(10, Vector2.Zero, radian - 0.85f, radian + 0.85f);
             v = velocity;
-            end = Common.MouseState.position;
+            end = Stellaris.MouseState.position;
         }
         public override void CustomBehavior()
         {
@@ -32,7 +32,7 @@ namespace Stellaris.Test
             float t = 1;
             if (timeLeft < 100) t = timeLeft / 100f;
             if (timeLeft > 146) t = 0;
-            if (Common.Quality > 2)
+            if (Stellaris.Quality > 2)
             {
                 for (int i = 0; i < oldPosLength; i++)
                 {
@@ -46,7 +46,7 @@ namespace Stellaris.Test
                     }
                 }
             }
-            else if (Common.Quality != 0)
+            else if (Stellaris.Quality != 0)
             {
                 for (int i = 0; i < oldPosLength / 2; i++)
                 {

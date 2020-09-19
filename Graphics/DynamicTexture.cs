@@ -182,6 +182,10 @@ namespace Stellaris.Graphics
         {
             return x - 1 + (y - 1) * _width[frame];
         }
+        protected int VectorToIndex(Vector2 vector)
+        {
+            return (int)vector.X - 1 + ((int)vector.Y - 1) * _width[frame];
+        }
         /// <summary>
         /// 缓存DynamicTexture到一文件
         /// </summary>

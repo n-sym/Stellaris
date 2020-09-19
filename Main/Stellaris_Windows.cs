@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using System;
@@ -8,43 +9,35 @@ using System.Reflection;
 
 namespace Stellaris
 {
-    public struct CommonMouseState
+    public static class Stellaris
     {
-        public Vector2 position;
-        public ButtonState left;
-        public ButtonState right;
-        public float scrollWheel;
-        public CommonMouseState(Vector2 position, ButtonState left, ButtonState right, float scrollWheel)
-        {
-            this.position = position;
-            this.left = left;
-            this.right = right;
-            this.scrollWheel = scrollWheel;
-        }
-    }
-    public enum Platform
-    {
-        Windows = 1,
-        Android = 2
-    }
-    public static class Common
-    {
-        public static Platform platform = Platform.Windows;
+        public static readonly Platform Platform = Platform.Windows;
+        public static string CurrentDirectory => Environment.CurrentDirectory;
         private static TouchCollection touchCollection;
         private static TouchLocation[] touchLocations;
         private static MouseState mouseState;
         private static float lastScrollWheel;
-        private static GraphicsDeviceManager graphics;
         public static CommonMouseState MouseState { get; private set; }
         public static CommonMouseState LastMouseState { get; private set; }
         public static Vector2 Resolution { get; private set; }
+        public static float Resolution_X => Resolution.X;
+        public static float Resolution_Y => Resolution.Y;
         public static int FPS { get; private set; }
         public static int Quality { get; private set; }
         public static Game game;
-        public static void Initialize(Game game)
+        public static GraphicsDeviceManager graphics;
+        public static void Initialize(Game game, GraphicsDeviceManager graphics)
         {
-            Common.game = game;
-            graphics = game.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static).First(m => m.FieldType == typeof(GraphicsDeviceManager)).GetValue(game) as GraphicsDeviceManager;
+            Stellaris.game = game;
+            Stellaris.graphics = graphics;
+            NativeMethods.Initialize();
+        }
+        public static void ChangeResolution(int x, int y)
+        {
+            graphics.PreferredBackBufferWidth = x;
+            graphics.PreferredBackBufferHeight = y;
+            Resolution = new Vector2(x, y);
+            graphics.ApplyChanges();
         }
         private static DateTime lastTime;
         public static void UpdateFPS(GameTime gameTime)
@@ -65,7 +58,7 @@ namespace Stellaris
             else Quality = (int)(FPS / 30f + (Quality / 2f));
             lastTime = nowTime;
         }
-        public static void Update()
+        public static void UpdateInput()
         {
             Resolution = game.Window.ClientBounds.Size.ToVector2();
             touchCollection = TouchPanel.GetState(game.Window).GetState();

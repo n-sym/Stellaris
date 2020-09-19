@@ -4,21 +4,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
-    <AssemblyVersion>1011.0.0.0</AssemblyVersion>
-    <FileVersion>1011.0.0.0</FileVersion>
-    <Version>1011</Version>
-    <Platforms>AnyCPU;x64</Platforms>
+    <AssemblyVersion>1010.0.0.0</AssemblyVersion>
+    <FileVersion>1010.0.0.0</FileVersion>
+    <Version>1010</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
@@ -41,21 +34,26 @@
     <None Remove="Test\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Main\CommonPC.cs" />
     <Compile Remove="Main\CommonAndroid.cs" />
-    <Compile Remove="Main\CommonXNA.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
-    <None Remove="Main\NativeMethods.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Main\NativeMethods.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
-  </ItemGroup>
-  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework">
+      <HintPath>..\..\..\Documents\My Games\Terraria\ModLoader\Mod Sources\StellarisTest\bin\Debug\net45\Microsoft.Xna.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game">
+      <HintPath>..\..\..\Documents\My Games\Terraria\ModLoader\Mod Sources\StellarisTest\bin\Debug\net45\Microsoft.Xna.Framework.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics">
+      <HintPath>..\..\..\Documents\My Games\Terraria\ModLoader\Mod Sources\StellarisTest\bin\Debug\net45\Microsoft.Xna.Framework.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact">
+      <HintPath>..\..\..\Documents\My Games\Terraria\ModLoader\Mod Sources\StellarisTest\bin\Debug\net45\Microsoft.Xna.Framework.Xact.dll</HintPath>
+    </Reference>
     <Reference Include="StbTrueTypeSharp">
       <HintPath>..\..\..\Desktop\StbTrueTypeSharp.dll</HintPath>
     </Reference>

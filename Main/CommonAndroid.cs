@@ -27,7 +27,7 @@ namespace Stellaris
         Windows = 1,
         Android = 2
     }
-    public static class Common
+    public static class Stellaris
     {
         public static Platform platform = Platform.Android;
         private static TouchCollection touchCollection;
@@ -43,7 +43,7 @@ namespace Stellaris
         public static Game game;
         public static void Initialize(Game game)
         {
-            Common.game = game;
+            Stellaris.game = game;
             graphics = game.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static).First(m => m.FieldType == typeof(GraphicsDeviceManager)).GetValue(game) as GraphicsDeviceManager;
         }
         private static DateTime lastTime;

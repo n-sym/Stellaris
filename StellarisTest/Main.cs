@@ -6,6 +6,7 @@ using Stellaris.Graphics;
 using Stellaris.UI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Stellaris.Test
 {
@@ -27,28 +28,26 @@ namespace Stellaris.Test
         }
         protected override void Initialize()
         {
-            Common.Initialize(this);
+            Stellaris.Initialize(this, graphics);
             Window.AllowUserResizing = true;
             bullets = new List<Bullet>();
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.PreferredBackBufferHeight = 1080;
-            graphics.ApplyChanges();
+            Stellaris.ChangeResolution(1920, 1080);
             a = new FlareFxAlt(graphicsDevice, 40, 40, "Test2");
             MeteorBullet.flarefx = new FlareFx(graphicsDevice, 40, 40, "Test");
             MeteorBullet.flarefxAlt = a as FlareFxAlt;
             mousePos = new Vector2[15];
             vertexBatch = new VertexBatch(graphicsDevice);
-            swordFx = new SwordFx(GraphicsDevice, 1);
             u = new UIBase();
             //text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
-            dtt = new DynamicSpriteFont(graphicsDevice, Common.GetAsset("SourceHanSansCN-Regular.ttf"), 80);
-            tex3 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail3.png"));
-            tex = Texture2D.FromStream(graphicsDevice, Common.GetAsset("aaa28.png"));
-            tex2 = Texture2D.FromStream(graphicsDevice, Common.GetAsset("trail3.png"));
-            tt = new TestTex(graphicsDevice, 70, 70);
+            dtt = new DynamicSpriteFont(graphicsDevice, Stellaris.GetAsset("SourceHanSansCN-Regular.ttf"), 80);
+            dtt2 = new DynamicSpriteFont(graphicsDevice, Stellaris.GetAsset("SourceHanSansCN-Regular.ttf"), 80, useNative : true);
+            tex3 = Texture2D.FromStream(graphicsDevice, Stellaris.GetAsset("trail3.png"));
+            tex = Texture2D.FromStream(graphicsDevice, Stellaris.GetAsset("aaa28.png"));
+            tex2 = Texture2D.FromStream(graphicsDevice, Stellaris.GetAsset("trail3.png"));
             base.Initialize();
         }
         DynamicSpriteFont dtt;
+        DynamicSpriteFont dtt2;
         Vertex[] vertices;
         protected override void LoadContent()
         {
@@ -58,27 +57,32 @@ namespace Stellaris.Test
         int timer2 = 0;
         protected override void Update(GameTime gameTime)
         {
-            Common.Update();
+            Stellaris.UpdateInput();
             timer += 0.15f;
             if (timer2 > 0) timer2--;
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
                 if (timer2 == 0) timer2 += 15;
             }
-            if (Common.MouseState.left == ButtonState.Pressed)
+            if (Stellaris.MouseState.left == ButtonState.Pressed)
             {
-                bullets.Add(new MeteorBullet(new Vector2(960, 540), (Common.MouseState.position - new Vector2(960, 540)).Angle(), 0));
+                bullets.Add(new MeteorBullet(new Vector2(960, 540), (Stellaris.MouseState.position - new Vector2(960, 540)).Angle(), 0));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.B))
             {
                 timer = 0;
             }
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !lastSpace)
+            {
+                refresh = !refresh;
+            }
+            lastSpace = Keyboard.GetState().IsKeyDown(Keys.Space);
             EntityManager.Update(bullets);
             for (int i = 14; i > 0; i--)
             {
                 mousePos[i] = mousePos[i - 1];
             }
-            mousePos[0] = Common.MouseState.position;
+            mousePos[0] = Stellaris.MouseState.position;
             //mousePos[0] = Mouse.GetState().Position.ToVector2() + ellipse.Get(timer);
             //mousePos[0] = new Vector2((float)Math.Cos(timer * 2.5f), (float)Math.Sin(timer * 2.5f)) * 200 + new Vector2(960, 540);
             //mousePos[0] = new Vector2(timer * 200, timer * timer * 10);
@@ -86,19 +90,19 @@ namespace Stellaris.Test
         }
         Vector2[] mousePos;
         VertexBatch vertexBatch;
-        SwordFx swordFx;
         UIBase u;
-        TestTex tt;
         Texture2D tex;
         Texture2D tex2;
         Texture2D tex3;
+        bool refresh = true;
+        bool lastSpace = false;
         protected override void Draw(GameTime gameTime)
         {
-            Common.UpdateFPS(gameTime);
+            Stellaris.UpdateFPS(gameTime);
             GraphicsDevice.Clear(Color.Black);
             u.width = 100;
             u.height = 100;
-            u.position = (Common.Resolution - u.Size) / 2;
+            u.position = (Stellaris.Resolution - u.Size) / 2;
             u.Update();
             //Window.Title = u.mouseStatus.ToString() + mousePos[0].ToString();
             /*
@@ -133,11 +137,24 @@ namespace Stellaris.Test
             //dtt.DrawString(spriteBatch, "开始游戏\n啥也开始不了", (Common.Resolution - dtt.MeasureString("开始游戏\n啥也开始不了", 1)) / 2, Color.White, default, 1);
             //Draw Bullets
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-            dtt.DrawString(spriteBatch, "Stellaris测试", new Vector2(0, 0), Color.White, Vector2.Zero, 1);
-            dtt.DrawString(spriteBatch, "Stellaris测试", new Vector2(50, 50) + dtt.MeasureString("Stellaris测试", 1.2f).Y_Vector());
-            vertexBatch.Begin(PrimitiveType.LineStrip);
-            UIBase.DrawBorder(vertexBatch, new Vector2(0, 0), dtt.MeasureString("Stellaris测试", 1));//vertexBatch.Begin(PrimitiveType.LineStrip);
-            vertexBatch.End();
+            var text = "DynamicSpriteFontTest\ndtt.DrawString(spriteBatch, text, new Vector2(0, 0), Color.White, Vector2.Zero, 1, rotation);";
+            var rotation = Stellaris.MouseState.position.Angle();
+            if (refresh)
+            {
+                dtt.Refresh();
+                dtt2.Refresh();
+            }
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            dtt.DrawString(spriteBatch, text, new Vector2(0, 0), Color.White, Vector2.Zero, 1, rotation);
+            stopwatch.Stop();
+            var timer1 = stopwatch.ElapsedMilliseconds;
+            stopwatch.Reset();
+            stopwatch.Start();
+            dtt2.DrawString(spriteBatch, text, new Vector2(0, 200), Color.White, Vector2.Zero, 1, rotation);
+            stopwatch.Stop();
+            var timer2 = stopwatch.ElapsedMilliseconds;
+            Window.Title = string.Format("C#:{0}, C++:{1}, C++ / C#:{2}, 不缓存字体:{3}, 空格键切换", timer1, timer2, timer2 * 1f / timer1, refresh);
             //UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1) + new Vector2(50, 50));
             //vertexBatch.End();
             EntityManager.Draw(bullets, spriteBatch);
@@ -178,21 +195,21 @@ namespace Stellaris.Test
             vertexBatch.Begin(tex, BlendState.Additive, PrimitiveType.TriangleStrip);
             //196 94 61
             var c = Helper.HslToRgb(196, 94, 61);
-            var v = Helper.GetEllipse(200, 200, begin, angle + begin, -0.01f, Common.Resolution / 2);
+            var v = Helper.GetEllipse(200, 200, begin, angle + begin, -0.01f, Stellaris.Resolution / 2);
             var vi = VertexTriangle.StripOneSide(v, -150, delegate (int index, Vertex vertex)
             {
                 return vertex.ChangeCoord(index % 2 == 0 ? 1f : 0f, index * -0.5f / v.Length + 1f).ChangeColor(c);
             }
             );
             //vertexBatch.Draw(vi); 
-            v = Helper.GetEllipse(190, 190, begin, angle + begin, -0.01f, Common.Resolution / 2);
+            v = Helper.GetEllipse(190, 190, begin, angle + begin, -0.01f, Stellaris.Resolution / 2);
             vi = VertexTriangle.StripOneSide(v, -135, delegate (int index, Vertex vertex)
             {
                 return vertex.ChangeCoord(index % 2 == 0 ? 1f : 0f, (index * -0.5f / v.Length + 0.9f) * 1.15f).ChangeColor(c);
             }
             );
             //vertexBatch.Draw(vi);
-            v = Helper.GetEllipse(180, 180, begin, angle + begin, -0.01f, Common.Resolution / 2);
+            v = Helper.GetEllipse(180, 180, begin, angle + begin, -0.01f, Stellaris.Resolution / 2);
             vi = VertexTriangle.StripOneSide(v, -120, delegate (int index, Vertex vertex)
             {
                 return vertex.ChangeCoord(index % 2 == 0 ? 1f : 0f, (index * -0.5f / v.Length + 0.8f) * 1.3f).ChangeColor(Color.White);

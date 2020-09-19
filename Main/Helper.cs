@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,7 +41,7 @@ namespace Stellaris
         /// <summary>
         /// 将每一项转换成字符串然后相加
         /// </summary>
-        public static string ToStringAlt<T>(this IList<T> array)
+        public static string ToString_<T>(this IList<T> array)
         {
             if (array.Count == 0) return "";
             string result = "";
@@ -54,7 +55,7 @@ namespace Stellaris
         /// <summary>
         /// 将每一项转换成字符串然后保存到新数组中
         /// </summary>
-        public static string[] ToStringArray<T>(this IList<T> array)
+        public static string[] ToString_Array<T>(this IList<T> array)
         {
             string[] result = new string[array.Count];
             for (int i = 0; i < array.Count; i++)
@@ -80,16 +81,7 @@ namespace Stellaris
             int[] result = new int[charArray.Count];
             for (int i = 0; i < charArray.Count; i++)
             {
-                result[i] = (int)charArray[i];
-            }
-            return result;
-        }
-        public static int[] ToCodePointArray(this string str)
-        {
-            int[] result = new int[str.Length];
-            for (int i = 0; i < str.Length; i++)
-            {
-                result[i] = (int)str[i];
+                result[i] = charArray[i];
             }
             return result;
         }
@@ -108,15 +100,6 @@ namespace Stellaris
             for (int i = 0; i < length; i++)
             {
                 result[i] = func(i);
-            }
-            return result;
-        }
-        public static T[] CutOut<T>(this T[] array, int start, int end)
-        {
-            T[] result = new T[end - start + 1];
-            for (int i = start; i < end + 1; i++)
-            {
-                result[i - start] = array.TryGetValue(i);
             }
             return result;
         }

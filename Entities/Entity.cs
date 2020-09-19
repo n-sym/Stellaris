@@ -26,7 +26,7 @@ namespace Stellaris.Entities
         public virtual void BasicBehavior()
         {
             position += velocity;
-            box = new Rectangle(ActualPos, ActualSize);
+            box = new Rectangle(ActualPos.X, ActualPos.Y, ActualSize.X, ActualSize.Y);
         }
         public virtual void CustomBehavior()
         {

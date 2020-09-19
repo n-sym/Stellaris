@@ -2,52 +2,53 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using static StbTrueTypeSharp.StbTrueType;
 
 namespace Stellaris
 {
-    public class Glyph
+    public unsafe class FontStb_Native : IFont, IDisposable
     {
-        public Texture2D texture;
-        public int x0, x1, y0, y1;
-        public int Width => x1 - x0;
-        public int Height => y1 - y0;
-        public int WidthAlt => x1 + x0;
-        public int HeightAlt => Math.Abs(y1) + Math.Abs(y0);
-        public Glyph(Texture2D texture, int x0, int x1, int y0, int y1)
+        [StructLayout(LayoutKind.Sequential, Size = 160)]
+        struct FontInfo
         {
-            this.texture = texture;
-            this.x0 = x0;
-            this.x1 = x1;
-            this.y0 = y0;
-            this.y1 = y1;
+
         }
-    }
-    public unsafe class FontStb : IDisposable
-    {
-        stbtt_fontinfo font;
+        FontInfo font;
         GraphicsDevice graphicsDevice;
-        public FontStb(byte[] ttf, GraphicsDevice graphicsDevice = null)
+        public FontStb_Native(byte[] ttf, GraphicsDevice graphicsDevice = null)
         {
             Initialize(graphicsDevice, ttf);
         }
-        public FontStb(Stream stream, GraphicsDevice graphicsDevice = null)
+        public FontStb_Native(Stream stream, GraphicsDevice graphicsDevice = null)
         {
             Initialize(graphicsDevice, stream.ToByteArray());
         }
-        public FontStb(string path, GraphicsDevice graphicsDevice = null)
+        public FontStb_Native(string path, GraphicsDevice graphicsDevice = null)
         {
             using (FileStream fileStream = File.OpenRead(path))
             {
                 Initialize(graphicsDevice, fileStream.ToByteArray());
             }
         }
+        private delegate FontInfo _helper_getfontinfo(byte* data, int offset);
+        private delegate float _stbtt_ScaleForPixelHeight(FontInfo font, float height);
+        private delegate void _stbtt_GetCodepointBitmapBox(FontInfo font, int codepoint, float scale_x, float scale_y, int* ix0, int* iy0, int* ix1, int* iy1);
+        private delegate void _stbtt_MakeCodepointBitmap(FontInfo info, byte* output, int out_w, int out_h, int out_stride, float scale_x, float scale_y, int codepoint);
+        static _helper_getfontinfo helper_getfontinfo;
+        static _stbtt_ScaleForPixelHeight stbtt_ScaleForPixelHeight;
+        static _stbtt_GetCodepointBitmapBox stbtt_GetCodepointBitmapBox;
+        static _stbtt_MakeCodepointBitmap stbtt_MakeCodepointBitmap;
         private void Initialize(GraphicsDevice graphicsDevice, byte[] ttf)
         {
             this.graphicsDevice = graphicsDevice;
             byte* bytePtr = (byte*)GCHandle.Alloc(ttf, GCHandleType.Pinned).AddrOfPinnedObject();
-            font = new stbtt_fontinfo();
-            stbtt_InitFont(font, bytePtr, 0);
+            if (helper_getfontinfo == null)
+            {
+                helper_getfontinfo = NativeMethods.GetMethod<_helper_getfontinfo>("helper_getfontinfo");
+                stbtt_ScaleForPixelHeight = NativeMethods.GetMethod<_stbtt_ScaleForPixelHeight>("stbtt_ScaleForPixelHeight");
+                stbtt_GetCodepointBitmapBox = NativeMethods.GetMethod<_stbtt_GetCodepointBitmapBox>("stbtt_GetCodepointBitmapBox");
+                stbtt_MakeCodepointBitmap = NativeMethods.GetMethod<_stbtt_MakeCodepointBitmap>("stbtt_MakeCodepointBitmap");
+            }
+            font = helper_getfontinfo(bytePtr, 0);
             GC.Collect();
         }
         public Glyph[] GetGlyphsFromCodepoint(float height, int[] codepoint, float scaleX, float scaleY)
@@ -78,7 +79,7 @@ namespace Stellaris
         }
         public void Dispose()
         {
-            font = null;
+            //font = null;
             GC.Collect();
         }
     }

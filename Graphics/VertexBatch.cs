@@ -33,8 +33,8 @@ namespace Stellaris.Graphics
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
             graphicsDevice.RasterizerState = rasterizerState;
-            basicEffect.View = Matrix.CreateTranslation(-Common.Resolution.X / 2, -Common.Resolution.Y / 2, 0) * Matrix.CreateRotationX(3.141592f);
-            basicEffect.Projection = Matrix.CreateOrthographic(Common.Resolution.X, Common.Resolution.Y, -100, 100);
+            basicEffect.View = Matrix.CreateTranslation(-Stellaris.Resolution.X / 2, -Stellaris.Resolution.Y / 2, 0) * Matrix.CreateRotationX(3.141592f);
+            basicEffect.Projection = Matrix.CreateOrthographic(Stellaris.Resolution.X, Stellaris.Resolution.Y, -100, 100);
             _begin = true;
         }
         public void Begin(PrimitiveType primitiveType = PrimitiveType.TriangleList)

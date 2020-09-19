@@ -12,26 +12,26 @@ namespace Stellaris.Graphics
         public float height;
         public Vector2 spacing;
         GraphicsDevice graphicsDevice;
-        FontStb font;
+        IFont font;
         Dictionary<char, Glyph> Glyphs;
         Glyph defaultGlyph;
         Glyph defaultGlyphCn;
-        public DynamicSpriteFont(GraphicsDevice graphicsDevice, FontStb font, float height, Vector2 spacing = default)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, IFont font, float height, Vector2 spacing = default)
         {
             Initialize(graphicsDevice, font, height, spacing);
         }
-        public DynamicSpriteFont(GraphicsDevice graphicsDevice, string path, float height, Vector2 spacing = default)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, string path, float height, Vector2 spacing = default, bool useNative = false)
         {
             using (FileStream fileStream = File.OpenRead(path))
             {
-                Initialize(graphicsDevice, new FontStb(path, graphicsDevice), height, spacing);
+                Initialize(graphicsDevice, useNative ? new FontStb_Native(path, graphicsDevice) as IFont : new FontStb(path, graphicsDevice), height, spacing);
             }
         }
-        public DynamicSpriteFont(GraphicsDevice graphicsDevice, Stream stream, float height, Vector2 spacing = default)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, Stream stream, float height, Vector2 spacing = default, bool useNative = false)
         {
-            Initialize(graphicsDevice, new FontStb(stream, graphicsDevice), height, spacing);
+            Initialize(graphicsDevice, useNative ? new FontStb_Native(stream, graphicsDevice) as IFont : new FontStb(stream, graphicsDevice), height, spacing);
         }
-        private void Initialize(GraphicsDevice graphicsDevice, FontStb font, float height, Vector2 spacing)
+        private void Initialize(GraphicsDevice graphicsDevice, IFont font, float height, Vector2 spacing)
         {
             this.graphicsDevice = graphicsDevice;
             this.font = font;
@@ -42,20 +42,9 @@ namespace Stellaris.Graphics
             defaultGlyph = Glyph[0];
             defaultGlyphCn = Glyph[1];
         }
-        public void Refresh(FontStb font, float height, Vector2 spacing = default)
+        public void Refresh()
         {
-            Initialize(graphicsDevice, font, height, spacing);
-        }
-        public void Refresh(string path, float height, Vector2 spacing = default)
-        {
-            using (FileStream fileStream = File.OpenRead(path))
-            {
-                Initialize(graphicsDevice, new FontStb(path, graphicsDevice), height, spacing);
-            }
-        }
-        public void ReFresh(Stream stream, float height, Vector2 spacing = default)
-        {
-            Initialize(graphicsDevice, new FontStb(stream, graphicsDevice), height, spacing);
+            Glyphs.Clear();
         }
         private void GetGlyph(char[] charArray)
         {
@@ -83,15 +72,15 @@ namespace Stellaris.Graphics
         {
             DrawString(spriteBatch, text, position, color, default, new Vector2(1, 1));
         }
-        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, Vector2 origin, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, Vector2 origin, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
-            DrawString(spriteBatch, text, position, color, origin, new Vector2(scale, scale), effects, layerDepth);
+            DrawString(spriteBatch, text, position, color, origin, new Vector2(scale, scale), rotation, effects, layerDepth);
         }
-        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, CenterType centerType, float scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, CenterType centerType, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
-            DrawString(spriteBatch, text, position, color, MeasureString(text, 1).MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(scale, scale), effects, layerDepth);
+            DrawString(spriteBatch, text, position, color, MeasureString(text, 1).MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(scale, scale), rotation, effects, layerDepth);
         }
-        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation = 0f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             char[] chars = text.ToCharArray();
             GetGlyph(chars);
@@ -118,7 +107,8 @@ namespace Stellaris.Graphics
                 else
                 {
                     Glyph Glyph = Glyphs[chars[i]];
-                    spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, 0, origin, scale, SpriteEffects.None, 1f);
+                    if (rotation == 0) spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, 0f, scale, scale, effects, layerDepth);
+                    else spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale).Rotate(rotation) + position, null, color, rotation, scale, scale, effects, layerDepth);
                     if (FontHelper.IsCn(chars[i])) x += defaultGlyphCn.Width * 1.2f + spacing.X;
                     else x += Glyph.WidthAlt + spacing.X;
                 }
@@ -170,7 +160,7 @@ namespace Stellaris.Graphics
             Glyphs = null;
             defaultGlyph = null;
             defaultGlyphCn = null;
-            font.Dispose();
+            if (font is IDisposable disposable) disposable.Dispose();
         }
     }
 }

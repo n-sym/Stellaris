@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
@@ -38,15 +38,10 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Stellaris.csproj" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="StbTrueTypeSharp">
-      <HintPath>..\..\..\..\Desktop\StbTrueTypeSharp.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Stellaris.csproj" />
   </ItemGroup>
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />

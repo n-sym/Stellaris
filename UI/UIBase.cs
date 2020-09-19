@@ -23,8 +23,8 @@ namespace Stellaris.UI
         public Rectangle HitBox => new Rectangle((int)position.X, (int)position.Y, (int)width, (int)height);
         protected void ChekCommonMouse()
         {
-            CommonMouseState mouseState = Common.MouseState;
-            CommonMouseState lastMouseState = Common.LastMouseState;
+            CommonMouseState mouseState = Stellaris.MouseState;
+            CommonMouseState lastMouseState = Stellaris.LastMouseState;
             Rectangle box = HitBox;
             if (mouseState.left == ButtonState.Released && lastMouseState.left == ButtonState.Pressed)
             {
