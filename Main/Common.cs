@@ -10,18 +10,18 @@ namespace Stellaris
 {
     public struct CommonMouseState
     {
-        public Vector2 position;
-        public ButtonState left;
-        public ButtonState right;
-        public float scrollWheel;
-        public float X => position.X;
-        public float Y => position.Y;
+        public Vector2 Position;
+        public ButtonState Left;
+        public ButtonState Right;
+        public float ScrollWheel;
+        public float X => Position.X;
+        public float Y => Position.Y;
         public CommonMouseState(Vector2 position, ButtonState left, ButtonState right, float scrollWheel)
         {
-            this.position = position;
-            this.left = left;
-            this.right = right;
-            this.scrollWheel = scrollWheel;
+            this.Position = position;
+            this.Left = left;
+            this.Right = right;
+            this.ScrollWheel = scrollWheel;
         }
     }
     public enum Platform

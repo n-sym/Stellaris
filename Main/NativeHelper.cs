@@ -14,11 +14,11 @@ namespace Stellaris
         static IntPtr nativeMethods;
         public static void Initialize()
         {
-            string fileName = "NativeMethods." + (Stellaris.Platform == Platform.Windows ? "dll" : "so");
-            string path = Path.Combine(Stellaris.CurrentDirectory, fileName);
+            string fileName = "NativeMethods." + (Ste.Platform == Platform.Windows ? "dll" : "so");
+            string path = Path.Combine(Ste.CurrentDirectory, fileName);
             using (Stream s = File.Create(path))
             {
-                using (Stream t = typeof(Stellaris).Assembly.GetManifestResourceStream("Stellaris.Main." + fileName))
+                using (Stream t = typeof(Ste).Assembly.GetManifestResourceStream("Stellaris.Main." + fileName))
                 {
                     t.CopyTo(s);
                 }
@@ -35,11 +35,11 @@ namespace Stellaris
     {
         public static IntPtr Load(string fileName)
         {
-            if(Stellaris.Platform == Platform.Windows)
+            if(Ste.Platform == Platform.Windows)
             {
                 return LibraryHelper_Windows.LoadLibraryW(fileName);
             }
-            if(Stellaris.Platform == Platform.Linux)
+            if(Ste.Platform == Platform.Linux)
             {
                 return LibraryHelper_Linux.dlopen(fileName, 0x0001);
             }
@@ -47,11 +47,11 @@ namespace Stellaris
         }
         public static IntPtr Find(IntPtr handle, string name)
         {
-            if (Stellaris.Platform == Platform.Windows)
+            if (Ste.Platform == Platform.Windows)
             {
                 return LibraryHelper_Windows.GetProcAddress(handle, name);
             }
-            if (Stellaris.Platform == Platform.Linux)
+            if (Ste.Platform == Platform.Linux)
             {
                 return LibraryHelper_Linux.dlsym(handle, name);
             }

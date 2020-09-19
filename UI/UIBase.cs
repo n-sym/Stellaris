@@ -13,7 +13,7 @@ namespace Stellaris.UI
         LeftPressed = 2,
         RightPressed = 3
     }
-    public class UIBase
+    public class UIBase : IUIElement
     {
         public Vector2 position;
         public float width;
@@ -23,27 +23,27 @@ namespace Stellaris.UI
         public Rectangle HitBox => new Rectangle((int)position.X, (int)position.Y, (int)width, (int)height);
         protected void ChekCommonMouse()
         {
-            CommonMouseState mouseState = Stellaris.MouseState;
-            CommonMouseState lastMouseState = Stellaris.LastMouseState;
+            CommonMouseState mouseState = Ste.MouseState;
+            CommonMouseState lastMouseState = Ste.LastMouseState;
             Rectangle box = HitBox;
-            if (mouseState.left == ButtonState.Released && lastMouseState.left == ButtonState.Pressed)
+            if (mouseState.Left == ButtonState.Released && lastMouseState.Left == ButtonState.Pressed)
             {
                 mouseStatus = MouseStatus.LeftPressed;
                 LeftClick();
             }
-            else if (mouseState.right == ButtonState.Released && lastMouseState.right == ButtonState.Pressed)
+            else if (mouseState.Right == ButtonState.Released && lastMouseState.Right == ButtonState.Pressed)
             {
                 mouseStatus = MouseStatus.RightPressed;
                 LeftClick();
             }
-            else if (box.Contains(mouseState.position.ToPoint()))
+            else if (box.Contains(mouseState.Position.ToPoint()))
             {
-                if (mouseState.left == ButtonState.Pressed)
+                if (mouseState.Left == ButtonState.Pressed)
                 {
                     mouseStatus = MouseStatus.LeftPressed;
                     OnLeftClick();
                 }
-                else if (mouseState.right == ButtonState.Pressed)
+                else if (mouseState.Right == ButtonState.Pressed)
                 {
                     mouseStatus = MouseStatus.RightPressed;
                     OnRightClick();
@@ -76,7 +76,7 @@ namespace Stellaris.UI
             if (vertexBatch.primitiveType == PrimitiveType.LineList) vertexBatch.Draw(new Vertex[] { new Vertex(position), new Vertex(position + size.X_Vector()), new Vertex(position + size.Y_Vector()), new Vertex(position + size) }, 0, 1, 1, 3, 3, 2, 2, 0);
             if (vertexBatch.primitiveType == PrimitiveType.LineStrip) vertexBatch.Draw(new Vertex[] { new Vertex(position), new Vertex(position + size.X_Vector()), new Vertex(position + size.Y_Vector()), new Vertex(position + size) }, 0, 1, 3, 2, 0);
         }
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(IDrawAPI drawAPI)
         {
 
         }

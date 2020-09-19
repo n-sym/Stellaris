@@ -60,7 +60,4 @@
       <HintPath>..\..\..\Desktop\StbTrueTypeSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
-  </ItemGroup>
 </Project>

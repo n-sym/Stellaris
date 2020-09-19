@@ -67,7 +67,7 @@ namespace Stellaris.Graphics
                 arrowBodyTexture = new ArrowBodyTexture(graphicsDevice, size);
             }
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Vector2 vector, float scale)
+        public void Draw(SpriteBatchS spriteBatch, Vector2 position, Vector2 vector, float scale)
         {
             EnsureInstancedTexture();
             arrowTexture.Draw(spriteBatch, position + vector, null, color, vector.Angle() + 1.571f, arrowTexture.Size / 2, scale, SpriteEffects.None, 1f);

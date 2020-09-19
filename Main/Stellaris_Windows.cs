@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Stellaris
 {
-    public static class Stellaris
+    public static class Ste
     {
         public static readonly Platform Platform = Platform.Windows;
         public static string CurrentDirectory => Environment.CurrentDirectory;
@@ -28,8 +28,8 @@ namespace Stellaris
         public static GraphicsDeviceManager graphics;
         public static void Initialize(Game game, GraphicsDeviceManager graphics)
         {
-            Stellaris.game = game;
-            Stellaris.graphics = graphics;
+            Ste.game = game;
+            Ste.graphics = graphics;
             NativeMethods.Initialize();
         }
         public static void ChangeResolution(int x, int y)
@@ -73,7 +73,7 @@ namespace Stellaris
             {
                 if (touchLocations.Length == 0)
                 {
-                    MouseState = new CommonMouseState(MouseState.position, ButtonState.Released, ButtonState.Released, 0);
+                    MouseState = new CommonMouseState(MouseState.Position, ButtonState.Released, ButtonState.Released, 0);
                 }
                 else
                 {

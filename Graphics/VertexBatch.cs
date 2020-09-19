@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Stellaris.Graphics
 {
-    public class VertexBatch : IDisposable
+    public class VertexBatch : IDisposable, IDrawAPI
     {
         public GraphicsDevice graphicsDevice;
         public PrimitiveType primitiveType;
@@ -33,8 +33,8 @@ namespace Stellaris.Graphics
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
             graphicsDevice.RasterizerState = rasterizerState;
-            basicEffect.View = Matrix.CreateTranslation(-Stellaris.Resolution.X / 2, -Stellaris.Resolution.Y / 2, 0) * Matrix.CreateRotationX(3.141592f);
-            basicEffect.Projection = Matrix.CreateOrthographic(Stellaris.Resolution.X, Stellaris.Resolution.Y, -100, 100);
+            basicEffect.View = Matrix.CreateTranslation(-Ste.Resolution.X / 2, -Ste.Resolution.Y / 2, 0) * Matrix.CreateRotationX(3.141592f);
+            basicEffect.Projection = Matrix.CreateOrthographic(Ste.Resolution.X, Ste.Resolution.Y, -100, 100);
             _begin = true;
         }
         public void Begin(PrimitiveType primitiveType = PrimitiveType.TriangleList)
@@ -80,9 +80,13 @@ namespace Stellaris.Graphics
             indexData.AddRange(index);
             if (vertexData.Count > short.MaxValue) throw new Exception("Vertices Counts Over 32768");
         }
-        public void Draw(VertexInfo vertexInfo)
+        public void Draw(VertexDrawInfo vertexInfo)
         {
-            Draw(vertexInfo.vertex, vertexInfo.index);
+            Draw(vertexInfo.vertices, vertexInfo.indices);
+        }
+        public void Draw(IDrawInfo drawInfo)
+        {
+            if (drawInfo is VertexDrawInfo info) Draw(info.vertices, info.indices);
         }
         public void ChangeTexture(Texture2D texture2D)
         {

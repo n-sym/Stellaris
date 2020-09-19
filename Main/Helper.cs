@@ -221,55 +221,6 @@ namespace Stellaris
         {
             return progress / max * b + (max - progress) / max * a;
         }
-        /// <summary>
-        /// 拉格朗日插值
-        /// </summary>
-        public static float Lagrange(float[] x, float[] y, float n)
-        {
-            float result = 0;
-            for (int i = 0; i < x.Length; i++)
-            {
-                float item = 1;
-                for (int j = 0; j < x.Length; j++)
-                {
-                    if (j == i) continue;
-                    item *= (n - x[j]) / (x[i] - x[j]);
-                }
-                result += item * y[i];
-            }
-            return result;
-        }
-        /// <summary>
-        /// 拉格朗日插值
-        /// </summary>
-        /// <param name="data">样本数据</param>
-        /// <param name="precision">精度</param>
-        /// <returns>插值过后的数据</returns>
-        public static Vector2[] Lagrange(Vector2[] data, int precision)
-        {
-            if (precision < 2) return new Vector2[1] { Vector2.Zero };
-            Vector2[] result = new Vector2[(data.Length - 1) * precision + 1];
-            float[] x = new float[data.Length];
-            for (int i = 0; i < data.Length; i++)
-            {
-                x[i] = data[i].X;
-            }
-            float[] y = new float[data.Length];
-            for (int i = 0; i < data.Length; i++)
-            {
-                y[i] = data[i].Y;
-            }
-            for (int i = 0; i < data.Length - 1; i++)
-            {
-                for (int j = 0; j < precision + 1; j++)
-                {
-                    float n = Linear(x[i], x[i + 1], j, precision + 1);
-                    result[i * (precision + 1) + j] = new Vector2(n, Lagrange(x, y, n));
-                }
-            }
-            result[result.Length - 1] = data[data.Length - 1];
-            return result;
-        }
         public static Vector2[] CatmullRom(Vector2[] data, int precision)
         {
             precision += 1;

@@ -11,7 +11,7 @@ namespace Stellaris.Graphics
     {
         public float height;
         public Vector2 spacing;
-        GraphicsDevice graphicsDevice;
+        public bool onlyUseUserSpcacing;
         IFont font;
         Dictionary<char, Glyph> Glyphs;
         Glyph defaultGlyph;
@@ -33,7 +33,6 @@ namespace Stellaris.Graphics
         }
         private void Initialize(GraphicsDevice graphicsDevice, IFont font, float height, Vector2 spacing)
         {
-            this.graphicsDevice = graphicsDevice;
             this.font = font;
             this.height = height;
             this.spacing = spacing;
@@ -64,57 +63,58 @@ namespace Stellaris.Graphics
                 Glyphs.Add(chars[i], GlyphArray[i]);
             }
         }
-        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position)
+        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position)
         {
             DrawString(spriteBatch, text, position, Color.White, default, new Vector2(1, 1));
         }
-        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color)
+        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position, Color color)
         {
             DrawString(spriteBatch, text, position, color, default, new Vector2(1, 1));
         }
-        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, Vector2 origin, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position, Color color, Vector2 origin, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             DrawString(spriteBatch, text, position, color, origin, new Vector2(scale, scale), rotation, effects, layerDepth);
         }
-        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, CenterType centerType, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position, Color color, CenterType centerType, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             DrawString(spriteBatch, text, position, color, MeasureString(text, 1).MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(scale, scale), rotation, effects, layerDepth);
         }
-        public void DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation = 0f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation = 0f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             char[] chars = text.ToCharArray();
             GetGlyph(chars);
             int defaultX = 0;
             float x = defaultX;
             float y = (int)(height * 0.6f);
+            int spacingFix = onlyUseUserSpcacing ? 0 : 1;
             for (int i = 0; i < chars.Length; i++)
             {
                 if (chars[i] == '\\' && chars.TryGetValue(i + 1) == 'n')
                 {
-                    y += height * 0.8f + spacing.Y;
+                    y += height * 0.8f * spacingFix + spacing.Y;
                     x = defaultX;
                     i++;
                 }
                 else if (chars[i] == '\n')
                 {
-                    y += height * 0.8f + spacing.Y;
+                    y += height * 0.8f * spacingFix + spacing.Y;
                     x = defaultX;
                 }
                 else if (chars[i] == ' ')
                 {
-                    x += defaultGlyph.Width * 0.5f + spacing.X;
+                    x += defaultGlyph.Width * 0.5f * spacingFix + spacing.X;
                 }
                 else
                 {
                     Glyph Glyph = Glyphs[chars[i]];
-                    if (rotation == 0) spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, 0f, scale, scale, effects, layerDepth);
-                    else spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale).Rotate(rotation) + position, null, color, rotation, scale, scale, effects, layerDepth);
-                    if (FontHelper.IsCn(chars[i])) x += defaultGlyphCn.Width * 1.2f + spacing.X;
-                    else x += Glyph.WidthAlt + spacing.X;
+                    if (rotation == 0) spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, 0f, origin, scale, effects, layerDepth);
+                    else spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale).Rotate(rotation) + position, null, color, rotation, origin, scale, effects, layerDepth);
+                    if (FontHelper.IsCn(chars[i])) x += defaultGlyphCn.Width * 1.2f * spacingFix + spacing.X;
+                    else x += Glyph.WidthAlt * spacingFix + spacing.X;
                 }
             }
         }
-        public Vector2 MeasureString(string text, Vector2 scale)
+        public Vector2 MeasureString(string text, Vector2 scale, float rotation = 0f)
         {
             char[] chars = text.ToCharArray();
             GetGlyph(chars);
@@ -147,11 +147,11 @@ namespace Stellaris.Graphics
                 }
                 if (x > maxX) maxX = x;
             }
-            return new Vector2(maxX, y).MutiplyXY(scale);
+            return new Vector2(maxX, y).MutiplyXY(scale).Rotate(rotation);
         }
-        public Vector2 MeasureString(string text, float scale)
+        public Vector2 MeasureString(string text, float scale, float rotation = 0f)
         {
-            return MeasureString(text, new Vector2(scale, scale));
+            return MeasureString(text, new Vector2(scale, scale), rotation);
         }
 
         public void Dispose()

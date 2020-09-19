@@ -11,7 +11,7 @@ namespace Stellaris.Entities
         public Color color;
         public float rotation;
         public bool flipped;
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatchS spriteBatch)
         {
             if (!active || CustomDraw(spriteBatch)) return;
             if (dynamicTexture == null)
@@ -23,7 +23,7 @@ namespace Stellaris.Entities
                 dynamicTexture.Draw(spriteBatch, position, null, color, rotation, Vector2.Zero, scale, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             }
         }
-        public virtual bool CustomDraw(SpriteBatch spriteBatch)
+        public virtual bool CustomDraw(SpriteBatchS spriteBatch)
         {
             return false;
         }

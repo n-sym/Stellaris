@@ -3,7 +3,104 @@ using System;
 
 namespace Stellaris.Graphics
 {
-    public enum TriangleVertexType
+    public static class VertexStrip
+    {
+        public static VertexDrawInfo Strip(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
+        {
+            Vertex[] result = new Vertex[pos.Length * 2];
+            for (int i = 0; i < pos.Length; i++)
+            {
+                float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size, 0).RotateTo(theta);
+                if (vertexFunc == null)
+                {
+                    result[i * 2] = new Vertex(pos[i] + vec);
+                    result[i * 2 + 1] = new Vertex(pos[i] - vec);
+                }
+                else
+                {
+                    result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
+                    result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i] - vec));
+                }
+            }
+            if (vertexFunc == null)
+            {
+                result[result.Length - 2] = result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
+                result[result.Length - 1] = result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
+            }
+            else
+            {
+                result[result.Length - 2] = vertexFunc(result.Length - 2, result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
+                result[result.Length - 1] = vertexFunc(result.Length - 1, result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
+            }
+            return new VertexDrawInfo(result, Helper.FromAToB(0, (short)result.Length));
+        }
+        public static VertexDrawInfo StripOneSide(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
+        {
+            Vertex[] result = new Vertex[pos.Length * 2];
+            for (int i = 0; i < pos.Length; i++)
+            {
+                float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size, 0).RotateTo(theta) * (size > 0 ? 1 : -1);
+                if (vertexFunc == null)
+                {
+                    result[i * 2] = new Vertex(pos[i] + vec);
+                    result[i * 2 + 1] = new Vertex(pos[i]);
+                }
+                else
+                {
+                    result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
+                    result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i]));
+                }
+            }
+            if (vertexFunc == null)
+            {
+                result[result.Length - 2] = result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
+                result[result.Length - 1] = result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
+            }
+            else
+            {
+                result[result.Length - 2] = vertexFunc(result.Length - 2, result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
+                result[result.Length - 1] = vertexFunc(result.Length - 1, result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
+            }
+            return new VertexDrawInfo(result, Helper.FromAToB(0, (short)result.Length));
+        }
+        public static VertexDrawInfo Strip(Vector2[] pos, float[] size, Func<int, Vertex, Vertex> vertexFunc = null)
+        {
+            Vertex[] result = new Vertex[pos.Length * 2];
+            for (int i = 0; i < pos.Length; i++)
+            {
+                float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size[i], 0).RotateTo(theta);
+                if (vertexFunc == null)
+                {
+                    result[i * 2] = new Vertex(pos[i] + vec);
+                    result[i * 2 + 1] = new Vertex(pos[i] - vec);
+                }
+                else
+                {
+                    result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
+                    result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i] - vec));
+                }
+            }
+            if (vertexFunc == null)
+            {
+                float theta = (pos[pos.Length - 1] - pos[pos.Length - 2]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size[size.Length - 1], 0).RotateTo(theta);
+                result[result.Length - 2] = new Vertex(pos[pos.Length - 1] + vec);
+                result[result.Length - 1] = new Vertex(pos[pos.Length - 1] - vec);
+            }
+            else
+            {
+                float theta = (pos[pos.Length - 1] - pos[pos.Length - 2]).Angle() + 1.571f;
+                Vector2 vec = new Vector2(size[size.Length - 1], 0).RotateTo(theta);
+                result[result.Length - 2] = vertexFunc(result.Length - 2, new Vertex(pos[pos.Length - 1] + vec));
+                result[result.Length - 1] = vertexFunc(result.Length - 1, new Vertex(pos[pos.Length - 1] - vec));
+            }
+            return new VertexDrawInfo(result, Helper.FromAToB(0, (short)result.Length));
+        }
+    }
+    /*public enum TriangleVertexType
     {
         A = 1,
         B = 2,
@@ -110,100 +207,6 @@ namespace Stellaris.Graphics
             }
             return RotationList(vertexC, vertexA, vertexB, radian);
         }
-        public static VertexInfo Strip(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
-        {
-            Vertex[] result = new Vertex[pos.Length * 2];
-            for (int i = 0; i < pos.Length; i++)
-            {
-                float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
-                Vector2 vec = new Vector2(size, 0).RotateTo(theta);
-                if (vertexFunc == null)
-                {
-                    result[i * 2] = new Vertex(pos[i] + vec);
-                    result[i * 2 + 1] = new Vertex(pos[i] - vec);
-                }
-                else
-                {
-                    result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
-                    result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i] - vec));
-                }
-            }
-            if (vertexFunc == null)
-            {
-                result[result.Length - 2] = result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
-                result[result.Length - 1] = result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
-            }
-            else
-            {
-                result[result.Length - 2] = vertexFunc(result.Length - 2, result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
-                result[result.Length - 1] = vertexFunc(result.Length - 1, result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
-            }
-            return new VertexInfo(result, Helper.FromAToB(0, (short)result.Length));
-        }
-        public static VertexInfo StripOneSide(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
-        {
-            Vertex[] result = new Vertex[pos.Length * 2];
-            for (int i = 0; i < pos.Length; i++)
-            {
-                float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
-                Vector2 vec = new Vector2(size, 0).RotateTo(theta) * (size > 0 ? 1 : -1);
-                if (vertexFunc == null)
-                {
-                    result[i * 2] = new Vertex(pos[i] + vec);
-                    result[i * 2 + 1] = new Vertex(pos[i]);
-                }
-                else
-                {
-                    result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
-                    result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i]));
-                }
-            }
-            if (vertexFunc == null)
-            {
-                result[result.Length - 2] = result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
-                result[result.Length - 1] = result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]);
-            }
-            else
-            {
-                result[result.Length - 2] = vertexFunc(result.Length - 2, result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
-                result[result.Length - 1] = vertexFunc(result.Length - 1, result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
-            }
-            return new VertexInfo(result, Helper.FromAToB(0, (short)result.Length));
-        }
-        public static VertexInfo Strip(Vector2[] pos, float[] size, Func<int, Vertex, Vertex> vertexFunc = null)
-        {
-            Vertex[] result = new Vertex[pos.Length * 2];
-            for (int i = 0; i < pos.Length; i++)
-            {
-                float theta = (pos.TryGetValue(i + 1) - pos[i]).Angle() + 1.571f;
-                Vector2 vec = new Vector2(size[i], 0).RotateTo(theta);
-                if (vertexFunc == null)
-                {
-                    result[i * 2] = new Vertex(pos[i] + vec);
-                    result[i * 2 + 1] = new Vertex(pos[i] - vec);
-                }
-                else
-                {
-                    result[i * 2] = vertexFunc(i * 2, new Vertex(pos[i] + vec));
-                    result[i * 2 + 1] = vertexFunc(i * 2 + 1, new Vertex(pos[i] - vec));
-                }
-            }
-            if (vertexFunc == null)
-            {
-                float theta = (pos[pos.Length - 1] - pos[pos.Length - 2]).Angle() + 1.571f;
-                Vector2 vec = new Vector2(size[size.Length - 1], 0).RotateTo(theta);
-                result[result.Length - 2] = new Vertex(pos[pos.Length - 1] + vec);
-                result[result.Length - 1] = new Vertex(pos[pos.Length - 1] - vec);
-            }
-            else
-            {
-                float theta = (pos[pos.Length - 1] - pos[pos.Length - 2]).Angle() + 1.571f;
-                Vector2 vec = new Vector2(size[size.Length - 1], 0).RotateTo(theta);
-                result[result.Length - 2] = vertexFunc(result.Length - 2, new Vertex(pos[pos.Length - 1] + vec));
-                result[result.Length - 1] = vertexFunc(result.Length - 1, new Vertex(pos[pos.Length - 1] - vec));
-            }
-            return new VertexInfo(result, Helper.FromAToB(0, (short)result.Length));
-        }
         public static VertexTriangle operator +(VertexTriangle left, VertexTriangle right)
         {
             return new VertexTriangle(left.vertexA.AddPosition(right.vertexA.Position), left.vertexB.AddPosition(right.vertexB.Position), left.vertexC.AddPosition(right.vertexC.Position));
@@ -216,5 +219,5 @@ namespace Stellaris.Graphics
         {
             return new VertexTriangle(left.vertexA.ChangePosition(left.vertexA.Position * right), left.vertexB.ChangePosition(left.vertexB.Position * right), left.vertexC.ChangePosition(left.vertexC.Position * right));
         }
-    }
+    }*/
 }

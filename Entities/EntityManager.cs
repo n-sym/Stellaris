@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Stellaris.Graphics;
 using System.Collections.Generic;
 
 namespace Stellaris.Entities
@@ -28,7 +29,7 @@ namespace Stellaris.Entities
                 entity.Update();
             }
         }
-        public static void Draw<T>(IList<T> list, SpriteBatch spriteBatch)
+        public static void Draw<T>(IList<T> list, SpriteBatchS spriteBatch)
         {
             for (int i = 0; i < list.Count; i++)
             {
@@ -41,7 +42,7 @@ namespace Stellaris.Entities
             Update(npcs);
             Update(bullets);
         }
-        public static void Draw(SpriteBatch spriteBatch)
+        public static void Draw(SpriteBatchS spriteBatch)
         {
             Draw(players, spriteBatch);
             Draw(npcs, spriteBatch);

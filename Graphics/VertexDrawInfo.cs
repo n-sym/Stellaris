@@ -4,68 +4,68 @@ using System;
 
 namespace Stellaris.Graphics
 {
-    public class VertexInfo
+    public class VertexDrawInfo : IDrawInfo
     {
-        public Vertex[] vertex;
-        public short[] index;
-        public VertexInfo(Vertex[] vertex, short[] index)
+        public Vertex[] vertices;
+        public short[] indices;
+        public VertexDrawInfo(Vertex[] vertex, short[] index)
         {
-            this.vertex = vertex;
-            this.index = index;
+            this.vertices = vertex;
+            this.indices = index;
         }
-        public VertexInfo(Vertex[] vertex)
+        public VertexDrawInfo(Vertex[] vertex)
         {
-            this.vertex = vertex;
-            index = new short[vertex.Length];
+            this.vertices = vertex;
+            indices = new short[vertex.Length];
             for (short i = 0; i < vertex.Length; i++)
             {
-                index[i] = i;
+                indices[i] = i;
             }
         }
-        public VertexInfo TransformPosition(Matrix matrix, Vector2 center = default)
+        public VertexDrawInfo TransformPosition(Matrix matrix, Vector2 center = default)
         {
-            Vertex[] vertices = new Vertex[vertex.Length];
+            Vertex[] _vertices = new Vertex[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i] = vertex[i].ChangePosition(Vector2.Transform(vertex[i].Position - center, matrix) + center);
+                _vertices[i] = vertices[i].ChangePosition(Vector2.Transform(vertices[i].Position - center, matrix) + center);
             }
-            return new VertexInfo(vertices, index);
+            return new VertexDrawInfo(_vertices, indices);
         }
-        public VertexInfo TransformPosition(Func<int, Vector2, Vector2> positionFunction)
+        public VertexDrawInfo TransformPosition(Func<int, Vector2, Vector2> positionFunction)
         {
-            Vertex[] vertices = new Vertex[vertex.Length];
+            Vertex[] _vertices = new Vertex[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i] = vertex[i].ChangePosition(positionFunction(i, vertex[i].Position));
+                _vertices[i] = vertices[i].ChangePosition(positionFunction(i, vertices[i].Position));
             }
-            return new VertexInfo(vertices, index);
+            return new VertexDrawInfo(_vertices, indices);
         }
-        public VertexInfo TransformColor(Func<int, Color, Color> colorFunction)
+        public VertexDrawInfo TransformColor(Func<int, Color, Color> colorFunction)
         {
-            Vertex[] vertices = new Vertex[vertex.Length];
+            Vertex[] _vertices = new Vertex[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i] = vertex[i].ChangeColor(colorFunction(i, vertex[i].Color));
+                _vertices[i] = vertices[i].ChangeColor(colorFunction(i, vertices[i].Color));
             }
-            return new VertexInfo(vertices, index);
+            return new VertexDrawInfo(_vertices, indices);
         }
-        public VertexInfo TransformCoord(Func<int, Vector2, Vector2> coordFunction)
+        public VertexDrawInfo TransformCoord(Func<int, Vector2, Vector2> coordFunction)
         {
-            Vertex[] vertices = new Vertex[vertex.Length];
+            Vertex[] _vertices = new Vertex[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i] = vertex[i].ChangeCoord(coordFunction(i, vertex[i].TextureCoordinate));
+                _vertices[i] = vertices[i].ChangeCoord(coordFunction(i, vertices[i].TextureCoordinate));
             }
-            return new VertexInfo(vertices, index);
+            return new VertexDrawInfo(_vertices, indices);
         }
-        public VertexInfo Transform(Func<int, Vertex, Vertex> vertexFunction)
+        public VertexDrawInfo Transform(Func<int, Vertex, Vertex> vertexFunction)
         {
-            Vertex[] vertices = new Vertex[vertex.Length];
+            Vertex[] _vertices = new Vertex[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i] = vertexFunction(i, vertex[i]);
+                _vertices[i] = vertexFunction(i, vertices[i]);
             }
-            return new VertexInfo(vertices, index);
+            return new VertexDrawInfo(_vertices, indices);
         }
     }
     public struct Vertex : IVertexType

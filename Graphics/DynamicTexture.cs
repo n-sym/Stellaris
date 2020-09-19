@@ -103,61 +103,69 @@ namespace Stellaris.Graphics
         /// <summary>
         /// The Actual Call of Draw methods, can be overriden
         /// </summary>
-        protected virtual void PrivateDraw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
+        protected virtual void PrivateDraw(SpriteBatchS spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
             EnsureGenerated();
             spriteBatch.Draw(_texture[frame], position, source, color, rotation, origin, scale, effects, layerDepth);
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, float scale = 1f)
+        public void Draw(SpriteBatchS spriteBatch, SpriteDrawInfo spriteDrawInfo)
+        {
+            PrivateDraw(spriteBatch, frame, spriteDrawInfo.position, spriteDrawInfo.sourceRectangle, spriteDrawInfo.color, spriteDrawInfo.rotation, spriteDrawInfo.origin, spriteDrawInfo.scale, spriteDrawInfo.effects, spriteDrawInfo.layerDepth);
+        }
+        public void Draw(SpriteBatchS spriteBatch, int frame, SpriteDrawInfo spriteDrawInfo)
+        {
+            PrivateDraw(spriteBatch, frame, spriteDrawInfo.position, spriteDrawInfo.sourceRectangle, spriteDrawInfo.color, spriteDrawInfo.rotation, spriteDrawInfo.origin, spriteDrawInfo.scale, spriteDrawInfo.effects, spriteDrawInfo.layerDepth);
+        }
+        public void Draw(SpriteBatchS spriteBatch, Vector2 position, float scale = 1f)
         {
             PrivateDraw(spriteBatch, frame, position, null, Color.White, 0f, default, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float scale = 1f)
+        public void Draw(SpriteBatchS spriteBatch, Vector2 position, Color color, float scale = 1f)
         {
             PrivateDraw(spriteBatch, frame, position, null, color, 0f, default, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, float scale = 1f, float rotation = 0f)
+        public void Draw(SpriteBatchS spriteBatch, Vector2 position, Color color, float scale = 1f, float rotation = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, null, color, rotation, default, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, Vector2 origin, float scale = 1f, float rotation = 0f)
+        public void Draw(SpriteBatchS spriteBatch, Vector2 position, Color color, Vector2 origin, float scale = 1f, float rotation = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, null, color, rotation, origin, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
-        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Color color, Vector2 origin, float scale = 1f, float rotation = 0f)
+        public void Draw(SpriteBatchS spriteBatch, int frame, Vector2 position, Color color, Vector2 origin, float scale = 1f, float rotation = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, null, color, rotation, origin, new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, CenterType centerType, float scale = 1f, float rotation = 0f)
+        public void Draw(SpriteBatchS spriteBatch, Vector2 position, Color color, CenterType centerType, float scale = 1f, float rotation = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, null, color, rotation, Size.MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
-        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Color color, CenterType centerType, float scale = 1f, float rotation = 0f)
+        public void Draw(SpriteBatchS spriteBatch, int frame, Vector2 position, Color color, CenterType centerType, float scale = 1f, float rotation = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, null, color, rotation, Size.MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(1, 1) * scale, SpriteEffects.None, 0f);
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color, CenterType centerType, Vector2 scale, float rotation = 0f)
+        public void Draw(SpriteBatchS spriteBatch, Vector2 position, Color color, CenterType centerType, Vector2 scale, float rotation = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, null, color, rotation, Size.MutiplyXY(Helper.CenterTypeToVector2(centerType)), scale, SpriteEffects.None, 0f);
         }
-        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Color color, CenterType centerType, Vector2 scale, float rotation = 0f)
+        public void Draw(SpriteBatchS spriteBatch, int frame, Vector2 position, Color color, CenterType centerType, Vector2 scale, float rotation = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, null, color, rotation, Size.MutiplyXY(Helper.CenterTypeToVector2(centerType)), scale, SpriteEffects.None, 0f);
         }
         #region XNA-Like Draw Methods
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation = 0, Vector2 origin = default, float scale = 1f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
+        public void Draw(SpriteBatchS spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation = 0, Vector2 origin = default, float scale = 1f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, source, color, rotation, origin, new Vector2(scale, scale), effects, layerDepth);
         }
-        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation = 0, Vector2 origin = default, float scale = 1f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
+        public void Draw(SpriteBatchS spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation = 0, Vector2 origin = default, float scale = 1f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, source, color, rotation, origin, new Vector2(scale, scale), effects, layerDepth);
         }
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
+        public void Draw(SpriteBatchS spriteBatch, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, source, color, rotation, origin, scale, effects, layerDepth);
         }
-        public void Draw(SpriteBatch spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
+        public void Draw(SpriteBatchS spriteBatch, int frame, Vector2 position, Rectangle? source, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
         {
             PrivateDraw(spriteBatch, frame, position, source, color, rotation, origin, scale, effects, layerDepth);
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Stellaris.Entities;
+using Stellaris.Graphics;
 using System;
 
 namespace Stellaris.Test
@@ -17,7 +18,7 @@ namespace Stellaris.Test
             size = new Vector2(12, 12);
             velocity = Helper.RandomAngleVec(10, Vector2.Zero, radian - 0.85f, radian + 0.85f);
             v = velocity;
-            end = Stellaris.MouseState.position;
+            end = Ste.MouseState.Position;
         }
         public override void CustomBehavior()
         {
@@ -27,12 +28,12 @@ namespace Stellaris.Test
         //public static Color drawColor = new Color(186, 221, 255);
         public static Color drawColor2 = new Color(128, 162, 233);
         public static Color drawColor = new Color(255, 250, 206);
-        public override bool CustomDraw(SpriteBatch spriteBatch)
+        public override bool CustomDraw(SpriteBatchS spriteBatch)
         {
             float t = 1;
             if (timeLeft < 100) t = timeLeft / 100f;
             if (timeLeft > 146) t = 0;
-            if (Stellaris.Quality > 2)
+            if (Ste.Quality > 2)
             {
                 for (int i = 0; i < oldPosLength; i++)
                 {
@@ -46,7 +47,7 @@ namespace Stellaris.Test
                     }
                 }
             }
-            else if (Stellaris.Quality != 0)
+            else if (Ste.Quality != 0)
             {
                 for (int i = 0; i < oldPosLength / 2; i++)
                 {

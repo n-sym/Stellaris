@@ -16,9 +16,9 @@ namespace Stellaris.UI
             this.text = text;
             this.font = font;
         }
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(IDrawAPI drawAPI)
         {
-            font.DrawString(spriteBatch, text, position, color, centerType, scale);
+            if(drawAPI is SpriteBatchS spriteBatch) font.DrawString(spriteBatch, text, position, color, centerType, scale);
         }
     }
 }
