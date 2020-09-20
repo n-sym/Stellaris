@@ -4,3 +4,9 @@
 /.config/
 /StellarisTest/obj/
 /StellarisTest/bin/
+/NativeMethods/x64/
+/Main/NativeMethods.exp
+/Main/NativeMethods.pdb
+/Main/NativeMethods.ipdb
+/Main/NativeMethods.iobj
+/Main/NativeMethods.lib

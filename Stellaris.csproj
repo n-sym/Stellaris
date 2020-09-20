@@ -49,6 +49,11 @@
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
     <None Remove="Main\NativeMethods.dll" />
+    <None Remove="Main\NativeMethods.exp" />
+    <None Remove="Main\NativeMethods.iobj" />
+    <None Remove="Main\NativeMethods.ipdb" />
+    <None Remove="Main\NativeMethods.lib" />
+    <None Remove="Main\NativeMethods.pdb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Main\NativeMethods.dll" />
