@@ -23,14 +23,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="NativeMethods\**" />
     <Compile Remove="Resources\**" />
     <Compile Remove="StellarisMobile\**" />
     <Compile Remove="StellarisTest\**" />
     <Compile Remove="Test\**" />
+    <EmbeddedResource Remove="NativeMethods\**" />
     <EmbeddedResource Remove="Resources\**" />
     <EmbeddedResource Remove="StellarisMobile\**" />
     <EmbeddedResource Remove="StellarisTest\**" />
     <EmbeddedResource Remove="Test\**" />
+    <None Remove="NativeMethods\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
   <ItemGroup>
