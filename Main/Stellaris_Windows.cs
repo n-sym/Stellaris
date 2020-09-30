@@ -19,6 +19,7 @@ namespace Stellaris
         private static float lastScrollWheel;
         public static CommonMouseState MouseState { get; private set; }
         public static CommonMouseState LastMouseState { get; private set; }
+        public static Vector2 MousePos => MouseState.Position;
         public static Vector2 Resolution { get; private set; }
         public static float Resolution_X => Resolution.X;
         public static float Resolution_Y => Resolution.Y;

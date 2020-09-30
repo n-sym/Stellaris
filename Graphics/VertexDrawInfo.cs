@@ -4,8 +4,9 @@ using System;
 
 namespace Stellaris.Graphics
 {
-    public class VertexDrawInfo : IDrawInfo
+    public class VertexDrawInfo
     {
+        public Texture2D? texture;
         public Vertex[] vertices;
         public short[] indices;
         public VertexDrawInfo(Vertex[] vertex, short[] index)

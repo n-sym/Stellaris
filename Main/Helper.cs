@@ -64,6 +64,12 @@ namespace Stellaris
             }
             return result;
         }
+        public unsafe static void MemoryCopy(void* a, void* b, long size)
+        {
+            byte* aptr = (byte*)a;
+            byte* bptr = (byte*)b;
+            for (long i = 0; i < size; i++) *aptr++ = *bptr++;
+        }
         public static byte[] ToByteArray(this Stream stream)
         {
             if (!stream.CanSeek) return new byte[] { 0 };

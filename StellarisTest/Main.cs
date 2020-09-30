@@ -24,7 +24,7 @@ namespace Stellaris.Test
             instance = this;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = false;
+            IsMouseVisible = true;
         }
         protected override void Initialize()
         {
@@ -42,7 +42,7 @@ namespace Stellaris.Test
             dtt = new DynamicSpriteFont(graphicsDevice, Ste.GetAsset("SourceHanSansCN-Regular.ttf"), 80);
             dtt2 = new DynamicSpriteFont(graphicsDevice, Ste.GetAsset("SourceHanSansCN-Regular.ttf"), 80, useNative : true);
             tex3 = Texture2D.FromStream(graphicsDevice, Ste.GetAsset("trail3.png"));
-            tex = Texture2D.FromStream(graphicsDevice, Ste.GetAsset("aaa28.png"));
+            tex = Texture2D.FromStream(graphicsDevice, Ste.GetAsset("zzzz.png"));
             tex2 = Texture2D.FromStream(graphicsDevice, Ste.GetAsset("trail3.png"));
             base.Initialize();
         }
@@ -136,9 +136,9 @@ namespace Stellaris.Test
             //Draw Texts
             //dtt.DrawString(spriteBatch, "开始游戏\n啥也开始不了", (Common.Resolution - dtt.MeasureString("开始游戏\n啥也开始不了", 1)) / 2, Color.White, default, 1);
             //Draw Bullets
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+            /*spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
             var text = "DynamicSpriteFontTest";
-            var rotation = Ste.MouseState.Position.Angle();
+            var rotation = (Ste.MouseState.Position - Ste.Resolution / 2).Angle();
             if (refresh)
             {
                 dtt.Refresh();
@@ -161,9 +161,10 @@ namespace Stellaris.Test
             stopwatch.Stop();
             var timer2 = stopwatch.ElapsedMilliseconds;
             Window.Title = string.Format("C#:{0}, C++:{1}, C++ / C#:{2}, 不缓存字体:{3}, 空格键切换", timer1, timer2, timer2 * 1f / timer1, refresh);
-            //UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1) + new Vector2(50, 50));
+            //UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1) + new Vector2(50, 50));*/
             //vertexBatch.End();
-            EntityManager.Draw(bullets, spriteBatch);
+            /*EntityManager.Draw(bullets, spriteBatch);
+            spriteBatch.Begin();
             if (mousePos[0] != mousePos[1])
             {
                 float t = (mousePos[0] - mousePos[1]).Angle() + 0.7853f;
@@ -177,6 +178,36 @@ namespace Stellaris.Test
                 MeteorBullet.flarefxAlt.Draw(spriteBatch, mousePos[6], cc * 0.55f, CenterType.MiddleCenter, 5f, t);
             }
             else MeteorBullet.flarefx.Draw(spriteBatch, mousePos[0], Color.White, CenterType.MiddleCenter, 1.5f, 0.7853f);
+            spriteBatch.End();*/
+            SpriteDrawInfo spriteDrawInfo = new SpriteDrawInfo(tex, Ste.MousePos);
+            spriteDrawInfo.rotation = 0.7f;
+            spriteBatch.Begin();
+            vertexBatch.Begin(PrimitiveType.TriangleList);
+            vertexBatch.SetDrawImmediately(false);
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            for(int i = 0; i < 1000; i++)
+            {
+                spriteDrawInfo.position.X += 1;
+                spriteBatch.Draw(spriteDrawInfo);
+            }
+            stopwatch.Stop();
+            var timer1 = stopwatch.ElapsedMilliseconds;
+            stopwatch.Reset(); 
+            spriteDrawInfo = new SpriteDrawInfo(tex, Ste.MousePos);
+            spriteDrawInfo.rotation = 0.7f;
+            stopwatch.Start();
+            for (int i = 0; i < 1000; i++)
+            {
+                spriteDrawInfo.position.X += 1;
+                //vertexBatch.Draw(spriteDrawInfo);
+            }
+            stopwatch.Stop();
+            var timer2 = stopwatch.ElapsedMilliseconds;
+            //Window.Title = string.Format("Sp:{0}, Vp:{1}, Vp / Sp:{2}", timer1, timer2, timer2 * 1f / timer1);
+            Window.Title = Ste.FPS.ToString();
+            spriteBatch.End();
+            vertexBatch.End();
             //Draw Mouse
             /*foreach (var vvv in v)
             {
@@ -191,11 +222,10 @@ namespace Stellaris.Test
             {
                 MeteorBullet.flarefx.Draw(spriteBatch, vvv.Position, Color.White, CenterType.MiddleCenter);
             }*/
-            spriteBatch.End();
             /*vertexBatch.Begin(tex3, BlendState.Additive, PrimitiveType.TriangleStrip);
             vertexBatch.Draw(vi);
             vertexBatch.End();*/
-            var timer3 = timer2;
+            /*var timer3 = timer2;
             var angle = 3.4f * (1 - timer3 / 15f) + 0.02f;
             var begin = 1 - timer3 / 4f;
             vertexBatch.Begin(tex, BlendState.Additive, PrimitiveType.TriangleStrip);
@@ -233,7 +263,7 @@ namespace Stellaris.Test
             vertexBatch.Draw(vi);
             vertexBatch.ChangeTexture(tex3);
             vertexBatch.Draw(vi);
-            vertexBatch.End();
+            vertexBatch.End();*/
             base.Draw(gameTime);
         }
     }

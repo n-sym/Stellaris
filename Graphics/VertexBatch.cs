@@ -9,25 +9,23 @@ namespace Stellaris.Graphics
     {
         public GraphicsDevice graphicsDevice;
         public PrimitiveType primitiveType;
-        public bool drawImmediately;
         private bool _begin;
-        List<Vertex> vertexData;
-        List<short> indexData;
+        Vertex[] vertexData;
+        short[] indexData;
         BasicEffect basicEffect;
-        VertexBuffer vertexBuffer;
+        public bool DrawImmediately { get; private set; }
         public VertexBatch(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
             basicEffect = new BasicEffect(graphicsDevice);
             basicEffect.VertexColorEnabled = true;
             basicEffect.World = Matrix.Identity;
-            vertexData = new List<Vertex>();
-            indexData = new List<short>();
+            vertexData = new Vertex[0];
         }
         private void OnBeginning(PrimitiveType primitiveType, BlendState blendState)
         {
             if (_begin) throw new Exception("Called Begin Twice");
-            if (primitiveType == PrimitiveType.TriangleStrip || primitiveType == PrimitiveType.LineStrip) drawImmediately = true;
+            DrawImmediately = true;
             this.primitiveType = primitiveType;
             graphicsDevice.BlendState = blendState;
             RasterizerState rasterizerState = new RasterizerState();
@@ -37,7 +35,7 @@ namespace Stellaris.Graphics
             basicEffect.Projection = Matrix.CreateOrthographic(Ste.Resolution.X, Ste.Resolution.Y, -100, 100);
             _begin = true;
         }
-        public void Begin(PrimitiveType primitiveType = PrimitiveType.TriangleList)
+        public void Begin(PrimitiveType primitiveType = PrimitiveType.TriangleStrip)
         {
             Begin(BlendState.AlphaBlend, primitiveType);
         }
@@ -56,72 +54,92 @@ namespace Stellaris.Graphics
             basicEffect.TextureEnabled = true;
             basicEffect.Texture = texture2D;
         }
-        public void Draw(params Vertex[] vertex)
-        {
-            if (!_begin) throw new Exception("Called Draw Before Begin");
-            Draw(vertex, Helper.FromAToB((short)(vertexData.Count), (short)(vertexData.Count + vertex.Length)));
-        }
         public void Draw(Vertex[] vertex, params short[] index)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
-            if (drawImmediately)
+            if (DrawImmediately)
             {
-                int length = index.Length == 0 ? vertex.Length : index.Length;
-                length = LengthGusser(length, primitiveType);
-                basicEffect.CurrentTechnique.Passes[0].Apply();
-                if (vertexBuffer != null) vertexBuffer.Dispose();
-                vertexBuffer = new VertexBuffer(graphicsDevice, typeof(Vertex), vertex.Length, BufferUsage.None);
-                graphicsDevice.SetVertexBuffer(vertexBuffer);
-                graphicsDevice.DrawUserIndexedPrimitives(primitiveType, vertex, 0, vertex.Length, index, 0, length);
+                DoDraw(vertex, index);
                 return;
             }
-            if (vertexData.Count != 0) index.PlusAll((short)vertexData.Count);
-            vertexData.AddRange(vertex);
-            indexData.AddRange(index);
-            if (vertexData.Count > short.MaxValue) throw new Exception("Vertices Counts Over 32768");
+            if (indexData == null) indexData = new short[0];
+            ResizeAndAdd(index);
+            ResizeAndAdd(vertex);
+            if (vertexData.Length > short.MaxValue) throw new Exception("Vertices Counts Over 32768");
         }
         public void Draw(VertexDrawInfo vertexInfo)
         {
+            if (DrawImmediately && vertexInfo.texture != null) ChangeTexture(vertexInfo.texture);
             Draw(vertexInfo.vertices, vertexInfo.indices);
         }
-        public void Draw(IDrawInfo drawInfo)
+        public void Draw(SpriteDrawInfo spriteDrawInfo)
         {
-            if (drawInfo is VertexDrawInfo info) Draw(info.vertices, info.indices);
+            Vertex[] v = new Vertex[4];
+            Vector2 pos = spriteDrawInfo.position + spriteDrawInfo.origin;
+            v[0] = new Vertex(pos, spriteDrawInfo.color, Vector2.Zero);
+            if (spriteDrawInfo.rotation == 0)
+            {
+                v[1] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, 0), spriteDrawInfo.color, new Vector2(1, 0));
+                v[2] = new Vertex(pos + new Vector2(0, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y), spriteDrawInfo.color, new Vector2(0, 1));
+                v[3] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y), spriteDrawInfo.color, Vector2.One);
+            }
+            else
+            {
+                v[1] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, 0).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(1, 0));
+                v[2] = new Vertex(pos + new Vector2(0, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(0, 1));
+                v[3] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, Vector2.One);
+            }
+            ChangeTexture(spriteDrawInfo.texture);
+            Draw(v, primitiveType == PrimitiveType.TriangleStrip ? new short[] { 0, 1, 2, 3} : new short[] { 0, 1, 2, 1, 3, 2});
         }
         public void ChangeTexture(Texture2D texture2D)
         {
             basicEffect.TextureEnabled = true;
             basicEffect.Texture = texture2D;
         }
+        public void SetDrawImmediately(bool drawImmediately)
+        {
+            if (primitiveType == PrimitiveType.TriangleStrip || primitiveType == PrimitiveType.LineStrip) return;
+            else DrawImmediately = drawImmediately;
+        }
+        public void ResizeAndAdd(Vertex[] v)
+        {
+            Vertex[] result = new Vertex[vertexData.Length + v.Length];
+            Array.Copy(vertexData, result, vertexData.Length);
+            Array.Copy(v, 0, result, vertexData.Length, v.Length);
+            vertexData = result;
+        }
+        public void ResizeAndAdd(short[] i)
+        {
+            i.PlusAll((short)(vertexData.Length));
+            short[] result = new short[indexData.Length + i.Length];
+            Array.Copy(indexData, result, indexData.Length);
+            Array.Copy(i, 0, result, indexData.Length, i.Length);
+            indexData = result;
+        }
         public static int LengthGusser(int length, PrimitiveType primitiveType)
         {
             return primitiveType == PrimitiveType.TriangleList ? length / 3 : (primitiveType == PrimitiveType.LineList ? length / 2 : (primitiveType == PrimitiveType.TriangleStrip ? length - 2 : length - 1));
         }
-        public void DoDraw()
+        public void DoDraw(Vertex[] vertices, short[] index)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
-            if (vertexData.Count == 0) return;
-            Vertex[] array = vertexData.ToArray();
-            int length = indexData.Count == 0 ? vertexData.Count : indexData.Count;
+            if (vertices.Length == 0) return;
+            int length = index.Length == 0 ? vertices.Length : index.Length;
             length = LengthGusser(length, primitiveType);
             basicEffect.CurrentTechnique.Passes[0].Apply();
-            if (vertexBuffer != null) vertexBuffer.Dispose();
-            vertexBuffer = new VertexBuffer(graphicsDevice, typeof(Vertex), array.Length, BufferUsage.None);
-            graphicsDevice.SetVertexBuffer(vertexBuffer);
-            graphicsDevice.DrawUserIndexedPrimitives(primitiveType, array, 0, array.Length, indexData.ToArray(), 0, length);
-            vertexData.Clear();
-            indexData.Clear();
+            graphicsDevice.DrawUserIndexedPrimitives(primitiveType, vertices, 0, vertices.Length, index, 0, length);
         }
         public void End()
         {
-            if (!drawImmediately) DoDraw();
+            if (!DrawImmediately) DoDraw(vertexData, indexData);
+            vertexData = new Vertex[0];
+            indexData = new short[0];
             _begin = false;
         }
         public void Dispose()
         {
-            vertexData.Clear();
-            indexData.Clear();
-            vertexBuffer.Dispose();
+            vertexData = new Vertex[0];
             basicEffect.Dispose();
             basicEffect = null;
         }

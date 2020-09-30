@@ -9,9 +9,13 @@ namespace Stellaris.Graphics
 
         }
 
-        public void Draw(IDrawInfo drawInfo)
+        public void Draw(SpriteDrawInfo info)
         {
-            if (drawInfo is SpriteDrawInfo info) Draw(info.texture, info.position, info.sourceRectangle, info.color, info.rotation, info.origin, info.scale, info.effects, info.layerDepth);
+            Draw(info.texture, info.position, info.sourceRectangle, info.color, info.rotation, info.origin, info.scale, info.effects, info.layerDepth);
+        }
+        public void Draw(VertexDrawInfo info)
+        {
+
         }
         public SpriteBatch ToXNA()
         {
