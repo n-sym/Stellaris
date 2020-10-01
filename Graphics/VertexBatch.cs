@@ -121,7 +121,7 @@ namespace Stellaris.Graphics
         {
             return primitiveType == PrimitiveType.TriangleList ? length / 3 : (primitiveType == PrimitiveType.LineList ? length / 2 : (primitiveType == PrimitiveType.TriangleStrip ? length - 2 : length - 1));
         }
-        public void DoDraw(Vertex[] vertices, short[] index)
+        private void DoDraw(Vertex[] vertices, short[] index)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
             if (vertices.Length == 0) return;

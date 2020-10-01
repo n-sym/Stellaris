@@ -100,7 +100,7 @@ namespace Stellaris.Test
         protected override void Draw(GameTime gameTime)
         {
             Ste.UpdateFPS(gameTime);
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
             u.width = 100;
             u.height = 100;
             u.position = (Ste.Resolution - u.Size) / 2;
@@ -180,17 +180,25 @@ namespace Stellaris.Test
             }
             else MeteorBullet.flarefx.Draw(spriteBatch, mousePos[0], Color.White, CenterType.MiddleCenter, 1.5f, 0.7853f);
             spriteBatch.End();*/
-            if(Ste.MouseState.Left)
+            if(Ste.MouseState.LeftDowned)
             {
                 timerz = 1;
             }
-            timerz *= 0.9f;
+            timerz *= 0.95f;
             vertexBatch.Begin(PrimitiveType.LineStrip);
-            BaseUIElement.DrawBorder(vertexBatch, new Vector2(100, 100), new Vector2(500, 200));
+            //BaseUIElement.DrawBorder(vertexBatch, new Vector2(100, 100), new Vector2(500, 200));
             vertexBatch.End();
             vertexBatch.Begin(PrimitiveType.TriangleList);
-            Ripple.DrawRound(vertexBatch, 300 - (int)(timerz * 200), 500, 200, Color.Transparent.LinearTo(Color.White, timerz, 1), new Vector2(100, 100), Ste.MousePos - new Vector2(100, 100));
+            for(int i = 0; i < 5; i++)
+            {
+                Border.DrawRoundedCornerBorder(vertexBatch, new Vector2(100 - i * 1.5f, 100), 500 + i * 3, 150 + i * 3, 70 + i * 2, Color.Black * 0.05f);
+            }
+            Border.DrawRoundedCornerBorder(vertexBatch, new Vector2(100, 100), 500, 150, 75, Color.White);
+            Ripple.DrawRound(vertexBatch, 400 - (int)(timerz * 300), new Vector2(100, 100), Ste.MousePos - new Vector2(100, 100), 500, 150, Color.Transparent.LinearTo(Color.Black, timerz, 3f), 75, 1, 10);
             vertexBatch.End();
+            spriteBatch.Begin();
+            dtt2.DrawString(spriteBatch, ",,,", new Vector2(10, 20));
+            spriteBatch.End();
             //Draw Mouse
             /*foreach (var vvv in v)
             {

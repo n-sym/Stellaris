@@ -8,7 +8,28 @@ namespace Stellaris.Graphics
 {
     public static class Ripple
     {
-        public static void DrawRound(VertexBatch vertexBatch, int radius, int width, int height, Color color, Vector2 position, Vector2 center, float xScale = 1f, float quality = 1f)
+        private static void IfBiggerThenSet(ref float value1, float value2)
+        {
+            if (value2 > value1) value1 = value2;
+        }
+        private static void IfSmallerThenSet(ref float value1, float value2)
+        {
+            if (value2 < value1) value1 = value2;
+        }
+        private static void CheckAndApplyCorner(ref Vector2 v, int w, int h, int r)
+        {
+            if (v.X < r)
+            {
+                if (v.Y < r) IfBiggerThenSet(ref v.X, r - (float)Math.Cos(Math.Asin(1 - v.Y / r)) * r);
+                else if (v.Y > h - r) IfBiggerThenSet(ref v.X, r - (float)Math.Cos(Math.Asin(1 + (v.Y - h) / r)) * r);
+            }
+            else if (v.X > w - r)
+            {
+                if (v.Y < r) IfSmallerThenSet(ref v.X, w - r + (float)Math.Cos(Math.Asin(1 - v.Y / r)) * r);
+                else if (v.Y > h - r) IfSmallerThenSet(ref v.X, w - r + (float)Math.Cos(Math.Asin(1 + (v.Y - h) / r)) * r);
+            }
+        }
+        public static void DrawRound(VertexBatch vertexBatch, int radius, Vector2 position, Vector2 center, int width, int height, Color color, int roundCorner = 0, float xScale = 1f, float quality = 1f)
         {
             if (vertexBatch.primitiveType == PrimitiveType.TriangleList)
             {
@@ -27,10 +48,11 @@ namespace Stellaris.Graphics
                     }
                 }
                 Vector2 po = center;
-                if (po.Y > height) po.Y = height;
-                else if (po.Y < 0) po.Y = 0;
-                if (po.X > width) po.X = width;
-                else if (po.X < 0) po.X = 0;
+                if (po.Y > height) return;
+                else if (po.Y < 0) return;
+                if (po.X > width) return;
+                else if (po.X < 0) return;
+                if (roundCorner != 0) CheckAndApplyCorner(ref po, width, height, roundCorner);
                 po += position;
                 cache.Add(po);
                 pos = cache.ToArray();
@@ -42,6 +64,10 @@ namespace Stellaris.Graphics
                     else if (pos[i].Y < 0) pos[i].Y = 0;
                     if (pos[i].X > width) pos[i].X = width;
                     else if (pos[i].X < 0) pos[i].X = 0;
+                    if (roundCorner != 0)
+                    {
+                        CheckAndApplyCorner(ref pos[i], width, height, roundCorner);
+                    }
                     pos[i] += position;
                     colors[i] = color;
                     indices[i * 3] = (short)(pos.Length - 1);
@@ -55,9 +81,9 @@ namespace Stellaris.Graphics
                 vertexBatch.Draw(new VertexDrawInfo(pos, colors, indices));
             }
         }
-        public static void DrawRound(VertexBatch vertexBatch, int radius, Rectangle rectangle, Vector2 center, Color color, float xScale = 1f, float quality = 1f)
+        public static void DrawRound(VertexBatch vertexBatch, int radius, Rectangle rectangle, Vector2 center, Color color, int roundCorner = 0, float xScale = 1f, float quality = 1f)
         {
-            DrawRound(vertexBatch, radius, rectangle.Width, rectangle.Height, color, rectangle.Location.ToVector2(), center, xScale, quality);
+            DrawRound(vertexBatch, radius, rectangle.Location.ToVector2(), center, rectangle.Width, rectangle.Height, color, roundCorner, xScale, quality);
         }
     }
 }
