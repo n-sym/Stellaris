@@ -116,6 +116,13 @@ namespace Stellaris
                 array[i] += num;
             }
         }
+        public static void PlusAll(this Vector2[] array, Vector2 vec)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] += vec;
+            }
+        }
         public static short[] FromAToB(short a, short b)
         {
             short[] result = new short[b - a];

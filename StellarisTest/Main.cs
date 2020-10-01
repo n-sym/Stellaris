@@ -37,7 +37,7 @@ namespace Stellaris.Test
             MeteorBullet.flarefxAlt = a as FlareFxAlt;
             mousePos = new Vector2[15];
             vertexBatch = new VertexBatch(graphicsDevice);
-            u = new UIBase();
+            u = new BaseUIElement();
             //text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
             dtt = new DynamicSpriteFont(graphicsDevice, Ste.GetAsset("SourceHanSansCN-Regular.ttf"), 80);
             dtt2 = new DynamicSpriteFont(graphicsDevice, Ste.GetAsset("SourceHanSansCN-Regular.ttf"), 80, useNative : true);
@@ -90,12 +90,13 @@ namespace Stellaris.Test
         }
         Vector2[] mousePos;
         VertexBatch vertexBatch;
-        UIBase u;
+        BaseUIElement u;
         Texture2D tex;
         Texture2D tex2;
         Texture2D tex3;
         bool refresh = true;
         bool lastSpace = false;
+        float timerz;
         protected override void Draw(GameTime gameTime)
         {
             Ste.UpdateFPS(gameTime);
@@ -179,34 +180,16 @@ namespace Stellaris.Test
             }
             else MeteorBullet.flarefx.Draw(spriteBatch, mousePos[0], Color.White, CenterType.MiddleCenter, 1.5f, 0.7853f);
             spriteBatch.End();*/
-            SpriteDrawInfo spriteDrawInfo = new SpriteDrawInfo(tex, Ste.MousePos);
-            spriteDrawInfo.rotation = 0.7f;
-            spriteBatch.Begin();
+            if(Ste.MouseState.Left)
+            {
+                timerz = 1;
+            }
+            timerz *= 0.9f;
+            vertexBatch.Begin(PrimitiveType.LineStrip);
+            BaseUIElement.DrawBorder(vertexBatch, new Vector2(100, 100), new Vector2(500, 200));
+            vertexBatch.End();
             vertexBatch.Begin(PrimitiveType.TriangleList);
-            vertexBatch.SetDrawImmediately(false);
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            for(int i = 0; i < 1000; i++)
-            {
-                spriteDrawInfo.position.X += 1;
-                spriteBatch.Draw(spriteDrawInfo);
-            }
-            stopwatch.Stop();
-            var timer1 = stopwatch.ElapsedMilliseconds;
-            stopwatch.Reset(); 
-            spriteDrawInfo = new SpriteDrawInfo(tex, Ste.MousePos);
-            spriteDrawInfo.rotation = 0.7f;
-            stopwatch.Start();
-            for (int i = 0; i < 1000; i++)
-            {
-                spriteDrawInfo.position.X += 1;
-                //vertexBatch.Draw(spriteDrawInfo);
-            }
-            stopwatch.Stop();
-            var timer2 = stopwatch.ElapsedMilliseconds;
-            //Window.Title = string.Format("Sp:{0}, Vp:{1}, Vp / Sp:{2}", timer1, timer2, timer2 * 1f / timer1);
-            Window.Title = Ste.FPS.ToString();
-            spriteBatch.End();
+            Ripple.DrawRound(vertexBatch, 300 - (int)(timerz * 200), 500, 200, Color.Transparent.LinearTo(Color.White, timerz, 1), new Vector2(100, 100), Ste.MousePos - new Vector2(100, 100));
             vertexBatch.End();
             //Draw Mouse
             /*foreach (var vvv in v)

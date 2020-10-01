@@ -23,6 +23,15 @@ namespace Stellaris.Graphics
                 indices[i] = i;
             }
         }
+        public VertexDrawInfo(Vector2[] position, Color[] color, short[] index)
+        {
+            vertices = new Vertex[position.Length];
+            for(int i = 0; i < position.Length; i++)
+            {
+                vertices[i] = new Vertex(position[i], color[i]);
+            }
+            indices = index;
+        }
         public VertexDrawInfo TransformPosition(Matrix matrix, Vector2 center = default)
         {
             Vertex[] _vertices = new Vertex[vertices.Length];

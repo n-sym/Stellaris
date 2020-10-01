@@ -16,6 +16,8 @@ namespace Stellaris
         public float ScrollWheel;
         public float X => Position.X;
         public float Y => Position.Y;
+        public bool LeftDowned => Left == ButtonState.Pressed;
+        public bool RightDowned => Right == ButtonState.Pressed;
         public CommonMouseState(Vector2 position, ButtonState left, ButtonState right, float scrollWheel)
         {
             this.Position = position;

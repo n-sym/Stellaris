@@ -102,14 +102,14 @@ namespace Stellaris.Graphics
             if (primitiveType == PrimitiveType.TriangleStrip || primitiveType == PrimitiveType.LineStrip) return;
             else DrawImmediately = drawImmediately;
         }
-        public void ResizeAndAdd(Vertex[] v)
+        private void ResizeAndAdd(Vertex[] v)
         {
             Vertex[] result = new Vertex[vertexData.Length + v.Length];
             Array.Copy(vertexData, result, vertexData.Length);
             Array.Copy(v, 0, result, vertexData.Length, v.Length);
             vertexData = result;
         }
-        public void ResizeAndAdd(short[] i)
+        private void ResizeAndAdd(short[] i)
         {
             i.PlusAll((short)(vertexData.Length));
             short[] result = new short[indexData.Length + i.Length];

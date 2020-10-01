@@ -13,7 +13,7 @@ namespace Stellaris.UI
         LeftPressed = 2,
         RightPressed = 3
     }
-    public class UIBase : IUIElement
+    public class BaseUIElement : IUIElement
     {
         public Vector2 position;
         public float width;
