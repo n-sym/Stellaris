@@ -63,23 +63,23 @@ namespace Stellaris.Graphics
                 Glyphs.Add(chars[i], GlyphArray[i]);
             }
         }
-        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position)
+        public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position)
         {
             DrawString(spriteBatch, text, position, Color.White, default, new Vector2(1, 1));
         }
-        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position, Color color)
+        public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color)
         {
             DrawString(spriteBatch, text, position, color, default, new Vector2(1, 1));
         }
-        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position, Color color, Vector2 origin, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color, Vector2 origin, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             DrawString(spriteBatch, text, position, color, origin, new Vector2(scale, scale), rotation, effects, layerDepth);
         }
-        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position, Color color, CenterType centerType, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color, CenterType centerType, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
-            DrawString(spriteBatch, text, position, color, MeasureString(text, 1).MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(scale, scale), rotation, effects, layerDepth);
+            DrawString(spriteBatch, text, position, color, -MeasureString(text, 1).MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(scale, scale), rotation, effects, layerDepth);
         }
-        public void DrawString(SpriteBatchS spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation = 0f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+        public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation = 0f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             char[] chars = text.ToCharArray();
             GetGlyph(chars);
@@ -107,8 +107,8 @@ namespace Stellaris.Graphics
                 else
                 {
                     Glyph Glyph = Glyphs[chars[i]];
-                    if (rotation == 0) spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, 0f, origin, scale, effects, layerDepth);
-                    else spriteBatch.Draw(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale).Rotate(rotation) + position, null, color, rotation, origin, scale, effects, layerDepth);
+                    if (rotation == 0) spriteBatch.Draw(new SpriteDrawInfo(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, origin, scale, 0f, effects, layerDepth));
+                    else spriteBatch.Draw(new SpriteDrawInfo(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale).Rotate(rotation) + position, null, color, origin, scale, rotation, effects, layerDepth));
                     if (FontHelper.IsCn(chars[i])) x += defaultGlyphCn.Width * 1.2f * spacingFix + spacing.X;
                     else x += Glyph.WidthAlt * spacingFix + spacing.X;
                 }

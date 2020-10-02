@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Stellaris.Main;
 using System;
 using System.Collections.Generic;
 
@@ -9,18 +10,20 @@ namespace Stellaris.Graphics
     {
         public GraphicsDevice graphicsDevice;
         public PrimitiveType primitiveType;
+        private Vertex[] vertexData;
+        private short[] indexData;
         private bool _begin;
-        Vertex[] vertexData;
-        short[] indexData;
-        BasicEffect basicEffect;
+        private Effect spriteEffect;
+        private EffectParameter _matrixTransform;
+        private Matrix _projection;
         public bool DrawImmediately { get; private set; }
         public VertexBatch(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
-            basicEffect = new BasicEffect(graphicsDevice);
-            basicEffect.VertexColorEnabled = true;
-            basicEffect.World = Matrix.Identity;
             vertexData = new Vertex[0];
+            Type effectResource = ReflectionHelper.GetMGClass("Microsoft.Xna.Framework.Graphics.EffectResource");
+            spriteEffect = new Effect(graphicsDevice, effectResource.GetPublicInstanceMethod("get_Bytecode").Invoke(effectResource.GetPublicStaticField("SpriteEffect").GetValue(null), null) as byte[]);
+            _matrixTransform = spriteEffect.Parameters["MatrixTransform"];
         }
         private void OnBeginning(PrimitiveType primitiveType, BlendState blendState)
         {
@@ -31,8 +34,10 @@ namespace Stellaris.Graphics
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
             graphicsDevice.RasterizerState = rasterizerState;
-            basicEffect.View = Matrix.CreateTranslation(-Ste.Resolution.X / 2, -Ste.Resolution.Y / 2, 0) * Matrix.CreateRotationX(3.141592f);
-            basicEffect.Projection = Matrix.CreateOrthographic(Ste.Resolution.X, Ste.Resolution.Y, -100, 100);
+            Viewport viewport = graphicsDevice.Viewport;
+            Matrix.CreateOrthographicOffCenter(0f, viewport.Width, viewport.Height, 0f, 0f, -1f, out _projection);
+            _matrixTransform.SetValue(_projection);
+            spriteEffect.CurrentTechnique.Passes[0].Apply();
             _begin = true;
         }
         public void Begin(PrimitiveType primitiveType = PrimitiveType.TriangleStrip)
@@ -42,7 +47,6 @@ namespace Stellaris.Graphics
         public void Begin(BlendState blendState, PrimitiveType primitiveType = PrimitiveType.TriangleList)
         {
             OnBeginning(primitiveType, blendState);
-            basicEffect.TextureEnabled = false;
         }
         public void Begin(Texture2D texture2D, PrimitiveType primitiveType = PrimitiveType.TriangleList)
         {
@@ -51,15 +55,13 @@ namespace Stellaris.Graphics
         public void Begin(Texture2D texture2D, BlendState blendState, PrimitiveType primitiveType = PrimitiveType.TriangleList)
         {
             OnBeginning(primitiveType, blendState);
-            basicEffect.TextureEnabled = true;
-            basicEffect.Texture = texture2D;
         }
-        public void Draw(Vertex[] vertex, params short[] index)
+        public void Draw(Vertex[] vertex, short[] index, Texture2D texture2D = null)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
             if (DrawImmediately)
             {
-                DoDraw(vertex, index);
+                DoDraw(vertex, index, texture2D);
                 return;
             }
             if (indexData == null) indexData = new short[0];
@@ -69,7 +71,15 @@ namespace Stellaris.Graphics
         }
         public void Draw(VertexDrawInfo vertexInfo)
         {
-            if (DrawImmediately && vertexInfo.texture != null) ChangeTexture(vertexInfo.texture);
+            if (DrawImmediately)
+            {
+                PrimitiveType cache = primitiveType;
+                if (vertexInfo.texture != null) ChangeTexture(vertexInfo.texture);
+                if (vertexInfo.primitiveType != null) primitiveType = vertexInfo.primitiveType.Value;
+                Draw(vertexInfo.vertices, vertexInfo.indices);
+                primitiveType = cache;
+                return;
+            }
             Draw(vertexInfo.vertices, vertexInfo.indices);
         }
         public void Draw(SpriteDrawInfo spriteDrawInfo)
@@ -89,13 +99,10 @@ namespace Stellaris.Graphics
                 v[2] = new Vertex(pos + new Vector2(0, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(0, 1));
                 v[3] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, Vector2.One);
             }
-            ChangeTexture(spriteDrawInfo.texture);
-            Draw(v, primitiveType == PrimitiveType.TriangleStrip ? new short[] { 0, 1, 2, 3} : new short[] { 0, 1, 2, 1, 3, 2});
+            DoDraw(v, primitiveType == PrimitiveType.TriangleStrip ? new short[] { 0, 1, 2, 3} : new short[] { 0, 1, 2, 1, 3, 2}, spriteDrawInfo.texture);
         }
         public void ChangeTexture(Texture2D texture2D)
         {
-            basicEffect.TextureEnabled = true;
-            basicEffect.Texture = texture2D;
         }
         public void SetDrawImmediately(bool drawImmediately)
         {
@@ -121,14 +128,18 @@ namespace Stellaris.Graphics
         {
             return primitiveType == PrimitiveType.TriangleList ? length / 3 : (primitiveType == PrimitiveType.LineList ? length / 2 : (primitiveType == PrimitiveType.TriangleStrip ? length - 2 : length - 1));
         }
-        private void DoDraw(Vertex[] vertices, short[] index)
+        private void DoDraw(Vertex[] vertices, short[] index, Texture2D texture2D = null)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
             if (vertices.Length == 0) return;
             int length = index.Length == 0 ? vertices.Length : index.Length;
             length = LengthGusser(length, primitiveType);
-            basicEffect.CurrentTechnique.Passes[0].Apply();
-            graphicsDevice.DrawUserIndexedPrimitives(primitiveType, vertices, 0, vertices.Length, index, 0, length);
+            if (texture2D != null) graphicsDevice.Textures[0] = texture2D;
+            else graphicsDevice.Textures[0] = Ste.pixel;
+            //var p = typeof(GraphicsMetrics).GetField("_spriteCount", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            //p.SetValue(graphicsDevice.Metrics, (long)p.GetValue(graphicsDevice.Metrics) + 1);
+            graphicsDevice.DrawUserIndexedPrimitives(primitiveType, vertices, 0, vertices.Length, index, 0, length, Vertex.VertexDeclaration);
+            graphicsDevice.Textures[0] = null;
         }
         public void End()
         {
@@ -140,8 +151,6 @@ namespace Stellaris.Graphics
         public void Dispose()
         {
             vertexData = new Vertex[0];
-            basicEffect.Dispose();
-            basicEffect = null;
         }
     }
 }

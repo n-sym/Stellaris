@@ -28,11 +28,13 @@
     <Compile Remove="StellarisMobile\**" />
     <Compile Remove="StellarisTest\**" />
     <Compile Remove="Test\**" />
+    <Compile Remove="x64\**" />
     <EmbeddedResource Remove="NativeMethods\**" />
     <EmbeddedResource Remove="Resources\**" />
     <EmbeddedResource Remove="StellarisMobile\**" />
     <EmbeddedResource Remove="StellarisTest\**" />
     <EmbeddedResource Remove="Test\**" />
+    <EmbeddedResource Remove="x64\**" />
     <None Remove="NativeMethods\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
@@ -43,6 +45,7 @@
     <None Remove="StellarisMobile\**" />
     <None Remove="StellarisTest\**" />
     <None Remove="Test\**" />
+    <None Remove="x64\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Main\CommonAndroid.cs" />

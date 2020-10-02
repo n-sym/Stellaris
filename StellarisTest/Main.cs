@@ -37,7 +37,6 @@ namespace Stellaris.Test
             MeteorBullet.flarefxAlt = a as FlareFxAlt;
             mousePos = new Vector2[15];
             vertexBatch = new VertexBatch(graphicsDevice);
-            u = new BaseUIElement();
             //text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
             dtt = new DynamicSpriteFont(graphicsDevice, Ste.GetAsset("SourceHanSansCN-Regular.ttf"), 80);
             dtt2 = new DynamicSpriteFont(graphicsDevice, Ste.GetAsset("SourceHanSansCN-Regular.ttf"), 80, useNative : true);
@@ -97,14 +96,11 @@ namespace Stellaris.Test
         bool refresh = true;
         bool lastSpace = false;
         float timerz;
+        MDButton button = new MDButton(new Vector2(100, 100), 500, 150, 75, Color.White, default, Color.Black * 0.4f, Color.Black, Color.Black * 0.7f);
         protected override void Draw(GameTime gameTime)
         {
             Ste.UpdateFPS(gameTime);
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            u.width = 100;
-            u.height = 100;
-            u.position = (Ste.Resolution - u.Size) / 2;
-            u.Update();
             //Window.Title = u.mouseStatus.ToString() + mousePos[0].ToString();
             /*
             var p = Common.MouseState.position;
@@ -185,16 +181,19 @@ namespace Stellaris.Test
                 timerz = 1;
             }
             timerz *= 0.95f;
-            vertexBatch.Begin(PrimitiveType.LineStrip);
-            //BaseUIElement.DrawBorder(vertexBatch, new Vector2(100, 100), new Vector2(500, 200));
-            vertexBatch.End();
+            button.Update();
             vertexBatch.Begin(PrimitiveType.TriangleList);
-            for(int i = 0; i < 5; i++)
+            button.SetText("测试按钮", dtt2, Color.Black.LinearTo(Color.White, 1, 5), 1);
+            button.Draw(vertexBatch);
+            for(int i = 0; i < (Ste.MouseState.LeftDowned ? 6 : 5); i++)
             {
-                Border.DrawRoundedCornerBorder(vertexBatch, new Vector2(100 - i * 1.5f, 100), 500 + i * 3, 150 + i * 3, 70 + i * 2, Color.Black * 0.05f);
+                //Border.DrawPaddingBorder(vertexBatch, new Vector2(100 - i * 2f, 100), 500 + i * 3, 150 + i * 3, 70 + i * 2, Color.Black * 0.03f);
             }
-            Border.DrawRoundedCornerBorder(vertexBatch, new Vector2(100, 100), 500, 150, 75, Color.White);
-            Ripple.DrawRound(vertexBatch, 400 - (int)(timerz * 300), new Vector2(100, 100), Ste.MousePos - new Vector2(100, 100), 500, 150, Color.Transparent.LinearTo(Color.Black, timerz, 3f), 75, 1, 10);
+            //Border.DrawRoundedCornerBorder(vertexBatch, new Vector2(100, 100), 500, 150, 75, Color.White);
+            //Ripple.DrawRound(vertexBatch, 400 - (int)(timerz * 300), new Vector2(100, 100), Ste.MousePos - new Vector2(100, 100), 500, 150, Color.Transparent.LinearTo(Color.White, timerz, 3f), 75, 1, 10);
+            vertexBatch.End();
+            vertexBatch.Begin(PrimitiveType.LineStrip);
+            //vertexBatch.Draw(Border.GetBorderDrawInfo(PrimitiveType.LineStrip, new Vector2(100, 100), 500, 150, 75, Color.White));
             vertexBatch.End();
             spriteBatch.Begin();
             dtt2.DrawString(spriteBatch, ",,,", new Vector2(10, 20));

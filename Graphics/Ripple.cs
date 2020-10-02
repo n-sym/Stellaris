@@ -33,9 +33,9 @@ namespace Stellaris.Graphics
         {
             if (vertexBatch.primitiveType == PrimitiveType.TriangleList)
             {
-                Vector2[] pos = new Vector2[(int)(radius * 0.4f * quality) + 1];
+                Vector2[] pos = new Vector2[(int)(radius * 0.5f * quality) + 1];
                 float theta = 6.283f / (pos.Length - 2);
-                float extra = 200 / (float)Math.Sqrt(width + height);
+                float extra = 0.5f - 3 / radius;
                 List<Vector2> cache = new List<Vector2>();
                 for (int i = 0; i < pos.Length - 1; i++)
                 {

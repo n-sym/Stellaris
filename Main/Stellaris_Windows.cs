@@ -25,6 +25,7 @@ namespace Stellaris
         public static float Resolution_Y => Resolution.Y;
         public static int FPS { get; private set; }
         public static int Quality { get; private set; }
+        public static Texture2D pixel;
         public static Game game;
         public static GraphicsDeviceManager graphics;
         public static void Initialize(Game game, GraphicsDeviceManager graphics)
@@ -32,6 +33,8 @@ namespace Stellaris
             Ste.game = game;
             Ste.graphics = graphics;
             NativeMethods.Initialize();
+            pixel = new Texture2D(game.GraphicsDevice, 1, 1);
+            pixel.SetData(new Color[] { Color.White });
         }
         public static void ChangeResolution(int x, int y)
         {
