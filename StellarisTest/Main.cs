@@ -93,11 +93,12 @@ namespace Stellaris.Test
         Texture2D tex;
         Texture2D tex2;
         Texture2D tex3;
-        bool refresh = true;
+        bool refresh = false;
         bool lastSpace = false;
         float timerz;
+        long t;
         MDButton button = new MDButton(new Vector2(100, 100), 500, 150, 75, Color.White, default, Color.Black * 0.4f, Color.Black, Color.Black * 0.7f);
-        protected override void Draw(GameTime gameTime)
+        protected unsafe override void Draw(GameTime gameTime)
         {
             Ste.UpdateFPS(gameTime);
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -133,35 +134,33 @@ namespace Stellaris.Test
             //Draw Texts
             //dtt.DrawString(spriteBatch, "开始游戏\n啥也开始不了", (Common.Resolution - dtt.MeasureString("开始游戏\n啥也开始不了", 1)) / 2, Color.White, default, 1);
             //Draw Bullets
-            /*spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-            var text = "DynamicSpriteFontTest";
+            vertexBatch.Begin(PrimitiveType.TriangleList);
+            spriteBatch.Begin();
+            var b = vertexBatch;
+            var text = "var rotation = (Ste.MouseState.Position - Ste.Resolution / 2).Angle()";
             var rotation = (Ste.MouseState.Position - Ste.Resolution / 2).Angle();
             if (refresh)
             {
-                dtt.Refresh();
-                dtt2.Refresh();
+                dtt.ClearCache();
+                dtt2.ClearCache();
             }
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            dtt.DrawString(spriteBatch, text, Ste.MouseState.Position, Color.White, CenterType.MiddleCenter, 1, rotation);
+            dtt.Cache(text.ToCharArray());
             stopwatch.Stop();
             var timer1 = stopwatch.ElapsedMilliseconds;
             stopwatch.Reset();
             stopwatch.Start();
-            dtt2.onlyUseUserSpcacing = true;
-            dtt2.spacing = new Vector2(50, 50);
-            dtt2.DrawString(spriteBatch, "测试Stellaris\n功能：字体间距", Ste.MouseState.Position + new Vector2(0, 200), Color.White, CenterType.MiddleCenter, 1, 0);
-            dtt2.onlyUseUserSpcacing = false;
-            dtt2.DrawString(spriteBatch, "测试Stellaris\n功能：字体间距", Ste.MouseState.Position + new Vector2(0, 400), Color.White, CenterType.MiddleCenter, 1, 0);
-            dtt2.spacing = Vector2.Zero;
-            dtt2.DrawString(spriteBatch, "测试Stellaris\n功能：字体间距", Ste.MouseState.Position + new Vector2(0, 600), Color.White, CenterType.MiddleCenter, 1, 0);
+            dtt2.Cache(text.ToCharArray());
             stopwatch.Stop();
             var timer2 = stopwatch.ElapsedMilliseconds;
             Window.Title = string.Format("C#:{0}, C++:{1}, C++ / C#:{2}, 不缓存字体:{3}, 空格键切换", timer1, timer2, timer2 * 1f / timer1, refresh);
             //UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1) + new Vector2(50, 50));*/
             //vertexBatch.End();
-            /*EntityManager.Draw(bullets, spriteBatch);
-            spriteBatch.Begin();
+            //EntityManager.Draw(bullets, spriteBatch);
+            vertexBatch.End();
+            spriteBatch.End();
+            /*
             if (mousePos[0] != mousePos[1])
             {
                 float t = (mousePos[0] - mousePos[1]).Angle() + 0.7853f;

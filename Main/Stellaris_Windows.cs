@@ -9,14 +9,17 @@ using System.Reflection;
 
 namespace Stellaris
 {
+    /// <summary>
+    /// Stellaris的管理器
+    /// </summary>
     public static class Ste
     {
-        public static readonly Platform Platform = Platform.Windows;
-        public static string CurrentDirectory => Environment.CurrentDirectory;
         private static TouchCollection touchCollection;
         private static TouchLocation[] touchLocations;
         private static MouseState mouseState;
         private static float lastScrollWheel;
+        public static readonly Platform Platform = Platform.Windows;
+        public static string CurrentDirectory => Environment.CurrentDirectory;
         public static CommonMouseState MouseState { get; private set; }
         public static CommonMouseState LastMouseState { get; private set; }
         public static Vector2 MousePos => MouseState.Position;
@@ -25,23 +28,32 @@ namespace Stellaris
         public static float Resolution_Y => Resolution.Y;
         public static int FPS { get; private set; }
         public static int Quality { get; private set; }
-        public static Texture2D pixel;
-        public static Game game;
-        public static GraphicsDeviceManager graphics;
+        public static Texture2D Pixel;
+        public static Game Game;
+        public static GraphicsDeviceManager Graphics;
+        internal static NativeMethods Native;
+        /// <summary>
+        /// 在使用Stellaris的各项功能前，强烈建议调用的初始化
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="graphics"></param>
         public static void Initialize(Game game, GraphicsDeviceManager graphics)
         {
-            Ste.game = game;
-            Ste.graphics = graphics;
-            NativeMethods.Initialize();
-            pixel = new Texture2D(game.GraphicsDevice, 1, 1);
-            pixel.SetData(new Color[] { Color.White });
+            Ste.Game = game;
+            Ste.Graphics = graphics;
+            Native = new NativeMethods();
+            Pixel = new Texture2D(game.GraphicsDevice, 1, 1);
+            Pixel.SetData(new Color[] { Color.White });
         }
+        /// <summary>
+        /// 切换分辨率
+        /// </summary>
         public static void ChangeResolution(int x, int y)
         {
-            graphics.PreferredBackBufferWidth = x;
-            graphics.PreferredBackBufferHeight = y;
+            Graphics.PreferredBackBufferWidth = x;
+            Graphics.PreferredBackBufferHeight = y;
             Resolution = new Vector2(x, y);
-            graphics.ApplyChanges();
+            Graphics.ApplyChanges();
         }
         private static DateTime lastTime;
         public static void UpdateFPS(GameTime gameTime)
@@ -62,10 +74,13 @@ namespace Stellaris
             else Quality = (int)(FPS / 30f + (Quality / 2f));
             lastTime = nowTime;
         }
+        /// <summary>
+        /// 强烈建议在每次Update时第一个执行的输入更新
+        /// </summary>
         public static void UpdateInput()
         {
-            Resolution = game.Window.ClientBounds.Size.ToVector2();
-            touchCollection = TouchPanel.GetState(game.Window).GetState();
+            Resolution = Game.Window.ClientBounds.Size.ToVector2();
+            touchCollection = TouchPanel.GetState(Game.Window).GetState();
             touchLocations = touchCollection.ToArray();
             LastMouseState = MouseState;
             mouseState = Mouse.GetState();
@@ -86,6 +101,9 @@ namespace Stellaris
             }
             lastScrollWheel = mouseState.ScrollWheelValue;
         }
+        /// <summary>
+        /// 获取Assets文件夹下文件。对于Windows，Assets文件夹在程序所在的目录里
+        /// </summary>
         public static Stream GetAsset(string path)
         {
             return File.OpenRead(Environment.CurrentDirectory + Path.DirectorySeparatorChar + "Assets" + Path.DirectorySeparatorChar + path);

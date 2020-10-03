@@ -100,7 +100,7 @@ namespace Stellaris.UI
                 }
                 if (rippleTimer > 0)
                 {
-                    Ripple.DrawRound(v, (int)Helper.Linear(2 * width + height, 0, 3 + rippleTimer * 0.75f, 4), position, ripplePos, width, height, Color.Transparent.LinearTo(rippleColor, rippleTimer, 1), roundCorner, 1, quality * 2);
+                    Ripple.DrawRound(v, (int)Helper.Linear(2 * width + height, 0, 3 + rippleTimer * 0.75f, 4), position, ripplePos, width, height, Color.Transparent.LinearTo(rippleColor, rippleTimer, 1), roundCorner, 1, quality * 3);
                 }
                 rippleTimer *= 0.95f;
                 if (rippleTimer < 0.01f) rippleTimer = 0;

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Stellaris
 {
+    /// <summary>
+    /// 图形绘制接口
+    /// </summary>
     public interface IDrawAPI
     {
         public void Draw(SpriteDrawInfo spriteDrawInfo);

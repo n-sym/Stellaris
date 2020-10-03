@@ -10,3 +10,8 @@
 /Main/NativeMethods.ipdb
 /Main/NativeMethods.iobj
 /Main/NativeMethods.lib
+x64/Debug/NativeMethods.dll
+x64/Debug/NativeMethods.exp
+x64/Debug/NativeMethods.ilk
+x64/Debug/NativeMethods.lib
+x64/Debug/NativeMethods.pdb

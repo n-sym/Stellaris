@@ -10,11 +10,11 @@ namespace Stellaris.Graphics
     {
         private static void IfBiggerThenSet(ref float value1, float value2)
         {
-            if (value2 > value1) value1 = value2;
+            if (value2 >= value1) value1 = value2;
         }
         private static void IfSmallerThenSet(ref float value1, float value2)
         {
-            if (value2 < value1) value1 = value2;
+            if (value2 <= value1) value1 = value2;
         }
         private static void CheckAndApplyCorner(ref Vector2 v, int w, int h, int r)
         {
@@ -33,9 +33,18 @@ namespace Stellaris.Graphics
         {
             if (vertexBatch.primitiveType == PrimitiveType.TriangleList)
             {
+                if (center.Y > height) return;
+                else if (center.Y < 0) return;
+                if (center.X > width) return;
+                else if (center.X < 0) return;
+                if (roundCorner > height / 3)
+                {
+                    if (center.X < roundCorner * 2 / 3) center.X = roundCorner * 2 / 3;
+                    else if (center.X > width - roundCorner * 2 / 3) center.X = width - roundCorner * 2 / 3;
+                }
                 Vector2[] pos = new Vector2[(int)(radius * 0.5f * quality) + 1];
                 float theta = 6.283f / (pos.Length - 2);
-                float extra = 0.5f - 3 / radius;
+                float extra = radius * 1f / width;
                 List<Vector2> cache = new List<Vector2>();
                 for (int i = 0; i < pos.Length - 1; i++)
                 {
@@ -48,10 +57,6 @@ namespace Stellaris.Graphics
                     }
                 }
                 Vector2 po = center;
-                if (po.Y > height) return;
-                else if (po.Y < 0) return;
-                if (po.X > width) return;
-                else if (po.X < 0) return;
                 if (roundCorner != 0) CheckAndApplyCorner(ref po, width, height, roundCorner);
                 po += position;
                 cache.Add(po);
@@ -64,10 +69,7 @@ namespace Stellaris.Graphics
                     else if (pos[i].Y < 0) pos[i].Y = 0;
                     if (pos[i].X > width) pos[i].X = width;
                     else if (pos[i].X < 0) pos[i].X = 0;
-                    if (roundCorner != 0)
-                    {
-                        CheckAndApplyCorner(ref pos[i], width, height, roundCorner);
-                    }
+                    if (roundCorner != 0) CheckAndApplyCorner(ref pos[i], width, height, roundCorner);
                     pos[i] += position;
                     colors[i] = color;
                     indices[i * 3] = (short)(pos.Length - 1);

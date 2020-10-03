@@ -29,26 +29,30 @@ namespace Stellaris
                 Initialize(graphicsDevice, fileStream.ToByteArray());
             }
         }
-        private delegate FontInfo _helper_getfontinfo(byte* data, int offset);
-        private delegate float _stbtt_ScaleForPixelHeight(FontInfo font, float height);
-        private delegate void _stbtt_GetCodepointBitmapBox(FontInfo font, int codepoint, float scale_x, float scale_y, int* ix0, int* iy0, int* ix1, int* iy1);
-        private delegate void _stbtt_MakeCodepointBitmap(FontInfo info, byte* output, int out_w, int out_h, int out_stride, float scale_x, float scale_y, int codepoint);
-        static _helper_getfontinfo helper_getfontinfo;
-        static _stbtt_ScaleForPixelHeight stbtt_ScaleForPixelHeight;
-        static _stbtt_GetCodepointBitmapBox stbtt_GetCodepointBitmapBox;
-        static _stbtt_MakeCodepointBitmap stbtt_MakeCodepointBitmap;
+        //private delegate FontInfo _helper_getfontinfo(byte* data, int offset);
+        //private delegate float _stbtt_ScaleForPixelHeight(FontInfo font, float height);
+        //private delegate void _stbtt_GetCodepointBitmapBox(FontInfo font, int codepoint, float scale_x, float scale_y, int* ix0, int* iy0, int* ix1, int* iy1);
+        //private delegate void _stbtt_MakeCodepointBitmap(FontInfo info, byte* output, int out_w, int out_h, int out_stride, float scale_x, float scale_y, int codepoint);
+        //static _helper_getfontinfo helper_getfontinfo;
+        //static _stbtt_ScaleForPixelHeight stbtt_ScaleForPixelHeight;
+        //static _stbtt_GetCodepointBitmapBox stbtt_GetCodepointBitmapBox;
+        //static _stbtt_MakeCodepointBitmap stbtt_MakeCodepointBitmap;
+        private static delegate*<byte*, int, FontInfo> helper_GetFontInfo;
+        private static delegate*<FontInfo, float, float> stbtt_ScaleForPixelHeight;
+        private static delegate*<FontInfo, int, float, float, int*, int*, int*, int*, void> stbtt_GetCodepointBitmapBox;
+        private static delegate*<FontInfo, byte*, int, int, int, float, float, int, void> stbtt_MakeCodepointBitmap;
         private void Initialize(GraphicsDevice graphicsDevice, byte[] ttf)
         {
             this.graphicsDevice = graphicsDevice;
             byte* bytePtr = (byte*)GCHandle.Alloc(ttf, GCHandleType.Pinned).AddrOfPinnedObject();
-            if (helper_getfontinfo == null)
+            if (helper_GetFontInfo == null)
             {
-                helper_getfontinfo = NativeMethods.GetMethod<_helper_getfontinfo>("helper_getfontinfo");
-                stbtt_ScaleForPixelHeight = NativeMethods.GetMethod<_stbtt_ScaleForPixelHeight>("stbtt_ScaleForPixelHeight");
-                stbtt_GetCodepointBitmapBox = NativeMethods.GetMethod<_stbtt_GetCodepointBitmapBox>("stbtt_GetCodepointBitmapBox");
-                stbtt_MakeCodepointBitmap = NativeMethods.GetMethod<_stbtt_MakeCodepointBitmap>("stbtt_MakeCodepointBitmap");
+                helper_GetFontInfo = (delegate*<byte*, int, FontInfo>)Ste.Native.GetMethodPtr("helper_GetFontInfo");
+                stbtt_ScaleForPixelHeight = (delegate*<FontInfo, float, float>)Ste.Native.GetMethodPtr("stbtt_ScaleForPixelHeight");
+                stbtt_GetCodepointBitmapBox = (delegate*<FontInfo, int, float, float, int*, int*, int*, int*, void>)Ste.Native.GetMethodPtr("stbtt_GetCodepointBitmapBox");
+                stbtt_MakeCodepointBitmap = (delegate*<FontInfo, byte*, int, int, int, float, float, int, void>)Ste.Native.GetMethodPtr("stbtt_MakeCodepointBitmap");
             }
-            font = helper_getfontinfo(bytePtr, 0);
+            font = helper_GetFontInfo(bytePtr, 0);
             GC.Collect();
         }
         public Glyph[] GetGlyphsFromCodepoint(float height, int[] codepoint, float scaleX, float scaleY)

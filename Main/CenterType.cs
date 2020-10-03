@@ -1,5 +1,8 @@
 ﻿namespace Stellaris
 {
+    /// <summary>
+    /// 中心类型
+    /// </summary>
     public enum CenterType
     {
         TopLeft = 0,

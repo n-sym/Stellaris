@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using System.Runtime.ConstrainedExecution;
 
 namespace Stellaris.Graphics
 {
@@ -17,6 +18,7 @@ namespace Stellaris.Graphics
         {
 
         }
+
         public SpriteBatch ToXNA()
         {
             return this;

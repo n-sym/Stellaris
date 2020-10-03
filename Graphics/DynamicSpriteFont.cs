@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace Stellaris.Graphics
 {
+    /// <summary>
+    /// 动态生成字形的SpriteFont
+    /// </summary>
     public class DynamicSpriteFont : IDisposable
     {
         public float height;
@@ -16,22 +19,44 @@ namespace Stellaris.Graphics
         Dictionary<char, Glyph> Glyphs;
         Glyph defaultGlyph;
         Glyph defaultGlyphCn;
-        public DynamicSpriteFont(GraphicsDevice graphicsDevice, IFont font, float height, Vector2 spacing = default)
+        /// <summary>
+        /// 构建DynamicSpriteFont
+        /// </summary>
+        /// <param name="font">字体</param>
+        /// <param name="height">高度</param>
+        /// <param name="spacing">间距</param>
+        public DynamicSpriteFont(IFont font, float height, Vector2 spacing = default)
         {
-            Initialize(graphicsDevice, font, height, spacing);
+            Initialize(font, height, spacing);
         }
-        public DynamicSpriteFont(GraphicsDevice graphicsDevice, string path, float height, Vector2 spacing = default, bool useNative = false)
+        /// <summary>
+        /// 构建DynamicSpriteFont
+        /// </summary>
+        /// <param name="graphicsDevice">显卡</param>
+        /// <param name="path">字体文件路径</param>
+        /// <param name="height">高度</param>
+        /// <param name="spacing">间距</param>
+        /// <param name="useNative">使用Native代码渲染字形</param>
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, string path, float height, Vector2 spacing = default, bool useNative = true)
         {
             using (FileStream fileStream = File.OpenRead(path))
             {
-                Initialize(graphicsDevice, useNative ? new FontStb_Native(path, graphicsDevice) as IFont : new FontStb(path, graphicsDevice), height, spacing);
+                Initialize(useNative ? new FontStb_Native(path, graphicsDevice) as IFont : new FontStb(path, graphicsDevice), height, spacing);
             }
         }
-        public DynamicSpriteFont(GraphicsDevice graphicsDevice, Stream stream, float height, Vector2 spacing = default, bool useNative = false)
+        /// <summary>
+         /// 构建DynamicSpriteFont
+         /// </summary>
+         /// <param name="graphicsDevice">显卡</param>
+         /// <param name="stream">字体文件流</param>
+         /// <param name="height">高度</param>
+         /// <param name="spacing">间距</param>
+         /// <param name="useNative">使用Native代码渲染字形</param>
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, Stream stream, float height, Vector2 spacing = default, bool useNative = true)
         {
-            Initialize(graphicsDevice, useNative ? new FontStb_Native(stream, graphicsDevice) as IFont : new FontStb(stream, graphicsDevice), height, spacing);
+            Initialize(useNative ? new FontStb_Native(stream, graphicsDevice) as IFont : new FontStb(stream, graphicsDevice), height, spacing);
         }
-        private void Initialize(GraphicsDevice graphicsDevice, IFont font, float height, Vector2 spacing)
+        private void Initialize(IFont font, float height, Vector2 spacing)
         {
             this.font = font;
             this.height = height;
@@ -41,11 +66,18 @@ namespace Stellaris.Graphics
             defaultGlyph = Glyph[0];
             defaultGlyphCn = Glyph[1];
         }
-        public void Refresh()
+        /// <summary>
+        /// 清除所有字形
+        /// </summary>
+        public void ClearCache()
         {
             Glyphs.Clear();
         }
-        private void GetGlyph(char[] charArray)
+        /// <summary>
+        /// 缓存字形
+        /// </summary>
+        /// <param name="charArray">需要缓存的字符</param>
+        public void Cache(char[] charArray)
         {
             List<char> chars = charArray.ToList();
             for (int i = 0; i < chars.Count; i++)
@@ -77,12 +109,12 @@ namespace Stellaris.Graphics
         }
         public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color, CenterType centerType, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
-            DrawString(spriteBatch, text, position, color, -MeasureString(text, 1).MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(scale, scale), rotation, effects, layerDepth);
+            DrawString(spriteBatch, text, position, color, MeasureString(text, 1).MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(scale, scale), rotation, effects, layerDepth);
         }
         public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation = 0f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             char[] chars = text.ToCharArray();
-            GetGlyph(chars);
+            Cache(chars);
             int defaultX = 0;
             float x = defaultX;
             float y = (int)(height * 0.6f);
@@ -117,7 +149,7 @@ namespace Stellaris.Graphics
         public Vector2 MeasureString(string text, Vector2 scale, float rotation = 0f)
         {
             char[] chars = text.ToCharArray();
-            GetGlyph(chars);
+            Cache(chars);
             int defaultX = 0;
             float x = defaultX;
             float maxX = 0;

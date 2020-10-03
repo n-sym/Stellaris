@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace Stellaris.Graphics
 {
+    /// <summary>
+    /// 简单的绘制接口，对顶点的绘制或许简化
+    /// </summary>
     public class VertexBatch : IDisposable, IDrawAPI
     {
         public GraphicsDevice graphicsDevice;
@@ -17,6 +20,9 @@ namespace Stellaris.Graphics
         private EffectParameter _matrixTransform;
         private Matrix _projection;
         public bool DrawImmediately { get; private set; }
+        /// <summary>
+        /// 构建一个VertexBatch
+        /// </summary>
         public VertexBatch(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
@@ -40,22 +46,29 @@ namespace Stellaris.Graphics
             spriteEffect.CurrentTechnique.Passes[0].Apply();
             _begin = true;
         }
+        /// <summary>
+        /// 开始准备绘制
+        /// </summary>
+        /// <param name="primitiveType">所用顶点类型</param>
         public void Begin(PrimitiveType primitiveType = PrimitiveType.TriangleStrip)
         {
             Begin(BlendState.AlphaBlend, primitiveType);
         }
+        /// <summary>
+        /// 开始准备绘制
+        /// </summary>
+        /// <param name="blendState">混合模式</param>
+        /// <param name="primitiveType">所用顶点类型</param>
         public void Begin(BlendState blendState, PrimitiveType primitiveType = PrimitiveType.TriangleList)
         {
             OnBeginning(primitiveType, blendState);
         }
-        public void Begin(Texture2D texture2D, PrimitiveType primitiveType = PrimitiveType.TriangleList)
-        {
-            Begin(texture2D, BlendState.AlphaBlend, primitiveType);
-        }
-        public void Begin(Texture2D texture2D, BlendState blendState, PrimitiveType primitiveType = PrimitiveType.TriangleList)
-        {
-            OnBeginning(primitiveType, blendState);
-        }
+        /// <summary>
+        /// 开始顶点绘制
+        /// </summary>
+        /// <param name="vertex">顶点</param>
+        /// <param name="index">索引</param>
+        /// <param name="texture2D">材质</param>
         public void Draw(Vertex[] vertex, short[] index, Texture2D texture2D = null)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
@@ -69,41 +82,51 @@ namespace Stellaris.Graphics
             ResizeAndAdd(vertex);
             if (vertexData.Length > short.MaxValue) throw new Exception("Vertices Counts Over 32768");
         }
+        /// <summary>
+        /// 开始顶点绘制
+        /// </summary>
+        /// <param name="vertexInfo">顶点绘制信息</param>
         public void Draw(VertexDrawInfo vertexInfo)
         {
             if (DrawImmediately)
             {
                 PrimitiveType cache = primitiveType;
-                if (vertexInfo.texture != null) ChangeTexture(vertexInfo.texture);
                 if (vertexInfo.primitiveType != null) primitiveType = vertexInfo.primitiveType.Value;
-                Draw(vertexInfo.vertices, vertexInfo.indices);
+                Draw(vertexInfo.vertices, vertexInfo.indices, vertexInfo.texture);
                 primitiveType = cache;
                 return;
             }
             Draw(vertexInfo.vertices, vertexInfo.indices);
         }
+        /// <summary>
+        /// 开始贴图绘制
+        /// </summary>
+        /// <param name="spriteDrawInfo">贴图绘制信息</param>
         public void Draw(SpriteDrawInfo spriteDrawInfo)
         {
             Vertex[] v = new Vertex[4];
-            Vector2 pos = spriteDrawInfo.position + spriteDrawInfo.origin;
-            v[0] = new Vertex(pos, spriteDrawInfo.color, Vector2.Zero);
+            Vector2 pos = spriteDrawInfo.position;
             if (spriteDrawInfo.rotation == 0)
             {
+                pos -= spriteDrawInfo.origin;
+                v[0] = new Vertex(pos, spriteDrawInfo.color, Vector2.Zero);
                 v[1] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, 0), spriteDrawInfo.color, new Vector2(1, 0));
                 v[2] = new Vertex(pos + new Vector2(0, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y), spriteDrawInfo.color, new Vector2(0, 1));
                 v[3] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y), spriteDrawInfo.color, Vector2.One);
             }
             else
             {
+                pos -= spriteDrawInfo.origin.Rotate(spriteDrawInfo.rotation);
+                v[0] = new Vertex(pos, spriteDrawInfo.color, Vector2.Zero);
                 v[1] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, 0).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(1, 0));
                 v[2] = new Vertex(pos + new Vector2(0, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(0, 1));
                 v[3] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, Vector2.One);
             }
             DoDraw(v, primitiveType == PrimitiveType.TriangleStrip ? new short[] { 0, 1, 2, 3} : new short[] { 0, 1, 2, 1, 3, 2}, spriteDrawInfo.texture);
         }
-        public void ChangeTexture(Texture2D texture2D)
-        {
-        }
+        /// <summary>
+        /// 设置是否立即绘制
+        /// </summary>
         public void SetDrawImmediately(bool drawImmediately)
         {
             if (primitiveType == PrimitiveType.TriangleStrip || primitiveType == PrimitiveType.LineStrip) return;
@@ -135,12 +158,15 @@ namespace Stellaris.Graphics
             int length = index.Length == 0 ? vertices.Length : index.Length;
             length = LengthGusser(length, primitiveType);
             if (texture2D != null) graphicsDevice.Textures[0] = texture2D;
-            else graphicsDevice.Textures[0] = Ste.pixel;
+            else graphicsDevice.Textures[0] = Ste.Pixel;
             //var p = typeof(GraphicsMetrics).GetField("_spriteCount", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             //p.SetValue(graphicsDevice.Metrics, (long)p.GetValue(graphicsDevice.Metrics) + 1);
             graphicsDevice.DrawUserIndexedPrimitives(primitiveType, vertices, 0, vertices.Length, index, 0, length, Vertex.VertexDeclaration);
             graphicsDevice.Textures[0] = null;
         }
+        /// <summary>
+        /// 结束绘制，如果没有设置立即绘制此时将一次性绘制所有顶点
+        /// </summary>
         public void End()
         {
             if (!DrawImmediately) DoDraw(vertexData, indexData);

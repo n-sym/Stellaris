@@ -2336,7 +2336,7 @@ STBTT_DEF int stbtt_InitFont(stbtt_fontinfo* info, const unsigned char* data, in
     return stbtt_InitFont_internal(info, (unsigned char*)data, offset);
 }
 
-STBTT_DEF stbtt_fontinfo helper_getfontinfo(unsigned char* data, int offset)
+STBTT_DEF stbtt_fontinfo helper_GetFontInfo(unsigned char* data, int offset)
 {
     stbtt_fontinfo fontinfo;
     stbtt_InitFont(&fontinfo, data, offset);

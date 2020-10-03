@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -9,25 +10,52 @@ using System.Threading.Tasks;
 
 namespace Stellaris
 {
-    internal static class NativeMethods
+    internal class NativeMethods : NativeLibrary
     {
-        static IntPtr nativeMethods;
-        public static void Initialize()
+        static string path
         {
-            string fileName = "NativeMethods." + (Ste.Platform == Platform.Windows ? "dll" : "so");
-            string path = Path.Combine(Ste.CurrentDirectory, fileName);
-            using (Stream s = File.Create(path))
+            get
             {
-                using (Stream t = typeof(Ste).Assembly.GetManifestResourceStream("Stellaris.Main." + fileName))
+                string fileName = "NativeMethods." + (Ste.Platform == Platform.Windows ? "dll" : "so");
+                string path = Path.Combine(Ste.CurrentDirectory, fileName);
+                using (Stream s = File.Create(path))
                 {
-                    t.CopyTo(s);
+                    using (Stream t = typeof(Ste).Assembly.GetManifestResourceStream("Stellaris.Main." + fileName))
+                    {
+                        t.CopyTo(s);
+                    }
                 }
+                return path;
             }
+        }
+        public NativeMethods() : base(path)
+        {
+        }
+    }
+    public unsafe class NativeLibrary : IDisposable
+    {
+        IntPtr nativeMethods;
+        bool disposed;
+        public NativeLibrary(string path)
+        {
             nativeMethods = LibraryHelper.Load(path);
         }
-        public static T GetMethod<T>(string name)
+        public T GetMethodDelegate<T>(string name)
         {
             return Marshal.GetDelegateForFunctionPointer<T>(LibraryHelper.Find(nativeMethods, name));
+        }
+        public void* GetMethodPtr(string name)
+        {
+            return LibraryHelper.Find(nativeMethods, name).ToPointer();
+        }
+        ~NativeLibrary()
+        {
+            if(!disposed)Dispose();
+        }
+        public void Dispose()
+        {
+            Marshal.FreeHGlobal(nativeMethods);
+            disposed = true;
         }
     }
     #region LibraryHelper
