@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace Stellaris
 {
@@ -27,69 +24,12 @@ namespace Stellaris
             if (value >= max) return value % (max - min) + min;
             return value;
         }
-        /// <summary>
-        /// 读取IList中索引为index那一项的值，如果越界则返回第一项或最后一项的值
-        /// </summary>
-        public static T TryGetValue<T>(this IList<T> array, int index)
-        {
-            if (array == null) return default;
-            if (array.Count == 0) return default;
-            if (index < 0) return array[0];
-            if (index > array.Count - 1) return array[array.Count - 1];
-            return array[index];
-        }
-        /// <summary>
-        /// 将每一项转换成字符串然后相加
-        /// </summary>
-        public static string ToString_<T>(this IList<T> array)
-        {
-            if (array.Count == 0) return "";
-            string result = "";
-            for (int i = 0; i < array.Count - 1; i++)
-            {
-                result += array[i].ToString() + ",";
-            }
-            result += array[array.Count - 1].ToString();
-            return result;
-        }
-        /// <summary>
-        /// 将每一项转换成字符串然后保存到新数组中
-        /// </summary>
-        public static string[] ToString_Array<T>(this IList<T> array)
-        {
-            string[] result = new string[array.Count];
-            for (int i = 0; i < array.Count; i++)
-            {
-                result[i] = array[i].ToString();
-            }
-            return result;
-        }
-        public unsafe static void MemoryCopy(void* a, void* b, long size)
+
+        public unsafe static void C_memcpy(void* a, void* b, long size)
         {
             byte* aptr = (byte*)a;
             byte* bptr = (byte*)b;
             for (long i = 0; i < size; i++) *aptr++ = *bptr++;
-        }
-        public static byte[] ToByteArray(this Stream stream)
-        {
-            if (!stream.CanSeek) return new byte[] { 0 };
-            byte[] bytes;
-            stream.Position = 0;
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                stream.CopyTo(memoryStream);
-                bytes = memoryStream.ToArray();
-            }
-            return bytes;
-        }
-        public static int[] ToCodePointArray(this IList<char> charArray)
-        {
-            int[] result = new int[charArray.Count];
-            for (int i = 0; i < charArray.Count; i++)
-            {
-                result[i] = charArray[i];
-            }
-            return result;
         }
         public static T[] InitializeArrayFromValue<T>(T value, int length)
         {
@@ -108,20 +48,6 @@ namespace Stellaris
                 result[i] = func(i);
             }
             return result;
-        }
-        public static void PlusAll(this short[] array, short num)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                array[i] += num;
-            }
-        }
-        public static void PlusAll(this Vector2[] array, Vector2 vec)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                array[i] += vec;
-            }
         }
         public static short[] FromAToB(short a, short b)
         {
@@ -164,7 +90,7 @@ namespace Stellaris
         public static Vector2 RandomAngleVec(float length, Vector2 center = default, float min = 0f, float max = 6.283f)
         {
             Random random = new Random(seed);
-            float radian = min.LinearTo(max, (float)random.NextDouble(), 1f);
+            float radian = min.LerpTo(max, (float)random.NextDouble(), 1f);
             float c = (float)Math.Cos(radian);
             float s = (float)Math.Sin(radian);
             seed = random.Next();
@@ -176,10 +102,10 @@ namespace Stellaris
         public static Vector2 RandomVec(Vector2 min, Vector2 max)
         {
             Random random = new Random(seed);
-            float x = min.X.LinearTo(max.X, (float)random.NextDouble(), 1);
+            float x = min.X.LerpTo(max.X, (float)random.NextDouble(), 1);
             seed = random.Next();
             random = new Random(seed);
-            float y = min.Y.LinearTo(max.Y, (float)random.NextDouble(), 1);
+            float y = min.Y.LerpTo(max.Y, (float)random.NextDouble(), 1);
             seed = random.Next();
             return new Vector2(x, y);
         }
@@ -216,21 +142,21 @@ namespace Stellaris
         /// <summary>
         /// 线性插值
         /// </summary>
-        public static float Linear(float a, float b, float progress, float max)
+        public static float Lerp(float a, float b, float progress, float max)
         {
             return progress / max * b + (max - progress) / max * a;
         }
         /// <summary>
         /// 线性插值
         /// </summary>
-        public static float LinearTo(this float a, float b, float progress, float max)
+        public static float LerpTo(this float a, float b, float progress, float max)
         {
             return progress / max * b + (max - progress) / max * a;
         }
         /// <summary>
         /// 线性插值
         /// </summary>
-        public static Vector2 Linear(Vector2 a, Vector2 b, float progress, float max)
+        public static Vector2 Lerp(Vector2 a, Vector2 b, float progress, float max)
         {
             return progress / max * b + (max - progress) / max * a;
         }

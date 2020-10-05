@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Stellaris.Graphics;
+﻿using Stellaris.Graphics;
 using System.Collections.Generic;
 
 namespace Stellaris.Entities

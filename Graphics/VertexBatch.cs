@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Stellaris.Main;
 using System;
-using System.Collections.Generic;
 
 namespace Stellaris.Graphics
 {
@@ -122,7 +121,7 @@ namespace Stellaris.Graphics
                 v[2] = new Vertex(pos + new Vector2(0, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(0, 1));
                 v[3] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, Vector2.One);
             }
-            DoDraw(v, primitiveType == PrimitiveType.TriangleStrip ? new short[] { 0, 1, 2, 3} : new short[] { 0, 1, 2, 1, 3, 2}, spriteDrawInfo.texture);
+            DoDraw(v, primitiveType == PrimitiveType.TriangleStrip ? new short[] { 0, 1, 2, 3 } : new short[] { 0, 1, 2, 1, 3, 2 }, spriteDrawInfo.texture);
         }
         /// <summary>
         /// 设置是否立即绘制
@@ -141,7 +140,7 @@ namespace Stellaris.Graphics
         }
         private void ResizeAndAdd(short[] i)
         {
-            i.PlusAll((short)(vertexData.Length));
+            i.Plus((short)(vertexData.Length));
             short[] result = new short[indexData.Length + i.Length];
             Array.Copy(indexData, result, indexData.Length);
             Array.Copy(i, 0, result, indexData.Length, i.Length);

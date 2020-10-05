@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Stellaris.Graphics
 {
@@ -40,7 +38,7 @@ namespace Stellaris.Graphics
         }
         public static VertexDrawInfo GetPaddingBorderDrawInfo(PrimitiveType primitiveType, Vector2 positon, int width, int height, int roundCorner, Color padding, float quality = 1f)
         {
-            if (primitiveType != PrimitiveType.TriangleList) return new VertexDrawInfo(new Vertex[]{new Vertex()});
+            if (primitiveType != PrimitiveType.TriangleList) return new VertexDrawInfo(new Vertex[] { new Vertex() });
             List<Vertex> cache = new List<Vertex>();
             GetBorder(cache, positon, width, height, roundCorner, padding, quality);
             cache.Add(new Vertex(positon + new Vector2(width, height) / 2, padding));

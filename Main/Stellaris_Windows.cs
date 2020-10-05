@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Input.Touch;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace Stellaris
 {
@@ -23,9 +22,9 @@ namespace Stellaris
         public static CommonMouseState MouseState { get; private set; }
         public static CommonMouseState LastMouseState { get; private set; }
         public static Vector2 MousePos => MouseState.Position;
-        public static Vector2 Resolution { get; private set; }
-        public static float Resolution_X => Resolution.X;
-        public static float Resolution_Y => Resolution.Y;
+        public static Vector2 Resolution { get => new Vector2(Resolution_X, Resolution_Y); }
+        public static int Resolution_X;
+        public static int Resolution_Y;
         public static int FPS { get; private set; }
         public static int Quality { get; private set; }
         public static Texture2D Pixel;
@@ -52,7 +51,8 @@ namespace Stellaris
         {
             Graphics.PreferredBackBufferWidth = x;
             Graphics.PreferredBackBufferHeight = y;
-            Resolution = new Vector2(x, y);
+            Resolution_X = x;
+            Resolution_Y = y;
             Graphics.ApplyChanges();
         }
         private static DateTime lastTime;
@@ -79,7 +79,8 @@ namespace Stellaris
         /// </summary>
         public static void UpdateInput()
         {
-            Resolution = Game.Window.ClientBounds.Size.ToVector2();
+            Resolution_X = Game.GraphicsDevice.Viewport.Width;
+            Resolution_Y = Game.GraphicsDevice.Viewport.Height;
             touchCollection = TouchPanel.GetState(Game.Window).GetState();
             touchLocations = touchCollection.ToArray();
             LastMouseState = MouseState;

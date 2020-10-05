@@ -1,10 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Input.Touch;
-using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace Stellaris
 {

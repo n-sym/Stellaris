@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Stellaris.Graphics;
 using System;
@@ -132,8 +131,8 @@ namespace Stellaris.UI
 
         }
         /// <summary>
-         /// 右键单击后调用，默认为空，用于自定义行为
-         /// </summary>
+        /// 右键单击后调用，默认为空，用于自定义行为
+        /// </summary>
         protected virtual void RightClick()
         {
 

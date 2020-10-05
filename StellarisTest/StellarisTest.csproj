@@ -57,6 +57,9 @@
     <None Update="Assets\aaa28.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\Blur.cfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\new.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

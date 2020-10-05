@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stellaris
 {
@@ -50,7 +44,7 @@ namespace Stellaris
         }
         ~NativeLibrary()
         {
-            if(!disposed)Dispose();
+            if (!disposed) Dispose();
         }
         public void Dispose()
         {
@@ -63,11 +57,11 @@ namespace Stellaris
     {
         public static IntPtr Load(string fileName)
         {
-            if(Ste.Platform == Platform.Windows)
+            if (Ste.Platform == Platform.Windows)
             {
                 return LibraryHelper_Windows.LoadLibraryW(fileName);
             }
-            if(Ste.Platform == Platform.Linux)
+            if (Ste.Platform == Platform.Linux)
             {
                 return LibraryHelper_Linux.dlopen(fileName, 0x0001);
             }

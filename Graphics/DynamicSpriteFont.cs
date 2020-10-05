@@ -45,13 +45,13 @@ namespace Stellaris.Graphics
             }
         }
         /// <summary>
-         /// 构建DynamicSpriteFont
-         /// </summary>
-         /// <param name="graphicsDevice">显卡</param>
-         /// <param name="stream">字体文件流</param>
-         /// <param name="height">高度</param>
-         /// <param name="spacing">间距</param>
-         /// <param name="useNative">使用Native代码渲染字形</param>
+        /// 构建DynamicSpriteFont
+        /// </summary>
+        /// <param name="graphicsDevice">显卡</param>
+        /// <param name="stream">字体文件流</param>
+        /// <param name="height">高度</param>
+        /// <param name="spacing">间距</param>
+        /// <param name="useNative">使用Native代码渲染字形</param>
         public DynamicSpriteFont(GraphicsDevice graphicsDevice, Stream stream, float height, Vector2 spacing = default, bool useNative = true)
         {
             Initialize(useNative ? new FontStb_Native(stream, graphicsDevice) as IFont : new FontStb(stream, graphicsDevice), height, spacing);
@@ -95,22 +95,37 @@ namespace Stellaris.Graphics
                 Glyphs.Add(chars[i], GlyphArray[i]);
             }
         }
+        /// <summary>
+        /// 通过IDrawAPI绘制文字
+        /// </summary>
         public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position)
         {
             DrawString(spriteBatch, text, position, Color.White, default, new Vector2(1, 1));
         }
+        /// <summary>
+        /// 通过IDrawAPI绘制文字
+        /// </summary>
         public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color)
         {
             DrawString(spriteBatch, text, position, color, default, new Vector2(1, 1));
         }
+        /// <summary>
+        /// 通过IDrawAPI绘制文字
+        /// </summary>
         public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color, Vector2 origin, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             DrawString(spriteBatch, text, position, color, origin, new Vector2(scale, scale), rotation, effects, layerDepth);
         }
+        /// <summary>
+        /// 通过IDrawAPI绘制文字
+        /// </summary>
         public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color, CenterType centerType, float scale, float rotation = 0, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             DrawString(spriteBatch, text, position, color, MeasureString(text, 1).MutiplyXY(Helper.CenterTypeToVector2(centerType)), new Vector2(scale, scale), rotation, effects, layerDepth);
         }
+        /// <summary>
+        /// 通过IDrawAPI绘制文字
+        /// </summary>
         public void DrawString(IDrawAPI spriteBatch, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation = 0f, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
         {
             char[] chars = text.ToCharArray();
@@ -146,6 +161,9 @@ namespace Stellaris.Graphics
                 }
             }
         }
+        /// <summary>
+        /// 测量文字长宽
+        /// </summary>
         public Vector2 MeasureString(string text, Vector2 scale, float rotation = 0f)
         {
             char[] chars = text.ToCharArray();

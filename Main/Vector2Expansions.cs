@@ -39,7 +39,7 @@ namespace Stellaris
         {
             return vec.Y / vec.X;
         }
-        public static Vector2 LinearTo(this Vector2 a, Vector2 b, float progress, float max)
+        public static Vector2 LerpTo(this Vector2 a, Vector2 b, float progress, float max)
         {
             return progress / max * b + (max - progress) / max * a;
         }

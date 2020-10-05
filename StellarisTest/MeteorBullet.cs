@@ -22,8 +22,8 @@ namespace Stellaris.Test
         }
         public override void CustomBehavior()
         {
-            velocity = velocity.LinearTo(velocity * 0.9f, 1.3f - Math.Abs(v.Angle()), 30f);
-            velocity = velocity.LinearTo(((end - new Vector2(960, 540)).NormalizeAlt() * 350 + new Vector2(960, 540) - position).NormalizeAlt() * velocity.Length(), 1, 35);
+            velocity = velocity.LerpTo(velocity * 0.9f, 1.3f - Math.Abs(v.Angle()), 30f);
+            velocity = velocity.LerpTo(((end - new Vector2(960, 540)).NormalizeAlt() * 350 + new Vector2(960, 540) - position).NormalizeAlt() * velocity.Length(), 1, 35);
         }
         //public static Color drawColor = new Color(186, 221, 255);
         public static Color drawColor2 = new Color(128, 162, 233);
@@ -42,8 +42,8 @@ namespace Stellaris.Test
                     float m = (oldPositon[i] - oldPositon.TryGetValue(i + 1)).Length() * 0.4f;
                     for (int j = 0; j < m; j++)
                     {
-                        if (i == 0 && j == 0) flarefx.Draw(spriteBatch, oldPositon[i].LinearTo(oldPositon.TryGetValue(i + 1), j, m), null, drawColor * 1.6f * t, 0.7853f, new Vector2(20, 20), 1.4f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
-                        else flarefxAlt.Draw(spriteBatch, oldPositon[i].LinearTo(oldPositon.TryGetValue(i + 1), j, m), null, color.LinearTo(drawColor, (oldPosLength - i) * (oldPosLength - i), oldPosLength * oldPosLength * 1.6f) * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))) * t, 0.7853f, new Vector2(20, 20), 1.1f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
+                        if (i == 0 && j == 0) flarefx.Draw(spriteBatch, oldPositon[i].LerpTo(oldPositon.TryGetValue(i + 1), j, m), null, drawColor * 1.6f * t, 0.7853f, new Vector2(20, 20), 1.4f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
+                        else flarefxAlt.Draw(spriteBatch, oldPositon[i].LerpTo(oldPositon.TryGetValue(i + 1), j, m), null, color.LerpTo(drawColor, (oldPosLength - i) * (oldPosLength - i), oldPosLength * oldPosLength * 1.6f) * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))) * t, 0.7853f, new Vector2(20, 20), 1.1f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
                     }
                 }
             }
@@ -56,8 +56,8 @@ namespace Stellaris.Test
                     float m = (oldPositon[i] - oldPositon.TryGetValue(i + 1)).Length() * 0.05f;
                     for (int j = 0; j < m; j++)
                     {
-                        if (i == 0 && j == 0) flarefx.Draw(spriteBatch, oldPositon[i].LinearTo(oldPositon.TryGetValue(i + 1), j, m), null, drawColor * 1.4f * t, 0.7853f, new Vector2(20, 20), 1.3f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
-                        else flarefxAlt.Draw(spriteBatch, oldPositon[i].LinearTo(oldPositon.TryGetValue(i + 1), j, m), null, color.LinearTo(drawColor, (oldPosLength - i) * (oldPosLength - i), oldPosLength * oldPosLength) * (1.55f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))) * t, 0.7853f, new Vector2(20, 20), 1.8f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
+                        if (i == 0 && j == 0) flarefx.Draw(spriteBatch, oldPositon[i].LerpTo(oldPositon.TryGetValue(i + 1), j, m), null, drawColor * 1.4f * t, 0.7853f, new Vector2(20, 20), 1.3f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
+                        else flarefxAlt.Draw(spriteBatch, oldPositon[i].LerpTo(oldPositon.TryGetValue(i + 1), j, m), null, color.LerpTo(drawColor, (oldPosLength - i) * (oldPosLength - i), oldPosLength * oldPosLength) * (1.55f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))) * t, 0.7853f, new Vector2(20, 20), 1.8f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
                     }
                 }
             }
@@ -68,7 +68,7 @@ namespace Stellaris.Test
                     if (oldPositon[i] == Vector2.Zero) break;
                     if (oldPositon.TryGetValue(i + 1) == Vector2.Zero) continue;
                     if (i == 0) flarefx.Draw(spriteBatch, oldPositon[i], null, drawColor * 1.4f * t, 0.7853f, new Vector2(20, 20), 1.3f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
-                    else flarefxAlt.Draw(spriteBatch, oldPositon[i], null, color.LinearTo(drawColor, (oldPosLength - i) * (oldPosLength - i), oldPosLength * oldPosLength) * (1.55f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))) * t, 0.7853f, new Vector2(20, 20), 1.8f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
+                    else flarefxAlt.Draw(spriteBatch, oldPositon[i], null, color.LerpTo(drawColor, (oldPosLength - i) * (oldPosLength - i), oldPosLength * oldPosLength) * (1.55f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))) * t, 0.7853f, new Vector2(20, 20), 1.8f * (1f - (float)(Math.Sqrt(i) / Math.Sqrt(oldPosLength))), SpriteEffects.None, 0f);
                 }
             }
             return true;

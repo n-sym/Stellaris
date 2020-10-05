@@ -31,7 +31,7 @@ namespace Stellaris
             byte* bytePtr = (byte*)GCHandle.Alloc(ttf, GCHandleType.Pinned).AddrOfPinnedObject();
             font = new stbtt_fontinfo();
             stbtt_InitFont(font, bytePtr, 0);
-            GC.Collect(); 
+            GC.Collect();
         }
         public Glyph[] GetGlyphsFromCodepoint(float height, int[] codepoint, float scaleX, float scaleY)
         {

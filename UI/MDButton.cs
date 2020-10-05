@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Stellaris.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Stellaris.UI
 {
@@ -46,13 +43,13 @@ namespace Stellaris.UI
         }
         protected override void OnHover()
         {
-            highLightTimer = highLightTimer.LinearTo(1, 1, 10);
+            highLightTimer = highLightTimer.LerpTo(1, 1, 10);
         }
         protected override void NotHover()
         {
             if (highLightTimer != 0)
             {
-                highLightTimer = highLightTimer.LinearTo(0, 1, 10);
+                highLightTimer = highLightTimer.LerpTo(0, 1, 10);
                 if (highLightTimer < 0.01) highLightTimer = 0;
             }
         }
@@ -100,7 +97,7 @@ namespace Stellaris.UI
                 }
                 if (rippleTimer > 0)
                 {
-                    Ripple.DrawRound(v, (int)Helper.Linear(2 * width + height, 0, 3 + rippleTimer * 0.75f, 4), position, ripplePos, width, height, Color.Transparent.LinearTo(rippleColor, rippleTimer, 1), roundCorner, 1, quality * 3);
+                    Ripple.DrawRound(v, (int)Helper.Lerp(2 * width + height, 0, 3 + rippleTimer * 0.75f, 4), position, ripplePos, width, height, Color.Transparent.LerpTo(rippleColor, rippleTimer, 1), roundCorner, 1, quality * 3);
                 }
                 rippleTimer *= 0.95f;
                 if (rippleTimer < 0.01f) rippleTimer = 0;

@@ -33,7 +33,7 @@ namespace Stellaris.Graphics
         public VertexDrawInfo(Vector2[] position, Color[] color, short[] index)
         {
             vertices = new Vertex[position.Length];
-            for(int i = 0; i < position.Length; i++)
+            for (int i = 0; i < position.Length; i++)
             {
                 vertices[i] = new Vertex(position[i], color[i]);
             }
