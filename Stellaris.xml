@@ -1,0 +1,381 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Stellaris</name>
+    </assembly>
+    <members>
+        <member name="T:Stellaris.Graphics.DynamicSpriteFont">
+            <summary>
+            动态生成字形的SpriteFont
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.#ctor(Stellaris.IFont,System.Single,Microsoft.Xna.Framework.Vector2)">
+            <summary>
+            构建DynamicSpriteFont
+            </summary>
+            <param name="font">字体</param>
+            <param name="height">高度</param>
+            <param name="spacing">间距</param>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.#ctor(Microsoft.Xna.Framework.Graphics.GraphicsDevice,System.String,System.Single,Microsoft.Xna.Framework.Vector2,System.Boolean)">
+            <summary>
+            构建DynamicSpriteFont
+            </summary>
+            <param name="graphicsDevice">显卡</param>
+            <param name="path">字体文件路径</param>
+            <param name="height">高度</param>
+            <param name="spacing">间距</param>
+            <param name="useNative">使用Native代码渲染字形</param>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.#ctor(Microsoft.Xna.Framework.Graphics.GraphicsDevice,System.IO.Stream,System.Single,Microsoft.Xna.Framework.Vector2,System.Boolean)">
+            <summary>
+            构建DynamicSpriteFont
+            </summary>
+            <param name="graphicsDevice">显卡</param>
+            <param name="stream">字体文件流</param>
+            <param name="height">高度</param>
+            <param name="spacing">间距</param>
+            <param name="useNative">使用Native代码渲染字形</param>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.ClearCache">
+            <summary>
+            清除所有字形
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.Cache(System.Char[])">
+            <summary>
+            缓存字形
+            </summary>
+            <param name="charArray">需要缓存的字符</param>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.DrawString(Stellaris.IDrawAPI,System.String,Microsoft.Xna.Framework.Vector2)">
+            <summary>
+            通过IDrawAPI绘制文字
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.DrawString(Stellaris.IDrawAPI,System.String,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Color)">
+            <summary>
+            通过IDrawAPI绘制文字
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.DrawString(Stellaris.IDrawAPI,System.String,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Color,Microsoft.Xna.Framework.Vector2,System.Single,System.Single,Microsoft.Xna.Framework.Graphics.SpriteEffects,System.Single)">
+            <summary>
+            通过IDrawAPI绘制文字
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.DrawString(Stellaris.IDrawAPI,System.String,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Color,Stellaris.CenterType,System.Single,System.Single,Microsoft.Xna.Framework.Graphics.SpriteEffects,System.Single)">
+            <summary>
+            通过IDrawAPI绘制文字
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.DrawString(Stellaris.IDrawAPI,System.String,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Color,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2,System.Single,Microsoft.Xna.Framework.Graphics.SpriteEffects,System.Single)">
+            <summary>
+            通过IDrawAPI绘制文字
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.MeasureString(System.String,Microsoft.Xna.Framework.Vector2,System.Single)">
+            <summary>
+            测量文字长宽
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicTexture.#ctor(Microsoft.Xna.Framework.Graphics.GraphicsDevice,System.String)">
+            <summary>
+            希望DynamicTexture没事----一般不用这个构造方法
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicTexture.Generating">
+            <summary>
+            DynamicTexture Generating
+            </summary>
+            <returns>Color Data</returns>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicTexture.Generate">
+            <summary>
+            Generate dynamictexture immediatly
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicTexture.PrivateDraw(Stellaris.Graphics.SpriteBatchS,System.Int32,Microsoft.Xna.Framework.Vector2,System.Nullable{Microsoft.Xna.Framework.Rectangle},Microsoft.Xna.Framework.Color,System.Single,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Graphics.SpriteEffects,System.Single)">
+            <summary>
+            The Actual Call of Draw methods, can be overriden
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicTexture.DoCache">
+            <summary>
+            缓存DynamicTexture到一文件
+            </summary>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Stellaris.Graphics.DynamicTexture.LoadCache">
+            <summary>
+            从一文件中读取DynamicTexture
+            </summary>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Stellaris.Graphics.VertexBatch">
+            <summary>
+            简单的绘制接口，对顶点的绘制或许简化
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.VertexBatch.#ctor(Microsoft.Xna.Framework.Graphics.GraphicsDevice)">
+            <summary>
+            构建一个VertexBatch
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.VertexBatch.Begin(Microsoft.Xna.Framework.Graphics.PrimitiveType)">
+            <summary>
+            开始准备绘制
+            </summary>
+            <param name="primitiveType">所用顶点类型</param>
+        </member>
+        <member name="M:Stellaris.Graphics.VertexBatch.Begin(Microsoft.Xna.Framework.Graphics.BlendState,Microsoft.Xna.Framework.Graphics.PrimitiveType)">
+            <summary>
+            开始准备绘制
+            </summary>
+            <param name="blendState">混合模式</param>
+            <param name="primitiveType">所用顶点类型</param>
+        </member>
+        <member name="M:Stellaris.Graphics.VertexBatch.Draw(Stellaris.Graphics.Vertex[],System.Int16[],Microsoft.Xna.Framework.Graphics.Texture2D)">
+            <summary>
+            开始顶点绘制
+            </summary>
+            <param name="vertex">顶点</param>
+            <param name="index">索引</param>
+            <param name="texture2D">材质</param>
+        </member>
+        <member name="M:Stellaris.Graphics.VertexBatch.Draw(Stellaris.Graphics.VertexDrawInfo)">
+            <summary>
+            开始顶点绘制
+            </summary>
+            <param name="vertexInfo">顶点绘制信息</param>
+        </member>
+        <member name="M:Stellaris.Graphics.VertexBatch.Draw(Stellaris.Graphics.SpriteDrawInfo)">
+            <summary>
+            开始贴图绘制
+            </summary>
+            <param name="spriteDrawInfo">贴图绘制信息</param>
+        </member>
+        <member name="M:Stellaris.Graphics.VertexBatch.SetDrawImmediately(System.Boolean)">
+            <summary>
+            设置是否立即绘制
+            </summary>
+        </member>
+        <member name="M:Stellaris.Graphics.VertexBatch.End">
+            <summary>
+            结束绘制，如果没有设置立即绘制此时将一次性绘制所有顶点
+            </summary>
+        </member>
+        <member name="T:Stellaris.CenterType">
+            <summary>
+            中心类型
+            </summary>
+        </member>
+        <member name="M:Stellaris.Expansions.TryGetValue``1(System.Collections.Generic.IList{``0},System.Int32)">
+            <summary>
+            读取IList中索引为index那一项的值，如果越界则返回第一项或最后一项的值
+            </summary>
+        </member>
+        <member name="M:Stellaris.Expansions.ToString_``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            将每一项转换成字符串然后相加
+            </summary>
+        </member>
+        <member name="M:Stellaris.Expansions.ToString_Array``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            将每一项转换成字符串然后保存到新数组中
+            </summary>
+        </member>
+        <member name="M:Stellaris.Expansions.ToByteArray(System.IO.Stream)">
+            <summary>
+            将Stream转换成Byte数组
+            </summary>
+        </member>
+        <member name="M:Stellaris.Expansions.ToCodePointArray(System.Collections.Generic.IList{System.Char})">
+            <summary>
+            将Char IList转换成int数组
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.TryGetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            如果Value不在(min, max)，返回最接近的一段的值
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.GetLoopedValue(System.Single,System.Single,System.Single)">
+            <summary>
+            周期函数，取不到max的值
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.RandomAngleVec(System.Single,Microsoft.Xna.Framework.Vector2,System.Single,System.Single)">
+            <summary>
+            随机角度的向量
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.RandomVec(Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2)">
+            <summary>
+            随机向量
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.AngleBetween(Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2)">
+            <summary>
+            求两向量角度平均值
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.Lerp(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            线性插值
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.LerpTo(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            线性插值
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.Lerp(Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2,System.Single,System.Single)">
+            <summary>
+            线性插值
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.HslToRgb(System.Single,System.Single,System.Single)">
+            <summary>
+            From Internet
+            </summary>
+        </member>
+        <member name="T:Stellaris.IDrawAPI">
+            <summary>
+            图形绘制接口
+            </summary>
+        </member>
+        <member name="M:Stellaris.IDrawAPI.Draw(Stellaris.Graphics.SpriteDrawInfo)">
+            <summary>
+            通过SpriteDrawInfo进行绘制
+            </summary>
+        </member>
+        <member name="M:Stellaris.IDrawAPI.Draw(Stellaris.Graphics.VertexDrawInfo)">
+            <summary>
+            通过VertexDrawInfo进行绘制
+            </summary>
+        </member>
+        <member name="T:Stellaris.NativeLibrary">
+            <summary>
+            提供当前平台可用的管理本机库的简单封装
+            </summary>
+        </member>
+        <member name="M:Stellaris.NativeLibrary.#ctor(System.String)">
+            <summary>
+            从路径加载一个本机库
+            </summary>
+        </member>
+        <member name="M:Stellaris.NativeLibrary.GetMethodDelegate``1(System.String)">
+            <summary>
+            借助Marshal，绑定方法到委托上
+            </summary>
+            <typeparam name="T">非泛型委托</typeparam>
+            <param name="name">方法名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Stellaris.NativeLibrary.GetMethodPtr(System.String)">
+            <summary>
+            获取指向方法的函数指针
+            </summary>
+            <param name="name">方法名</param>
+            <returns></returns>
+        </member>
+        <member name="M:Stellaris.NativeLibrary.Finalize">
+            <summary>
+            释放库
+            </summary>
+        </member>
+        <member name="M:Stellaris.NativeLibrary.Dispose">
+            <summary>
+            释放库
+            </summary>
+        </member>
+        <member name="T:Stellaris.Ste">
+            <summary>
+            Stellaris的管理器
+            </summary>
+        </member>
+        <member name="M:Stellaris.Ste.Initialize(Microsoft.Xna.Framework.Game,Microsoft.Xna.Framework.GraphicsDeviceManager)">
+            <summary>
+            在使用Stellaris的各项功能前，强烈建议调用的初始化
+            </summary>
+            <param name="game"></param>
+            <param name="graphics"></param>
+        </member>
+        <member name="M:Stellaris.Ste.ChangeResolution(System.Int32,System.Int32)">
+            <summary>
+            切换分辨率
+            </summary>
+        </member>
+        <member name="M:Stellaris.Ste.UpdateInput">
+            <summary>
+            强烈建议在每次Update时第一个执行的输入更新
+            </summary>
+        </member>
+        <member name="M:Stellaris.Ste.GetAsset(System.String)">
+            <summary>
+            获取Assets文件夹下文件。对于Windows，Assets文件夹在程序所在的目录里
+            </summary>
+        </member>
+        <member name="T:Stellaris.UI.MouseStatus">
+            <summary>
+            鼠标状态。BaseUIElement中专指鼠标对于自己的状态。
+            </summary>
+        </member>
+        <member name="T:Stellaris.UI.BaseUIElement">
+            <summary>
+            可选的UI基类
+            </summary>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.ChekCommonMouse">
+            <summary>
+            获取鼠标信息，以后也会对触摸进行支持，一般不需要手动调用
+            </summary>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.Update">
+            <summary>
+            需要手动调用的更新
+            </summary>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.Draw(Stellaris.IDrawAPI)">
+            <summary>
+            需要手动调用的绘制
+            </summary>
+            <param name="drawAPI">绘制接口</param>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.OnUpdate">
+            <summary>
+            自动调用的更新，默认为空，用于自定义行为
+            </summary>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.LeftClick">
+            <summary>
+            左键单击后调用，默认为空，用于自定义行为
+            </summary>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.OnLeftClick">
+            <summary>
+            左键单击时调用，默认为空，用于自定义行为
+            </summary>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.RightClick">
+            <summary>
+            右键单击后调用，默认为空，用于自定义行为
+            </summary>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.OnRightClick">
+            <summary>
+            左键单击时调用，默认为空，用于自定义行为
+            </summary>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.OnHover">
+            <summary>
+            鼠标仅仅悬浮时调用，默认为空，用于自定义行为
+            </summary>
+        </member>
+        <member name="M:Stellaris.UI.BaseUIElement.NotHover">
+            <summary>
+            鼠标没有悬浮时调用，默认为空，用于自定义行为
+            </summary>
+        </member>
+    </members>
+</doc>

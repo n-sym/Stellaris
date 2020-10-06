@@ -40,6 +40,7 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
     <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,15 +49,18 @@
     <DefineConstants>TRACE;ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidUseSharedRuntime>true</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <BundleAssemblies>false</BundleAssemblies>
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>..\Library\Android\MonoGame.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="StellarisMobile">
-      <HintPath>..\bin\Debug\net45\StellarisMobile.dll</HintPath>
+    <Reference Include="Stellaris_Android">
+      <HintPath>..\bin\Debug\monoandroid90\Stellaris_Android.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -72,13 +76,11 @@
   <ItemGroup>
     <None Include="app.manifest" />
     <AndroidAsset Include="Assets\SourceHanSansCN-Regular.ttf" />
+    <AndroidAsset Include="Assets\Blur.cfx" />
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" Visible="false" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MonoGame.Content.Builder" Version="3.8.*" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\trail1.png" />
@@ -104,6 +106,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.Android">
+      <Version>3.8.0.1641</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\aaa28.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\zzzz.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

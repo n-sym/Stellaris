@@ -10,7 +10,7 @@ namespace Stellaris
         {
             get
             {
-                string fileName = "NativeMethods." + (Ste.Platform == Platform.Windows ? "dll" : "so");
+                string fileName = "NativeMethods_Windows.dll";
                 string path = Path.Combine(Ste.CurrentDirectory, fileName);
                 using (Stream s = File.Create(path))
                 {
@@ -26,34 +26,71 @@ namespace Stellaris
         {
         }
     }
+    /// <summary>
+    /// 提供当前平台可用的管理本机库的简单封装
+    /// </summary>
     public unsafe class NativeLibrary : IDisposable
     {
-        IntPtr nativeMethods;
+        void* libraryHandle;
         bool disposed;
+        /// <summary>
+        /// 从路径加载一个本机库
+        /// </summary>
         public NativeLibrary(string path)
         {
-            nativeMethods = LibraryHelper.Load(path);
+            libraryHandle = PlatfromLoadLibrary(path);
         }
+        /// <summary>
+        /// 借助Marshal，绑定方法到委托上
+        /// </summary>
+        /// <typeparam name="T">非泛型委托</typeparam>
+        /// <param name="name">方法名</param>
+        /// <returns></returns>
         public T GetMethodDelegate<T>(string name)
         {
-            return Marshal.GetDelegateForFunctionPointer<T>(LibraryHelper.Find(nativeMethods, name));
+            return Marshal.GetDelegateForFunctionPointer<T>((IntPtr)PlatfromFindMethod(name));
         }
+        /// <summary>
+        /// 获取指向方法的函数指针
+        /// </summary>
+        /// <param name="name">方法名</param>
+        /// <returns></returns>
         public void* GetMethodPtr(string name)
         {
-            return LibraryHelper.Find(nativeMethods, name).ToPointer();
+            return PlatfromFindMethod(name);
         }
+        /// <summary>
+        /// 释放库
+        /// </summary>
         ~NativeLibrary()
         {
             if (!disposed) Dispose();
         }
+        /// <summary>
+        /// 释放库
+        /// </summary>
         public void Dispose()
         {
-            Marshal.FreeHGlobal(nativeMethods);
+            Marshal.FreeHGlobal((IntPtr)libraryHandle);
             disposed = true;
         }
+
+        private void* PlatfromLoadLibrary(string file)
+        {
+            return LoadLibraryW(file);
+        }
+        private void* PlatfromFindMethod(string name)
+        {
+            return GetProcAddress(libraryHandle, name);
+        }
+
+        [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
+        private static extern void* GetProcAddress(void* hModule, string procName);
+
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern void* LoadLibraryW(string lpszLib);
     }
-    #region LibraryHelper
-    public static class LibraryHelper
+    internal static class LibraryHelper
     {
         public static IntPtr Load(string fileName)
         {
@@ -104,5 +141,4 @@ namespace Stellaris
         [DllImport("dl")]
         public static extern IntPtr dlsym(IntPtr handle, string symbol);
     }
-    #endregion
 }

@@ -1,12 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <OutputType>library</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>monoandroid90</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
-    <AssemblyVersion>1010.0.0.0</AssemblyVersion>
-    <FileVersion>1010.0.0.0</FileVersion>
-    <Version>1010</Version>
+    <AssemblyVersion>1011.0.0.0</AssemblyVersion>
+    <FileVersion>1011.0.0.0</FileVersion>
+    <Version>1011</Version>
+    <Platforms>AnyCPU;x64</Platforms>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -15,14 +17,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="NativeMethods\**" />
     <Compile Remove="Resources\**" />
     <Compile Remove="StellarisMobile\**" />
     <Compile Remove="StellarisTest\**" />
     <Compile Remove="Test\**" />
+    <EmbeddedResource Remove="NativeMethods\**" />
     <EmbeddedResource Remove="Resources\**" />
     <EmbeddedResource Remove="StellarisMobile\**" />
     <EmbeddedResource Remove="StellarisTest\**" />
     <EmbeddedResource Remove="Test\**" />
+    <None Remove="NativeMethods\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
   <ItemGroup>
@@ -36,17 +41,38 @@
   <ItemGroup>
     <Compile Remove="Main\CommonDX.cs" />
     <Compile Remove="Main\CommonXNA.cs" />
+    <Compile Remove="Main\NativeHelper_Linux.cs" />
+    <Compile Remove="Main\NativeHelper_Windows.cs" />
+    <Compile Remove="Main\Stellaris_Windows.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
+    <None Remove="Main\libNativeMethods_Android.so" />
+    <None Remove="Main\libNativeMethods_Linux.so" />
+    <None Remove="Main\NativeMethods.dll" />
+    <None Remove="Main\NativeMethods.exp" />
+    <None Remove="Main\NativeMethods.iobj" />
+    <None Remove="Main\NativeMethods.ipdb" />
+    <None Remove="Main\NativeMethods.lib" />
+    <None Remove="Main\NativeMethods.pdb" />
+    <None Remove="Main\NativeMethods_Linux.so" />
+    <None Remove="Main\NativeMethods_Windows.dll" />
+    <None Remove="Main\NativeMethods_Windows.exp" />
+    <None Remove="Main\NativeMethods_Windows.iobj" />
+    <None Remove="Main\NativeMethods_Windows.ipdb" />
+    <None Remove="Main\NativeMethods_Windows.lib" />
+    <None Remove="Main\NativeMethods_Windows.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Main\libNativeMethods_Android.so" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mono.Android">
       <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v9.0\Mono.Android.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>Library\Android\MonoGame.Framework_Android.dll</HintPath>
     </Reference>
     <Reference Include="StbTrueTypeSharp">
       <HintPath>..\TerrariaLauncher\Library\StbTrueTypeSharp.dll</HintPath>

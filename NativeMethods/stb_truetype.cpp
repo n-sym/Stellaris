@@ -1,4 +1,3 @@
-#include "pch.h"
 // stb_truetype.h - v1.24 - public domain
 // authored from 2009-2020 by Sean Barrett / RAD Game Tool
 #ifndef stbtt_uint8
@@ -65,14 +64,11 @@ typedef char stbtt__check_size16[sizeof(stbtt_int16) == 2 ? 1 : -1];
 #define STBTT_memset       memset
 #endif
 
-#ifndef __STB_INCLUDE_STB_TRUETYPE_H__
-#define __STB_INCLUDE_STB_TRUETYPE_H__
-
-#ifdef STBTT_STATIC
-#define STBTT_DEF static
-#else
+#ifdef _WINDOWS
 #define STBTT_DEF extern "C" __declspec(dllexport)
-#endif
+#else
+#define STBTT_DEF extern "C"
+#endif _WINDOWS
 
 #ifdef __cplusplus
 extern "C" {
@@ -240,15 +236,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-#endif // __STB_INCLUDE_STB_TRUETYPE_H__
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-////
-////   IMPLEMENTATION
-////
-////
 
 #ifndef STBTT_MAX_OVERSAMPLE
 #define STBTT_MAX_OVERSAMPLE   8
