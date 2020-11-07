@@ -143,6 +143,13 @@ namespace Stellaris.Graphics
         {
             return new Vertex(Position, Color, new Vector2(newCoordX, newCoordY));
         }
+
+        public void SwapCoord(ref Vertex target)
+        {
+            Vector2 cache = TextureCoordinate;
+            TextureCoordinate = target.TextureCoordinate;
+            target.TextureCoordinate = cache;
+        }
         public static Vertex[] GetVertices(int length, Func<int, Vertex> vertexFunction)
         {
             Vertex[] result = new Vertex[length];

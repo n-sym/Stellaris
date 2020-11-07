@@ -12,38 +12,32 @@ namespace Stellaris
         {
 
         }
+
+        public IFont? ReverseFont;
         FontInfo font;
-        GraphicsDevice graphicsDevice;
-        public FontStb_Native(byte[] ttf, GraphicsDevice graphicsDevice = null)
+        public FontStb_Native(byte[] ttf)
         {
-            Initialize(graphicsDevice, ttf);
+            Initialize(ttf);
         }
-        public FontStb_Native(Stream stream, GraphicsDevice graphicsDevice = null)
+        public FontStb_Native(Stream stream)
         {
-            Initialize(graphicsDevice, stream.ToByteArray());
+            Initialize(stream.ToByteArray());
         }
-        public FontStb_Native(string path, GraphicsDevice graphicsDevice = null)
+        public FontStb_Native(string path)
         {
             using (FileStream fileStream = File.OpenRead(path))
             {
-                Initialize(graphicsDevice, fileStream.ToByteArray());
+                Initialize(fileStream.ToByteArray());
             }
         }
-        //private delegate FontInfo _helper_getfontinfo(byte* data, int offset);
-        //private delegate float _stbtt_ScaleForPixelHeight(FontInfo font, float height);
-        //private delegate void _stbtt_GetCodepointBitmapBox(FontInfo font, int codepoint, float scale_x, float scale_y, int* ix0, int* iy0, int* ix1, int* iy1);
-        //private delegate void _stbtt_MakeCodepointBitmap(FontInfo info, byte* output, int out_w, int out_h, int out_stride, float scale_x, float scale_y, int codepoint);
-        //static _helper_getfontinfo helper_getfontinfo;
-        //static _stbtt_ScaleForPixelHeight stbtt_ScaleForPixelHeight;
-        //static _stbtt_GetCodepointBitmapBox stbtt_GetCodepointBitmapBox;
-        //static _stbtt_MakeCodepointBitmap stbtt_MakeCodepointBitmap;
         private static delegate*<byte*, int, FontInfo> helper_GetFontInfo;
         private static delegate*<FontInfo, float, float> stbtt_ScaleForPixelHeight;
         private static delegate*<FontInfo, int, float, float, int*, int*, int*, int*, void> stbtt_GetCodepointBitmapBox;
         private static delegate*<FontInfo, byte*, int, int, int, float, float, int, void> stbtt_MakeCodepointBitmap;
-        private void Initialize(GraphicsDevice graphicsDevice, byte[] ttf)
+        private static delegate*<FontInfo, int, int> stbtt_FindGlyphIndex;
+
+        private void Initialize(byte[] ttf)
         {
-            this.graphicsDevice = graphicsDevice;
             byte* bytePtr = (byte*)GCHandle.Alloc(ttf, GCHandleType.Pinned).AddrOfPinnedObject();
             if (helper_GetFontInfo == null)
             {
@@ -51,32 +45,39 @@ namespace Stellaris
                 stbtt_ScaleForPixelHeight = (delegate*<FontInfo, float, float>)Ste.Native.GetMethodPtr("stbtt_ScaleForPixelHeight");
                 stbtt_GetCodepointBitmapBox = (delegate*<FontInfo, int, float, float, int*, int*, int*, int*, void>)Ste.Native.GetMethodPtr("stbtt_GetCodepointBitmapBox");
                 stbtt_MakeCodepointBitmap = (delegate*<FontInfo, byte*, int, int, int, float, float, int, void>)Ste.Native.GetMethodPtr("stbtt_MakeCodepointBitmap");
+                stbtt_FindGlyphIndex = (delegate*<FontInfo, int, int>)Ste.Native.GetMethodPtr("stbtt_FindGlyphIndex");
             }
             font = helper_GetFontInfo(bytePtr, 0);
             GC.Collect();
+        }
+        public bool HaveGlyph(int codepoint)
+        {
+            return stbtt_FindGlyphIndex(font, codepoint) != 0;
         }
         public Glyph[] GetGlyphsFromCodepoint(float height, int[] codepoint, float scaleX, float scaleY)
         {
             float scale = stbtt_ScaleForPixelHeight(font, height);
             Glyph[] result = new Glyph[codepoint.Length];
-            if (graphicsDevice == null) return result;
             for (int i = 0; i < codepoint.Length; i++)
             {
-                int x0, x1, y0, y1;
-                stbtt_GetCodepointBitmapBox(font, codepoint[i], scale * scaleX, scale * scaleY, &x0, &y0, &x1, &y1);
-                int w = x1 - x0;
-                int h = y1 - y0;
-                if (w == 0 && h == 0)
+                if (HaveGlyph(codepoint[i]))
                 {
-                    w = 1;
-                    h = 1;
+                    int x0, x1, y0, y1;
+                    stbtt_GetCodepointBitmapBox(font, codepoint[i], scale * scaleX, scale * scaleY, &x0, &y0, &x1, &y1);
+                    int w = x1 - x0;
+                    int h = y1 - y0;
+                    byte[] bitmap = new byte[w * h];
+                    fixed (byte* bytePtr = bitmap)
+                    {
+                        stbtt_MakeCodepointBitmap(font, bytePtr, w, h, w, scale * scaleX, scale * scaleY, codepoint[i]);
+                    }
+                    result[i] = new Glyph(bitmap, x0, x1, y0, y1);
                 }
-                byte[] bitmap = new byte[w * h];
-                fixed (byte* bytePtr = bitmap)
+                else
                 {
-                    stbtt_MakeCodepointBitmap(font, bytePtr, w, h, w, scale * scaleX, scale * scaleY, codepoint[i]);
+                    if (ReverseFont == null) result[i] = new Glyph(new byte[0], 0, 0, 0, 0);
+                    else result[i] = ReverseFont.GetGlyphsFromCodepoint(height, new int[] { codepoint[i]}, scaleX, scaleY)[0];
                 }
-                result[i] = new Glyph(FontHelper.ByteDataToTexture2D(graphicsDevice, bitmap, w, h), x0, x1, y0, y1);
             }
             GC.Collect();
             return result;

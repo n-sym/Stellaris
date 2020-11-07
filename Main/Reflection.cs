@@ -2,9 +2,9 @@
 using System;
 using System.Reflection;
 
-namespace Stellaris.Main
+namespace Stellaris
 {
-    internal static class ReflectionHelper
+    public static class ReflectionHelper
     {
         static Assembly mg = typeof(Vector2).Assembly;
         public static Type GetMGClass(string name)
@@ -20,9 +20,17 @@ namespace Stellaris.Main
         {
             return type.GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
         }
+        public static MethodInfo GetNonPublicInstanceMethod(this Type type, string name)
+        {
+            return type.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+        }
         public static MethodInfo GetPublicStaticMethod(this Type type, string name)
         {
             return type.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
+        }
+        public static MethodInfo GetNonPublicStaticMethod(this Type type, string name)
+        {
+            return type.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static);
         }
     }
 }

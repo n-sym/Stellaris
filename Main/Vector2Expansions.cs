@@ -22,12 +22,23 @@ namespace Stellaris
             float s = (float)Math.Sin(radian);
             return new Vector2(c * vec.X - s * vec.Y, s * vec.X + c * vec.Y);
         }
+        public static Vector2 Rotate_(this Vector2 vec, float radian)
+        {
+            if (radian == 0) return vec;
+            float c = (float)Math.Cos(radian);
+            float s = (float)Math.Sin(radian);
+            return new Vector2(c * vec.X - s * vec.Y, s * vec.X + c * vec.Y);
+        }
         public static Vector2 Rotate(this Vector2 vec, float radian, Vector2 center = default)
         {
             vec -= center;
             float c = (float)Math.Cos(radian);
             float s = (float)Math.Sin(radian);
             return new Vector2(c * vec.X - s * vec.Y, s * vec.X + c * vec.Y) + center;
+        }
+        public static Vector2 Floor_(this Vector2 vec)
+        {
+            return new Vector2((int)vec.X, (int)vec.Y);
         }
         public static float Angle(this Vector2 vec)
         {

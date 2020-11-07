@@ -9,7 +9,7 @@
             动态生成字形的SpriteFont
             </summary>
         </member>
-        <member name="M:Stellaris.Graphics.DynamicSpriteFont.#ctor(Stellaris.IFont,System.Single,Microsoft.Xna.Framework.Vector2)">
+        <member name="M:Stellaris.Graphics.DynamicSpriteFont.#ctor(Microsoft.Xna.Framework.Graphics.GraphicsDevice,Stellaris.IFont,System.Single,Microsoft.Xna.Framework.Vector2)">
             <summary>
             构建DynamicSpriteFont
             </summary>
@@ -169,6 +169,16 @@
             中心类型
             </summary>
         </member>
+        <member name="T:Stellaris.CommonMouseState">
+            <summary>
+            通用鼠标状态
+            </summary>
+        </member>
+        <member name="T:Stellaris.Platform">
+            <summary>
+            平台
+            </summary>
+        </member>
         <member name="M:Stellaris.Expansions.TryGetValue``1(System.Collections.Generic.IList{``0},System.Int32)">
             <summary>
             读取IList中索引为index那一项的值，如果越界则返回第一项或最后一项的值
@@ -197,6 +207,11 @@
         <member name="M:Stellaris.Helper.TryGetValue(System.Single,System.Single,System.Single)">
             <summary>
             如果Value不在(min, max)，返回最接近的一段的值
+            </summary>
+        </member>
+        <member name="M:Stellaris.Helper.TrySetValue``1(System.Collections.Generic.IList{``0},System.Int32,``0)">
+            <summary>
+            如果可以，赋值
             </summary>
         </member>
         <member name="M:Stellaris.Helper.GetLoopedValue(System.Single,System.Single,System.Single)">

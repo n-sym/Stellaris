@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Stellaris
 {
+    /// <summary>
+    /// 通用鼠标状态
+    /// </summary>
     public struct CommonMouseState
     {
         public Vector2 Position;
@@ -21,6 +24,9 @@ namespace Stellaris
             this.ScrollWheel = scrollWheel;
         }
     }
+    /// <summary>
+    /// 平台
+    /// </summary>
     public enum Platform
     {
         Windows = 1,

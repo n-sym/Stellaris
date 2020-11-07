@@ -39,7 +39,9 @@ namespace Stellaris.Test
             //var n = new FontStb_Native(Ste.GetAsset("SourceHanSansCN-Regular.ttf"), graphicsDevice);
             //text = new DynamicTextureTextGDI(graphicsDevice, Environment.CurrentDirectory + Path.DirectorySeparatorChar + "SourceHanSansCN-Regular.ttf", 40, "***ABCD文字绘制测试\nStellaris\n增益免疫汉化组");
             dtt = new DynamicSpriteFont(graphicsDevice, Ste.GetAsset("SourceHanSansCN-Regular.ttf"), 80, useNative: false);
-            //dtt2 = new DynamicSpriteFont(graphicsDevice, Ste.GetAsset("SourceHanSansCN-Regular.ttf"), 80, useNative: true);
+            var font = new FontStb_Native(Ste.GetAsset("Product-Sans-Regular.ttf"));
+            font.ReverseFont = dtt.font;
+            dtt2 = new DynamicSpriteFont(graphicsDevice, font, 80);
             tex3 = Texture2D.FromStream(graphicsDevice, Ste.GetAsset("trail3.png"));
             tex = Texture2D.FromStream(graphicsDevice, Ste.GetAsset("zzzz.png"));
             tex2 = Texture2D.FromStream(graphicsDevice, Ste.GetAsset("trail3.png"));
@@ -146,7 +148,7 @@ namespace Stellaris.Test
             if (refresh)
             {
                 dtt.ClearCache();
-                //dtt2.ClearCache();
+                dtt2.ClearCache();
             }
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -155,7 +157,7 @@ namespace Stellaris.Test
             var timer1 = stopwatch.ElapsedMilliseconds;
             stopwatch.Reset();
             stopwatch.Start();
-            //dtt2.Cache(text.ToCharArray());
+            dtt2.Cache(text.ToCharArray());
             stopwatch.Stop();
             var timer2 = stopwatch.ElapsedMilliseconds;
             Window.Title = string.Format("C#:{0}, C++:{1}, C++ / C#:{2}, 不缓存字体:{3}, 空格键切换", timer1, timer2, timer2 * 1f / timer1, refresh);
@@ -199,7 +201,7 @@ namespace Stellaris.Test
             //vertexBatch.Draw(Border.GetBorderDrawInfo(PrimitiveType.LineStrip, new Vector2(100, 100), 500, 150, 75, Color.White));
             vertexBatch.End();
             spriteBatch.Begin();
-            //dtt2.DrawString(spriteBatch, "我被shader克制了", new Vector2(10, 20));
+            dtt2.DrawString(spriteBatch, "我被shader克制了", new Vector2(10, 20));
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate);
             z.Parameters["tex"].SetValue(renderTarget2D);

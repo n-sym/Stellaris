@@ -15,8 +15,10 @@ namespace Stellaris.Graphics
         public float height;
         public Vector2 spacing;
         public bool onlyUseUserSpcacing;
-        IFont font;
+        public bool useNative;
+        public IFont font;
         Dictionary<char, Glyph> Glyphs;
+        GraphicsDevice graphicsDevice;
         Glyph defaultGlyph;
         Glyph defaultGlyphCn;
         /// <summary>
@@ -25,9 +27,9 @@ namespace Stellaris.Graphics
         /// <param name="font">字体</param>
         /// <param name="height">高度</param>
         /// <param name="spacing">间距</param>
-        public DynamicSpriteFont(IFont font, float height, Vector2 spacing = default)
+        public DynamicSpriteFont(GraphicsDevice graphicsDevice, IFont font, float height, Vector2 spacing = default)
         {
-            Initialize(font, height, spacing);
+            Initialize(graphicsDevice, font, height, spacing, true);
         }
         /// <summary>
         /// 构建DynamicSpriteFont
@@ -41,7 +43,7 @@ namespace Stellaris.Graphics
         {
             using (FileStream fileStream = File.OpenRead(path))
             {
-                Initialize(useNative ? new FontStb_Native(path, graphicsDevice) as IFont : new FontStb(path, graphicsDevice), height, spacing);
+                Initialize(graphicsDevice, useNative ? new FontStb_Native(path) as IFont : new FontStb(path), height, spacing, useNative);
             }
         }
         /// <summary>
@@ -54,13 +56,15 @@ namespace Stellaris.Graphics
         /// <param name="useNative">使用Native代码渲染字形</param>
         public DynamicSpriteFont(GraphicsDevice graphicsDevice, Stream stream, float height, Vector2 spacing = default, bool useNative = true)
         {
-            Initialize(useNative ? new FontStb_Native(stream, graphicsDevice) as IFont : new FontStb(stream, graphicsDevice), height, spacing);
+            Initialize(graphicsDevice, useNative ? new FontStb_Native(stream) as IFont : new FontStb(stream), height, spacing, useNative);
         }
-        private void Initialize(IFont font, float height, Vector2 spacing)
+        private void Initialize(GraphicsDevice graphicsDevice,IFont font, float height, Vector2 spacing, bool useNative)
         {
+            this.graphicsDevice = graphicsDevice;
             this.font = font;
             this.height = height;
             this.spacing = spacing;
+            this.useNative = useNative;
             Glyphs = new Dictionary<char, Glyph>();
             Glyph[] Glyph = font.GetGlyphsFromCodepoint(height, new int[] { 'A', '国' }, 1f, 1f);
             defaultGlyph = Glyph[0];
@@ -82,17 +86,23 @@ namespace Stellaris.Graphics
             List<char> chars = charArray.ToList();
             for (int i = 0; i < chars.Count; i++)
             {
-                if (Glyphs.ContainsKey(chars[i]) || chars.IndexOf(chars[i]) < i)
+                if (Glyphs.ContainsKey(chars[i]) || chars.IndexOf(chars[i]) < i || chars[i] == ' ')
                 {
                     chars.RemoveAt(i);
                     i--;
                 }
             }
             if (chars.Count == 0) return;
-            Glyph[] GlyphArray = font.GetGlyphsFromCodepoint(height, chars.ToCodePointArray(), 1f, 1f);
+            Glyph[] glyphArray = font.GetGlyphsFromCodepoint(height, chars.ToCodePointArray(), 1f, 1f);
             for (int i = 0; i < chars.Count; i++)
             {
-                Glyphs.Add(chars[i], GlyphArray[i]);
+                if (glyphArray[i].texture == null && glyphArray[i].Width != 0)
+                {
+                    glyphArray[i].texture = FontHelper.ByteDataToTexture2D(graphicsDevice, glyphArray[i].bitmap,
+                    glyphArray[i].Width, glyphArray[i].Height);
+                    glyphArray[i].bitmap = new byte[0];
+                }
+                Glyphs.Add(chars[i], glyphArray[i]);
             }
         }
         /// <summary>
@@ -153,11 +163,11 @@ namespace Stellaris.Graphics
                 }
                 else
                 {
-                    Glyph Glyph = Glyphs[chars[i]];
-                    if (rotation == 0) spriteBatch.Draw(new SpriteDrawInfo(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale) + position, null, color, origin, scale, 0f, effects, layerDepth));
-                    else spriteBatch.Draw(new SpriteDrawInfo(Glyph.texture, new Vector2(x + Glyph.x0, y + Glyph.y0).MutiplyXY(scale).Rotate(rotation) + position, null, color, origin, scale, rotation, effects, layerDepth));
+                    Glyph glyph = Glyphs[chars[i]];
+                    if (rotation == 0) spriteBatch.Draw(new SpriteDrawInfo(glyph.texture, new Vector2(x + glyph.x0, y + glyph.y0).MutiplyXY(scale) + position, null, color, origin, scale, 0f, effects, layerDepth));
+                    else spriteBatch.Draw(new SpriteDrawInfo(glyph.texture, new Vector2(x + glyph.x0, y + glyph.y0).MutiplyXY(scale).Rotate(rotation) + position, null, color, origin, scale, rotation, effects, layerDepth));
                     if (FontHelper.IsCn(chars[i])) x += defaultGlyphCn.Width * 1.2f * spacingFix + spacing.X;
-                    else x += Glyph.WidthAlt * spacingFix + spacing.X;
+                    else x += glyph.WidthAlt * spacingFix + spacing.X;
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace Stellaris
 {
@@ -14,6 +15,15 @@ namespace Stellaris
             if (value < min) return min;
             if (value > max) return max;
             return value;
+        }
+        /// <summary>
+        /// 如果可以，赋值
+        /// </summary>
+        public static void TrySetValue<T>(this IList<T> list, int index, T value)
+        {
+            if (index < 0) return;
+            if (index >= list.Count) return;
+            list[index] = value;
         }
         /// <summary>
         /// 周期函数，取不到max的值
@@ -248,6 +258,52 @@ namespace Stellaris
                 }
             }
             return new Color(num4, num5, num6);
+        }
+        public static int[] SplitNum(int num)
+        {
+            int length = 0;
+            for (int i = 1; ; i *= 10)
+            {
+                if (i > num) break;
+                length += 1;
+            }
+            int[] cache = new int[length];
+            int[] result = new int[length];
+            for (int i = 0; i < length; i++)
+            {
+                cache[i] = num;
+                num /= 10;
+            }
+            for (int i = 1; i < length; i++)
+            {
+                result[i] = cache[length - i - 1] - cache[length - i] * 10;
+            }
+            result[0] = cache[length - 1];
+            return result;
+        }
+        public static Color[] CutBitmap(Color[] bitmap, int bitmapWidth, int startX, int startY, int width, int height)
+        {
+            Color[] result = new Color[width * height];
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    result[j * width + i] = bitmap[(j + startY) * bitmapWidth + startX + i];
+                }
+            }
+            return result;
+        }
+        public static byte[] CutBitmap(byte[] bitmap, int bitmapWidth, int startX, int startY, int width, int height)
+        {
+            byte[] result = new byte[width * height];
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    result[j * width + i] = bitmap[(j + startY) * bitmapWidth + startX + i];
+                }
+            }
+            return result;
         }
     }
 }

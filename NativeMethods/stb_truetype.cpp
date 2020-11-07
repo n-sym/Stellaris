@@ -68,7 +68,7 @@ typedef char stbtt__check_size16[sizeof(stbtt_int16) == 2 ? 1 : -1];
 #define STBTT_DEF extern "C" __declspec(dllexport)
 #else
 #define STBTT_DEF extern "C"
-#endif _WINDOWS
+#endif //_WINDOWS
 
 #ifdef __cplusplus
 extern "C" {
@@ -113,13 +113,6 @@ extern "C" {
     STBTT_DEF int  stbtt_GetGlyphBox(const stbtt_fontinfo* info, int glyph_index, int* x0, int* y0, int* x1, int* y1);
     // as above, but takes one or more glyph indices for greater efficiency
 
-    typedef struct stbtt_kerningentry
-    {
-        int glyph1; // use stbtt_FindGlyphIndex
-        int glyph2;
-        int advance;
-    } stbtt_kerningentry;
-
 #ifndef STBTT_vmove // you can predefine these to use different values (but why?)
     enum {
         STBTT_vmove = 1,
@@ -142,7 +135,6 @@ extern "C" {
     STBTT_DEF int stbtt_IsGlyphEmpty(const stbtt_fontinfo* info, int glyph_index);
     // returns non-zero if nothing is drawn for this glyph
 
-    STBTT_DEF int stbtt_GetCodepointShape(const stbtt_fontinfo* info, int unicode_codepoint, stbtt_vertex** vertices);
     STBTT_DEF int stbtt_GetGlyphShape(const stbtt_fontinfo* info, int glyph_index, stbtt_vertex** vertices);
 
     STBTT_DEF void stbtt_FreeBitmap(unsigned char* bitmap, void* userdata);
@@ -449,40 +441,6 @@ static stbtt_uint32 stbtt__find_table(stbtt_uint8* data, stbtt_uint32 fontstart,
     return 0;
 }
 
-static int stbtt_GetFontOffsetForIndex_internal(unsigned char* font_collection, int index)
-{
-    // if it's just a font, there's only one valid index
-    if (stbtt__isfont(font_collection))
-        return index == 0 ? 0 : -1;
-
-    // check if it's a TTC
-    if (stbtt_tag(font_collection, "ttcf")) {
-        // version 1?
-        if (ttULONG(font_collection + 4) == 0x00010000 || ttULONG(font_collection + 4) == 0x00020000) {
-            stbtt_int32 n = ttLONG(font_collection + 8);
-            if (index >= n)
-                return -1;
-            return ttULONG(font_collection + 12 + index * 4);
-        }
-    }
-    return -1;
-}
-
-static int stbtt_GetNumberOfFonts_internal(unsigned char* font_collection)
-{
-    // if it's just a font, there's only one valid font
-    if (stbtt__isfont(font_collection))
-        return 1;
-
-    // check if it's a TTC
-    if (stbtt_tag(font_collection, "ttcf")) {
-        // version 1?
-        if (ttULONG(font_collection + 4) == 0x00010000 || ttULONG(font_collection + 4) == 0x00020000) {
-            return ttLONG(font_collection + 8);
-        }
-    }
-    return 0;
-}
 
 static stbtt__buf stbtt__get_subrs(stbtt__buf cff, stbtt__buf fontdict)
 {
@@ -495,23 +453,6 @@ static stbtt__buf stbtt__get_subrs(stbtt__buf cff, stbtt__buf fontdict)
     if (!subrsoff) return stbtt__new_buf(NULL, 0);
     stbtt__buf_seek(&cff, private_loc[1] + subrsoff);
     return stbtt__cff_get_index(&cff);
-}
-
-// since most people won't use this, find this table the first time it's needed
-static int stbtt__get_svg(stbtt_fontinfo* info)
-{
-    stbtt_uint32 t;
-    if (info->svg < 0) {
-        t = stbtt__find_table(info->data, info->fontstart, "SVG ");
-        if (t) {
-            stbtt_uint32 offset = ttULONG(info->data + t + 2);
-            info->svg = t + offset;
-        }
-        else {
-            info->svg = 0;
-        }
-    }
-    return info->svg;
 }
 
 static int stbtt_InitFont_internal(stbtt_fontinfo* info, unsigned char* data, int fontstart)
@@ -725,10 +666,6 @@ STBTT_DEF int stbtt_FindGlyphIndex(const stbtt_fontinfo* info, int unicode_codep
     return 0;
 }
 
-STBTT_DEF int stbtt_GetCodepointShape(const stbtt_fontinfo* info, int unicode_codepoint, stbtt_vertex** vertices)
-{
-    return stbtt_GetGlyphShape(info, stbtt_FindGlyphIndex(info, unicode_codepoint), vertices);
-}
 
 static void stbtt_setvertex(stbtt_vertex* v, stbtt_uint8 type, stbtt_int32 x, stbtt_int32 y, stbtt_int32 cx, stbtt_int32 cy)
 {
@@ -900,7 +837,6 @@ static int stbtt__GetGlyphShapeTT(const stbtt_fontinfo* info, int glyph_index, s
             vertices[off + i].y = (stbtt_int16)y;
         }
 
-        // now convert them to our format
         num_vertices = 0;
         sx = sy = cx = cy = scx = scy = 0;
         for (i = 0; i < n; ++i) {
@@ -911,24 +847,18 @@ static int stbtt__GetGlyphShapeTT(const stbtt_fontinfo* info, int glyph_index, s
             if (next_move == i) {
                 if (i != 0)
                     num_vertices = stbtt__close_shape(vertices, num_vertices, was_off, start_off, sx, sy, scx, scy, cx, cy);
-
-                // now start the new one
                 start_off = !(flags & 1);
                 if (start_off) {
-                    // if we start off with an off-curve point, then when we need to find a point on the curve
-                    // where we can start, and we need to save some state for when we wraparound.
                     scx = x;
                     scy = y;
                     if (!(vertices[off + i + 1].type & 1)) {
-                        // next point is also a curve point, so interpolate an on-point curve
                         sx = (x + (stbtt_int32)vertices[off + i + 1].x) >> 1;
                         sy = (y + (stbtt_int32)vertices[off + i + 1].y) >> 1;
                     }
                     else {
-                        // otherwise just use the next point as our start point
                         sx = (stbtt_int32)vertices[off + i + 1].x;
                         sy = (stbtt_int32)vertices[off + i + 1].y;
-                        ++i; // we're using point i+1 as the starting point, so skip it
+                        ++i;
                     }
                 }
                 else {
@@ -1425,7 +1355,6 @@ static int stbtt__run_charstring(const stbtt_fontinfo* info, int glyph_index, st
 
 static int stbtt__GetGlyphShapeT2(const stbtt_fontinfo* info, int glyph_index, stbtt_vertex** pvertices)
 {
-    // runs the charstring twice, once to count and once to output (to avoid realloc)
     stbtt__csctx count_ctx = STBTT__CSCTX_INIT(1);
     stbtt__csctx output_ctx = STBTT__CSCTX_INIT(0);
     if (stbtt__run_charstring(info, glyph_index, &count_ctx)) {
@@ -1740,39 +1669,17 @@ static void stbtt__fill_active_edges_new(float* scanline, float* scanline_fill, 
                 }
             }
             else {
-                // if edge goes outside of box we're drawing, we require
-                // clipping logic. since this does not match the intended use
-                // of this library, we use a different, very slow brute
-                // force implementation
                 int x;
                 for (x = 0; x < len; ++x) {
-                    // cases:
-                    //
-                    // there can be up to two intersections with the pixel. any intersection
-                    // with left or right edges can be handled by splitting into two (or three)
-                    // regions. intersections with top & bottom do not necessitate case-wise logic.
-                    //
-                    // the old way of doing this found the intersections with the left & right edges,
-                    // then used some simple logic to produce up to three segments in sorted order
-                    // from top-to-bottom. however, this had a problem: if an x edge was epsilon
-                    // across the x border, then the corresponding y position might not be distinct
-                    // from the other y segment, and it might ignored as an empty segment. to avoid
-                    // that, we need to explicitly produce segments based on x positions.
-
-                    // rename variables to clearly-defined pairs
                     float y0 = y_top;
                     float x1 = (float)(x);
                     float x2 = (float)(x + 1);
                     float x3 = xb;
                     float y3 = y_bottom;
-
-                    // x = e->x + e->dx * (y-y_top)
-                    // (y-y_top) = (x - e->x) / e->dx
-                    // y = (x - e->x) / e->dx + y_top
                     float y1 = (x - x0) / dx + y_top;
                     float y2 = (x + 1 - x0) / dx + y_top;
 
-                    if (x0 < x1 && x3 > x2) {         // three segments descending down-right
+                    if (x0 < x1 && x3 > x2) {
                         stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x1, y1);
                         stbtt__handle_clipped_edge(scanline, x, e, x1, y1, x2, y2);
                         stbtt__handle_clipped_edge(scanline, x, e, x2, y2, x3, y3);
@@ -1829,16 +1736,11 @@ static void stbtt__rasterize_sorted_edges(stbtt__bitmap* result, stbtt__edge* e,
     e[n].y0 = (float)(off_y + result->h) + 1;
 
     while (j < result->h) {
-        // find center of pixel for this scanline
         float scan_y_top = y + 0.0f;
         float scan_y_bottom = y + 1.0f;
         stbtt__active_edge** step = &active;
-
         STBTT_memset(scanline, 0, result->w * sizeof(scanline[0]));
         STBTT_memset(scanline2, 0, (result->w + 1) * sizeof(scanline[0]));
-
-        // update all active edges;
-        // remove all active edges that terminate before the top of this scanline
         while (*step) {
             stbtt__active_edge* z = *step;
             if (z->ey <= scan_y_top) {
@@ -1851,8 +1753,6 @@ static void stbtt__rasterize_sorted_edges(stbtt__bitmap* result, stbtt__edge* e,
                 step = &((*step)->next); // advance through list
             }
         }
-
-        // insert all edges that start before the bottom of this scanline
         while (e->y0 <= scan_y_bottom) {
             if (e->y0 != e->y1) {
                 stbtt__active_edge* z = stbtt__new_active(&hh, e, off_x, scan_y_top, userdata);
@@ -1871,8 +1771,6 @@ static void stbtt__rasterize_sorted_edges(stbtt__bitmap* result, stbtt__edge* e,
             }
             ++e;
         }
-
-        // now process all active edges
         if (active)
             stbtt__fill_active_edges_new(scanline, scanline2 + 1, result->w, active, scan_y_top);
 
@@ -1929,46 +1827,32 @@ static void stbtt__sort_edges_ins_sort(stbtt__edge* p, int n)
 
 static void stbtt__sort_edges_quicksort(stbtt__edge* p, int n)
 {
-    /* threshold for transitioning to insertion sort */
     while (n > 12) {
         stbtt__edge t;
         int c01, c12, c, m, i, j;
-
-        /* compute median of three */
         m = n >> 1;
         c01 = STBTT__COMPARE(&p[0], &p[m]);
         c12 = STBTT__COMPARE(&p[m], &p[n - 1]);
-        /* if 0 >= mid >= end, or 0 < mid < end, then use mid */
         if (c01 != c12) {
-            /* otherwise, we'll need to swap something else to middle */
             int z;
             c = STBTT__COMPARE(&p[0], &p[n - 1]);
-            /* 0>mid && mid<n:  0>n => n; 0<n => 0 */
-            /* 0<mid && mid>n:  0>n => 0; 0<n => n */
             z = (c == c12) ? 0 : n - 1;
             t = p[z];
             p[z] = p[m];
             p[m] = t;
         }
-        /* now p[m] is the median-of-three */
-        /* swap it to the beginning so it won't move around */
         t = p[0];
         p[0] = p[m];
         p[m] = t;
-
-        /* partition loop */
         i = 1;
         j = n - 1;
         for (;;) {
-            /* handling of equality is crucial here */
-            /* for sentinels & efficiency with duplicates */
             for (;;++i) {
                 if (!STBTT__COMPARE(&p[i], &p[0])) break;
             }
             for (;;--j) {
                 if (!STBTT__COMPARE(&p[0], &p[j])) break;
             }
-            /* make sure we haven't crossed */
             if (i >= j) break;
             t = p[i];
             p[i] = p[j];
@@ -1977,7 +1861,6 @@ static void stbtt__sort_edges_quicksort(stbtt__edge* p, int n)
             ++i;
             --j;
         }
-        /* recurse on smaller side, iterate on larger */
         if (j < (n - i)) {
             stbtt__sort_edges_quicksort(p, j);
             p = p + i;
@@ -2089,7 +1972,6 @@ static int stbtt__tesselate_curve(stbtt__point* points, int* num_points, float x
 
 static void stbtt__tesselate_cubic(stbtt__point* points, int* num_points, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, float objspace_flatness_squared, int n)
 {
-    // @TODO this "flatness" calculation is just made-up nonsense that seems to work well enough
     float dx0 = x1 - x0;
     float dy0 = y1 - y0;
     float dx1 = x2 - x1;
@@ -2102,7 +1984,7 @@ static void stbtt__tesselate_cubic(stbtt__point* points, int* num_points, float 
     float shortlen = (float)STBTT_sqrt(dx * dx + dy * dy);
     float flatness_squared = longlen * longlen - shortlen * shortlen;
 
-    if (n > 16) // 65536 segments on one curve better be enough!
+    if (n > 16)
         return;
 
     if (flatness_squared > objspace_flatness_squared) {
@@ -2298,11 +2180,6 @@ STBTT_DEF void stbtt_MakeCodepointBitmapSubpixel(const stbtt_fontinfo* info, uns
 STBTT_DEF void stbtt_MakeCodepointBitmap(const stbtt_fontinfo* info, unsigned char* output, int out_w, int out_h, int out_stride, float scale_x, float scale_y, int codepoint)
 {
     stbtt_MakeCodepointBitmapSubpixel(info, output, out_w, out_h, out_stride, scale_x, scale_y, 0.0f, 0.0f, codepoint);
-}
-
-static int equal(float* a, float* b)
-{
-    return (a[0] == b[0] && a[1] == b[1]);
 }
 
 

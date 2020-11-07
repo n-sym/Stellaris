@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Stellaris
@@ -11,7 +13,7 @@ namespace Stellaris
             get
             {
                 string fileName = "NativeMethods_Windows.dll";
-                string path = Path.Combine(Ste.CurrentDirectory, fileName);
+                string path = Path.Combine(Ste.CurrentDirectory, "runtimes", fileName);
                 using (Stream s = File.Create(path))
                 {
                     using (Stream t = typeof(Ste).Assembly.GetManifestResourceStream("Stellaris.Main." + fileName))
@@ -58,7 +60,7 @@ namespace Stellaris
         public void* GetMethodPtr(string name)
         {
             return PlatfromFindMethod(name);
-        }
+        } 
         /// <summary>
         /// 释放库
         /// </summary>

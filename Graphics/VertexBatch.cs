@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Stellaris.Main;
 using System;
+using System.Text;
 
 namespace Stellaris.Graphics
 {
@@ -105,23 +105,53 @@ namespace Stellaris.Graphics
         {
             Vertex[] v = new Vertex[4];
             Vector2 pos = spriteDrawInfo.position;
+            Vector2 size = spriteDrawInfo.sourceRectangle.HasValue ? new Vector2(spriteDrawInfo.sourceRectangle.Value.Width, spriteDrawInfo.sourceRectangle.Value.Height) :
+                new Vector2(spriteDrawInfo.texture.Width, spriteDrawInfo.texture.Height);
             if (spriteDrawInfo.rotation == 0)
             {
                 pos -= spriteDrawInfo.origin;
                 v[0] = new Vertex(pos, spriteDrawInfo.color, Vector2.Zero);
-                v[1] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, 0), spriteDrawInfo.color, new Vector2(1, 0));
-                v[2] = new Vertex(pos + new Vector2(0, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y), spriteDrawInfo.color, new Vector2(0, 1));
-                v[3] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y), spriteDrawInfo.color, Vector2.One);
+                v[1] = new Vertex(pos + new Vector2((int)(size.X * spriteDrawInfo.scale.X), 0), spriteDrawInfo.color, new Vector2(1, 0));
+                v[2] = new Vertex(pos + new Vector2(0, (int)(size.Y * spriteDrawInfo.scale.Y)), spriteDrawInfo.color, new Vector2(0, 1));
+                v[3] = new Vertex(pos + new Vector2((int)(size.X * spriteDrawInfo.scale.X), (int)(size.Y * spriteDrawInfo.scale.Y)), spriteDrawInfo.color, Vector2.One);
             }
             else
             {
                 pos -= spriteDrawInfo.origin.Rotate(spriteDrawInfo.rotation);
                 v[0] = new Vertex(pos, spriteDrawInfo.color, Vector2.Zero);
-                v[1] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, 0).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(1, 0));
-                v[2] = new Vertex(pos + new Vector2(0, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(0, 1));
-                v[3] = new Vertex(pos + new Vector2(spriteDrawInfo.texture.Width * spriteDrawInfo.scale.X, spriteDrawInfo.texture.Height * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, Vector2.One);
+                v[1] = new Vertex(pos + new Vector2(size.X * spriteDrawInfo.scale.X, 0).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(1, 0));
+                v[2] = new Vertex(pos + new Vector2(0, size.Y * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(0, 1));
+                v[3] = new Vertex(pos + new Vector2(size.X * spriteDrawInfo.scale.X, size.Y * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, Vector2.One);
+            }
+            if (spriteDrawInfo.sourceRectangle.HasValue)
+            {
+                v[0].TextureCoordinate = new Vector2(spriteDrawInfo.sourceRectangle.Value.X / (float)spriteDrawInfo.texture.Width,
+                    spriteDrawInfo.sourceRectangle.Value.Y / (float)spriteDrawInfo.texture.Height);
+                v[1].TextureCoordinate = v[0].TextureCoordinate + new Vector2(size.X / spriteDrawInfo.texture.Width, 0);
+                v[2].TextureCoordinate = v[0].TextureCoordinate + new Vector2(0, size.Y / spriteDrawInfo.texture.Height);
+                v[3].TextureCoordinate = new Vector2(v[1].TextureCoordinate.X, v[2].TextureCoordinate.Y);
+            }
+            if(spriteDrawInfo.effects != SpriteEffects.None)
+            {
+                if (spriteDrawInfo.effects == SpriteEffects.FlipHorizontally)
+                {
+                    v[0].SwapCoord(ref v[1]);
+                    v[2].SwapCoord(ref v[3]);
+                }
+                else
+                {
+                    v[0].SwapCoord(ref v[3]);
+                    v[2].SwapCoord(ref v[1]);
+                }
             }
             DoDraw(v, primitiveType == PrimitiveType.TriangleStrip ? new short[] { 0, 1, 2, 3 } : new short[] { 0, 1, 2, 1, 3, 2 }, spriteDrawInfo.texture);
+        }
+        private void MakeUpForSprite(Vertex[] v, Vector2 pos, Vector2 posFix, Color color, Vector2 coord)
+        {
+            v[0] = new Vertex(pos, color, Vector2.Zero);
+            v[1] = new Vertex(pos + new Vector2(posFix.X, 0), color, new Vector2(coord.X, 0));
+            v[2] = new Vertex(pos + new Vector2(0, posFix.Y), color, new Vector2(0, coord.Y));
+            v[3] = new Vertex(pos + posFix, color, coord);
         }
         /// <summary>
         /// 设置是否立即绘制

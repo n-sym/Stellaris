@@ -1,13 +1,9 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <OutputType>library</OutputType>
     <TargetFramework>monoandroid90</TargetFramework>
-    <PublishReadyToRun>false</PublishReadyToRun>
-    <TieredCompilation>false</TieredCompilation>
     <AssemblyVersion>1011.0.0.0</AssemblyVersion>
     <FileVersion>1011.0.0.0</FileVersion>
     <Version>1011</Version>
-    <Platforms>AnyCPU;x64</Platforms>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -48,7 +44,7 @@
   <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
-    <None Remove="Main\libNativeMethods_Android.so" />
+    <None Remove="Main\libNativeMethods.so" />
     <None Remove="Main\libNativeMethods_Linux.so" />
     <None Remove="Main\NativeMethods.dll" />
     <None Remove="Main\NativeMethods.exp" />
@@ -65,9 +61,6 @@
     <None Remove="Main\NativeMethods_Windows.pdb" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Main\libNativeMethods_Android.so" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
@@ -77,8 +70,5 @@
     <Reference Include="StbTrueTypeSharp">
       <HintPath>..\TerrariaLauncher\Library\StbTrueTypeSharp.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
 </Project>
