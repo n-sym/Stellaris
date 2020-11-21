@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Text;
+using System.Diagnostics;
 
 namespace Stellaris.Graphics
 {
@@ -12,8 +12,9 @@ namespace Stellaris.Graphics
     {
         public GraphicsDevice graphicsDevice;
         public PrimitiveType primitiveType;
-        private Vertex[] vertexData;
-        private short[] indexData;
+        private VertexDrawInfo[] infos;
+        private int drawCalls;
+        private int drawCount;
         private bool _begin;
         private Effect spriteEffect;
         private EffectParameter _matrixTransform;
@@ -25,10 +26,10 @@ namespace Stellaris.Graphics
         public VertexBatch(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
-            vertexData = new Vertex[0];
             Type effectResource = ReflectionHelper.GetMGClass("Microsoft.Xna.Framework.Graphics.EffectResource");
             spriteEffect = new Effect(graphicsDevice, effectResource.GetPublicInstanceMethod("get_Bytecode").Invoke(effectResource.GetPublicStaticField("SpriteEffect").GetValue(null), null) as byte[]);
             _matrixTransform = spriteEffect.Parameters["MatrixTransform"];
+            infos = new VertexDrawInfo[1024];
         }
         private void OnBeginning(PrimitiveType primitiveType, BlendState blendState)
         {
@@ -38,7 +39,7 @@ namespace Stellaris.Graphics
             graphicsDevice.BlendState = blendState;
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
-            graphicsDevice.RasterizerState = rasterizerState;
+            //graphicsDevice.RasterizerState = rasterizerState;
             Viewport viewport = graphicsDevice.Viewport;
             Matrix.CreateOrthographicOffCenter(0f, viewport.Width, viewport.Height, 0f, 0f, -1f, out _projection);
             _matrixTransform.SetValue(_projection);
@@ -68,18 +69,18 @@ namespace Stellaris.Graphics
         /// <param name="vertex">顶点</param>
         /// <param name="index">索引</param>
         /// <param name="texture2D">材质</param>
-        public void Draw(Vertex[] vertex, short[] index, Texture2D texture2D = null)
+        public void Draw(Vertex[] vertex, int[] index, Texture2D texture2D = null)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
+            if (texture2D == null) texture2D = Ste.Pixel;
             if (DrawImmediately)
             {
                 DoDraw(vertex, index, texture2D);
                 return;
             }
-            if (indexData == null) indexData = new short[0];
-            ResizeAndAdd(index);
-            ResizeAndAdd(vertex);
-            if (vertexData.Length > short.MaxValue) throw new Exception("Vertices Counts Over 32768");
+            if (infos.Length < drawCount) Array.Resize(ref infos, drawCount + 512);
+            infos[drawCount] = new VertexDrawInfo(vertex, index, texture2D);
+            drawCount++;
         }
         /// <summary>
         /// 开始顶点绘制
@@ -103,37 +104,41 @@ namespace Stellaris.Graphics
         /// <param name="spriteDrawInfo">贴图绘制信息</param>
         public void Draw(SpriteDrawInfo spriteDrawInfo)
         {
+            Draw(spriteDrawInfo.texture, spriteDrawInfo.position, spriteDrawInfo.sourceRectangle, spriteDrawInfo.color, spriteDrawInfo.rotation, spriteDrawInfo.origin, spriteDrawInfo.scale, spriteDrawInfo.effects, spriteDrawInfo.layerDepth);
+        }
+        public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
+        {
             Vertex[] v = new Vertex[4];
-            Vector2 pos = spriteDrawInfo.position;
-            Vector2 size = spriteDrawInfo.sourceRectangle.HasValue ? new Vector2(spriteDrawInfo.sourceRectangle.Value.Width, spriteDrawInfo.sourceRectangle.Value.Height) :
-                new Vector2(spriteDrawInfo.texture.Width, spriteDrawInfo.texture.Height);
-            if (spriteDrawInfo.rotation == 0)
+            Vector2 pos = position;
+            Vector2 size = sourceRectangle.HasValue ? new Vector2(sourceRectangle.Value.Width, sourceRectangle.Value.Height) :
+                new Vector2(texture.Width, texture.Height);
+            if (rotation == 0)
             {
-                pos -= spriteDrawInfo.origin;
-                v[0] = new Vertex(pos, spriteDrawInfo.color, Vector2.Zero);
-                v[1] = new Vertex(pos + new Vector2((int)(size.X * spriteDrawInfo.scale.X), 0), spriteDrawInfo.color, new Vector2(1, 0));
-                v[2] = new Vertex(pos + new Vector2(0, (int)(size.Y * spriteDrawInfo.scale.Y)), spriteDrawInfo.color, new Vector2(0, 1));
-                v[3] = new Vertex(pos + new Vector2((int)(size.X * spriteDrawInfo.scale.X), (int)(size.Y * spriteDrawInfo.scale.Y)), spriteDrawInfo.color, Vector2.One);
+                pos -= origin;
+                v[0] = new Vertex(pos, color, Vector2.Zero);
+                v[1] = new Vertex(pos + new Vector2((int)(size.X * scale.X), 0), color, new Vector2(1, 0));
+                v[2] = new Vertex(pos + new Vector2(0, (int)(size.Y * scale.Y)), color, new Vector2(0, 1));
+                v[3] = new Vertex(pos + new Vector2((int)(size.X * scale.X), (int)(size.Y * scale.Y)), color, Vector2.One);
             }
             else
             {
-                pos -= spriteDrawInfo.origin.Rotate(spriteDrawInfo.rotation);
-                v[0] = new Vertex(pos, spriteDrawInfo.color, Vector2.Zero);
-                v[1] = new Vertex(pos + new Vector2(size.X * spriteDrawInfo.scale.X, 0).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(1, 0));
-                v[2] = new Vertex(pos + new Vector2(0, size.Y * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, new Vector2(0, 1));
-                v[3] = new Vertex(pos + new Vector2(size.X * spriteDrawInfo.scale.X, size.Y * spriteDrawInfo.scale.Y).Rotate(spriteDrawInfo.rotation), spriteDrawInfo.color, Vector2.One);
+                pos -= origin.Rotate(rotation);
+                v[0] = new Vertex(pos, color, Vector2.Zero);
+                v[1] = new Vertex(pos + new Vector2(size.X * scale.X, 0).Rotate(rotation), color, new Vector2(1, 0));
+                v[2] = new Vertex(pos + new Vector2(0, size.Y * scale.Y).Rotate(rotation), color, new Vector2(0, 1));
+                v[3] = new Vertex(pos + new Vector2(size.X * scale.X, size.Y * scale.Y).Rotate(rotation), color, Vector2.One);
             }
-            if (spriteDrawInfo.sourceRectangle.HasValue)
+            if (sourceRectangle.HasValue)
             {
-                v[0].TextureCoordinate = new Vector2(spriteDrawInfo.sourceRectangle.Value.X / (float)spriteDrawInfo.texture.Width,
-                    spriteDrawInfo.sourceRectangle.Value.Y / (float)spriteDrawInfo.texture.Height);
-                v[1].TextureCoordinate = v[0].TextureCoordinate + new Vector2(size.X / spriteDrawInfo.texture.Width, 0);
-                v[2].TextureCoordinate = v[0].TextureCoordinate + new Vector2(0, size.Y / spriteDrawInfo.texture.Height);
+                v[0].TextureCoordinate = new Vector2(sourceRectangle.Value.X / (float)texture.Width,
+                    sourceRectangle.Value.Y / (float)texture.Height);
+                v[1].TextureCoordinate = v[0].TextureCoordinate + new Vector2(size.X / texture.Width, 0);
+                v[2].TextureCoordinate = v[0].TextureCoordinate + new Vector2(0, size.Y / texture.Height);
                 v[3].TextureCoordinate = new Vector2(v[1].TextureCoordinate.X, v[2].TextureCoordinate.Y);
             }
-            if(spriteDrawInfo.effects != SpriteEffects.None)
+            if (effects != SpriteEffects.None)
             {
-                if (spriteDrawInfo.effects == SpriteEffects.FlipHorizontally)
+                if (effects == SpriteEffects.FlipHorizontally)
                 {
                     v[0].SwapCoord(ref v[1]);
                     v[2].SwapCoord(ref v[3]);
@@ -144,68 +149,55 @@ namespace Stellaris.Graphics
                     v[2].SwapCoord(ref v[1]);
                 }
             }
-            DoDraw(v, primitiveType == PrimitiveType.TriangleStrip ? new short[] { 0, 1, 2, 3 } : new short[] { 0, 1, 2, 1, 3, 2 }, spriteDrawInfo.texture);
-        }
-        private void MakeUpForSprite(Vertex[] v, Vector2 pos, Vector2 posFix, Color color, Vector2 coord)
-        {
-            v[0] = new Vertex(pos, color, Vector2.Zero);
-            v[1] = new Vertex(pos + new Vector2(posFix.X, 0), color, new Vector2(coord.X, 0));
-            v[2] = new Vertex(pos + new Vector2(0, posFix.Y), color, new Vector2(0, coord.Y));
-            v[3] = new Vertex(pos + posFix, color, coord);
+            Draw(v, primitiveType == PrimitiveType.TriangleStrip ? new int[] { 0, 1, 2, 3 } : new int[] { 0, 1, 2, 1, 3, 2 }, texture);
         }
         /// <summary>
         /// 设置是否立即绘制
         /// </summary>
         public void SetDrawImmediately(bool drawImmediately)
         {
-            if (primitiveType == PrimitiveType.TriangleStrip || primitiveType == PrimitiveType.LineStrip) return;
-            else DrawImmediately = drawImmediately;
+            DrawImmediately = true;
+            //primitiveType = PrimitiveType.TriangleList;
         }
-        private void ResizeAndAdd(Vertex[] v)
+        private void ResizeAndAdd(int id, Vertex[] v)
         {
-            Vertex[] result = new Vertex[vertexData.Length + v.Length];
-            Array.Copy(vertexData, result, vertexData.Length);
-            Array.Copy(v, 0, result, vertexData.Length, v.Length);
-            vertexData = result;
         }
-        private void ResizeAndAdd(short[] i)
+        private void ResizeAndAdd(int id, int[] i)
         {
-            i.Plus((short)(vertexData.Length));
-            short[] result = new short[indexData.Length + i.Length];
-            Array.Copy(indexData, result, indexData.Length);
-            Array.Copy(i, 0, result, indexData.Length, i.Length);
-            indexData = result;
         }
         public static int LengthGusser(int length, PrimitiveType primitiveType)
         {
             return primitiveType == PrimitiveType.TriangleList ? length / 3 : (primitiveType == PrimitiveType.LineList ? length / 2 : (primitiveType == PrimitiveType.TriangleStrip ? length - 2 : length - 1));
         }
-        private void DoDraw(Vertex[] vertices, short[] index, Texture2D texture2D = null)
+        private void DoDraw(Vertex[] vertices, int[] index, Texture2D texture2D = null)
         {
             if (!_begin) throw new Exception("Called Draw Before Begin");
             if (vertices.Length == 0) return;
             int length = index.Length == 0 ? vertices.Length : index.Length;
             length = LengthGusser(length, primitiveType);
-            if (texture2D != null) graphicsDevice.Textures[0] = texture2D;
-            else graphicsDevice.Textures[0] = Ste.Pixel;
-            //var p = typeof(GraphicsMetrics).GetField("_spriteCount", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            //p.SetValue(graphicsDevice.Metrics, (long)p.GetValue(graphicsDevice.Metrics) + 1);
+            graphicsDevice.Textures[0] = texture2D;
+            drawCalls++;
             graphicsDevice.DrawUserIndexedPrimitives(primitiveType, vertices, 0, vertices.Length, index, 0, length, Vertex.VertexDeclaration);
-            graphicsDevice.Textures[0] = null;
         }
-        /// <summary>
+        ///<summary>
         /// 结束绘制，如果没有设置立即绘制此时将一次性绘制所有顶点
         /// </summary>
         public void End()
         {
-            if (!DrawImmediately) DoDraw(vertexData, indexData);
-            vertexData = new Vertex[0];
-            indexData = new short[0];
+            if (!DrawImmediately)
+            {
+                for (int i = 0; i < drawCount; i++)
+                {
+                    DoDraw(infos[i].vertices, infos[i].indices, infos[i].texture);
+                }
+            }
+            Debug.WriteLine("DrawCalls:" + drawCalls.ToString());
+            drawCalls = 0;
+            drawCount = 0;
             _begin = false;
         }
         public void Dispose()
         {
-            vertexData = new Vertex[0];
         }
     }
 }

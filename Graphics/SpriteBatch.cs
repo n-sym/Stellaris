@@ -2,11 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Xml.XPath;
 
 namespace Stellaris.Graphics
 {
@@ -61,11 +59,11 @@ namespace Stellaris.Graphics
         }
         public void Draw(Texture2D texture, Vector2 position, Color color)
         {
-            Draw(texture, position, null, color, 0, default, 0f, SpriteEffects.None, 0f);
+            Draw(texture, position, null, color, 0, default, 1f, SpriteEffects.None, 0f);
         }
         public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color)
         {
-            Draw(texture, position, sourceRectangle, color, 0, default, 0f, SpriteEffects.None, 0f);
+            Draw(texture, position, sourceRectangle, color, 0, default, 1f, SpriteEffects.None, 0f);
         }
         public void Draw(Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color)
         {

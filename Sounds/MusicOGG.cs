@@ -1,10 +1,4 @@
-﻿using Microsoft.Xna.Framework.Audio;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-
-namespace Stellaris.Music
+﻿namespace Stellaris.Music
 {
     /*public abstract class MusicOGG : MusicStreaming
     {

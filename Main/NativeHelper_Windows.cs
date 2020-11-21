@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Stellaris
@@ -60,7 +58,7 @@ namespace Stellaris
         public void* GetMethodPtr(string name)
         {
             return PlatfromFindMethod(name);
-        } 
+        }
         /// <summary>
         /// 释放库
         /// </summary>

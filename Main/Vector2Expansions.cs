@@ -113,5 +113,9 @@ namespace Stellaris
         {
             return new Point((int)vec.X, (int)vec.Y);
         }
+        public static Vector2 XY(this Vector3 vec)
+        {
+            return new Vector2(vec.X, vec.Y);
+        }
     }
 }

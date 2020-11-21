@@ -61,7 +61,7 @@ namespace Stellaris.Graphics
                 cache.Add(po);
                 pos = cache.ToArray();
                 Color[] colors = new Color[pos.Length];
-                short[] indices = new short[pos.Length * 3 - 3];
+                int[] indices = new int[pos.Length * 3 - 3];
                 for (int i = 0; i < pos.Length - 1; i++)
                 {
                     if (pos[i].Y > height) pos[i].Y = height;
@@ -71,10 +71,10 @@ namespace Stellaris.Graphics
                     if (roundCorner != 0) CheckAndApplyCorner(ref pos[i], width, height, roundCorner);
                     pos[i] += position;
                     colors[i] = color;
-                    indices[i * 3] = (short)(pos.Length - 1);
-                    indices[i * 3 + 1] = (short)i;
+                    indices[i * 3] = (int)(pos.Length - 1);
+                    indices[i * 3 + 1] = (int)i;
                     if (i == pos.Length - 2) indices[i * 3 + 2] = 0;
-                    else indices[i * 3 + 2] = (short)(i + 1);
+                    else indices[i * 3 + 2] = (int)(i + 1);
                 }
                 colors[pos.Length - 1] = color;
                 if (indices.Length == 0) return;

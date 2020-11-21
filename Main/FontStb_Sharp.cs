@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using static StbTrueTypeSharp.StbTrueType;

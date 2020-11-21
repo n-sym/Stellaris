@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -76,7 +75,7 @@ namespace Stellaris
                 else
                 {
                     if (ReverseFont == null) result[i] = new Glyph(new byte[0], 0, 0, 0, 0);
-                    else result[i] = ReverseFont.GetGlyphsFromCodepoint(height, new int[] { codepoint[i]}, scaleX, scaleY)[0];
+                    else result[i] = ReverseFont.GetGlyphsFromCodepoint(height, new int[] { codepoint[i] }, scaleX, scaleY)[0];
                 }
             }
             GC.Collect();

@@ -82,7 +82,7 @@ namespace Stellaris.UI
                     {
                         v.Draw(paddingBorderInfo.Transform(delegate (int z, Vertex v)
                         {
-                            return new Vertex(v.Position + new Vector2(0, i * 2), shadowColor * 0.05f);
+                            return new Vertex(v.Position.XY() + new Vector2(0, i * 2), shadowColor * 0.05f);
                         }));
                     }
                 }

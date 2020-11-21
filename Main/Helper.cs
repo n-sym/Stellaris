@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 
@@ -7,6 +8,7 @@ namespace Stellaris
     public static class Helper
     {
         static int seed = new Random().Next();
+        static int textureID;
         /// <summary>
         /// 如果Value不在(min, max)，返回最接近的一段的值
         /// </summary>
@@ -59,10 +61,10 @@ namespace Stellaris
             }
             return result;
         }
-        public static short[] FromAToB(short a, short b)
+        public static int[] FromAToB(int a, int b)
         {
-            short[] result = new short[b - a];
-            for (short i = a; i < b; i++)
+            int[] result = new int[b - a];
+            for (int i = a; i < b; i++)
             {
                 result[i - a] = i;
             }
@@ -304,6 +306,20 @@ namespace Stellaris
                 }
             }
             return result;
+        }
+        public static int GetTextureID(Texture2D texture2D)
+        {
+            if (texture2D.Tag == null)
+            {
+                texture2D.Tag = textureID;
+                textureID++;
+            }
+            //Debug.WriteLine(textureID);
+            return (int)texture2D.Tag;
+        }
+        public static Vector3 Vector3(double x, double y, double z)
+        {
+            return new Vector3((float)x, (float)y, (float)z);
         }
     }
 }

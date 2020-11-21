@@ -33,7 +33,7 @@ namespace Stellaris.Graphics
                 result[result.Length - 2] = vertexFunc(result.Length - 2, result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
                 result[result.Length - 1] = vertexFunc(result.Length - 1, result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
             }
-            return new VertexDrawInfo(result, Helper.FromAToB(0, (short)result.Length));
+            return new VertexDrawInfo(result, Helper.FromAToB(0, (int)result.Length));
         }
         public static VertexDrawInfo StripOneSide(Vector2[] pos, float size, Func<int, Vertex, Vertex> vertexFunc = null)
         {
@@ -63,7 +63,7 @@ namespace Stellaris.Graphics
                 result[result.Length - 2] = vertexFunc(result.Length - 2, result[result.Length - 4].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
                 result[result.Length - 1] = vertexFunc(result.Length - 1, result[result.Length - 3].AddPosition(pos[pos.Length - 1] - pos[pos.Length - 2]));
             }
-            return new VertexDrawInfo(result, Helper.FromAToB(0, (short)result.Length));
+            return new VertexDrawInfo(result, Helper.FromAToB(0, (int)result.Length));
         }
         public static VertexDrawInfo Strip(Vector2[] pos, float[] size, Func<int, Vertex, Vertex> vertexFunc = null)
         {
@@ -97,7 +97,7 @@ namespace Stellaris.Graphics
                 result[result.Length - 2] = vertexFunc(result.Length - 2, new Vertex(pos[pos.Length - 1] + vec));
                 result[result.Length - 1] = vertexFunc(result.Length - 1, new Vertex(pos[pos.Length - 1] - vec));
             }
-            return new VertexDrawInfo(result, Helper.FromAToB(0, (short)result.Length));
+            return new VertexDrawInfo(result, Helper.FromAToB(0, (int)result.Length));
         }
     }
     /*public enum TriangleVertexType
@@ -182,12 +182,12 @@ namespace Stellaris.Graphics
                 else vertices[i] = vertexFunc(i, vertexC.ChangePosition(side + vertexA.Position));
                 side = side.Rotate(theta);
             }
-            short[] index = new short[count * 3];
+            int[] index = new int[count * 3];
             for (int i = 0; i < count * 3; i += 3)
             {
                 index[i + 2] = 0;
-                index[i + 1] = (short)(i / 3 + 1);
-                index[i] = (short)(i / 3 + 2);
+                index[i + 1] = (int)(i / 3 + 1);
+                index[i] = (int)(i / 3 + 2);
             }
             return new VertexInfo(vertices, index);
         }

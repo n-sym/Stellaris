@@ -42,13 +42,13 @@ namespace Stellaris.Graphics
             List<Vertex> cache = new List<Vertex>();
             GetBorder(cache, positon, width, height, roundCorner, padding, quality);
             cache.Add(new Vertex(positon + new Vector2(width, height) / 2, padding));
-            short[] indices = new short[cache.Count * 3 - 3];
+            int[] indices = new int[cache.Count * 3 - 3];
             for (int i = 0; i < cache.Count - 1; i++)
             {
-                indices[i * 3] = (short)(cache.Count - 1);
-                indices[i * 3 + 1] = (short)i;
+                indices[i * 3] = (int)(cache.Count - 1);
+                indices[i * 3 + 1] = (int)i;
                 if (i == cache.Count - 2) indices[i * 3 + 2] = 0;
-                else indices[i * 3 + 2] = (short)(i + 1);
+                else indices[i * 3 + 2] = (int)(i + 1);
             }
             return new VertexDrawInfo(cache.ToArray(), indices);
         }
@@ -57,17 +57,17 @@ namespace Stellaris.Graphics
             if (primitiveType != PrimitiveType.LineStrip && primitiveType != PrimitiveType.LineList) return new VertexDrawInfo(new Vertex[] { new Vertex() });
             List<Vertex> cache = new List<Vertex>();
             GetBorder(cache, positon, width, height, roundCorner, color, quality);
-            short[] indices = new short[primitiveType == PrimitiveType.LineStrip ? cache.Count : cache.Count * 2];
+            int[] indices = new int[primitiveType == PrimitiveType.LineStrip ? cache.Count : cache.Count * 2];
             if (primitiveType == PrimitiveType.LineStrip)
             {
-                indices = Helper.FromAToB(0, (short)(cache.Count - 1));
+                indices = Helper.FromAToB(0, (int)(cache.Count - 1));
             }
             else
             {
                 for (int i = 0; i < cache.Count; i++)
                 {
-                    indices[i * 2] = (short)i;
-                    if (i + 1 < cache.Count) indices[i * 2 + 1] = (short)(i + 1);
+                    indices[i * 2] = (int)i;
+                    if (i + 1 < cache.Count) indices[i * 2 + 1] = (int)(i + 1);
                     else indices[1 * 2 + 1] = 0;
                 }
             }

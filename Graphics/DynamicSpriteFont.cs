@@ -58,7 +58,7 @@ namespace Stellaris.Graphics
         {
             Initialize(graphicsDevice, useNative ? new FontStb_Native(stream) as IFont : new FontStb(stream), height, spacing, useNative);
         }
-        private void Initialize(GraphicsDevice graphicsDevice,IFont font, float height, Vector2 spacing, bool useNative)
+        private void Initialize(GraphicsDevice graphicsDevice, IFont font, float height, Vector2 spacing, bool useNative)
         {
             this.graphicsDevice = graphicsDevice;
             this.font = font;

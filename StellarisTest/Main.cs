@@ -4,8 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using Stellaris.Entities;
 using Stellaris.Graphics;
 using Stellaris.UI;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Stellaris.Test
 {
@@ -101,10 +101,70 @@ namespace Stellaris.Test
         bool lastSpace = false;
         float timerz;
         MDButton button = new MDButton(new Vector2(100, 100), 500, 150, 75, Color.White, default, Color.Black * 0.4f, Color.Black, Color.Black * 0.7f);
+        float zDis;
+        VertexDrawInfo sphere;
+        VertexDrawInfo cache;
+        Vector2 angle = default;
+        Vector2 deltaAngle = default;
         protected unsafe override void Draw(GameTime gameTime)
         {
             Ste.UpdateFPS(gameTime);
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            if (Keyboard.GetState().IsKeyDown(Keys.A)) zDis += 1;
+            vertexBatch.Begin(PrimitiveType.TriangleStrip);
+            deltaAngle *= 0.9f;
+            if (deltaAngle.Length() < 0.01f) deltaAngle = Vector2.Zero;
+            if (Ste.MouseState.LeftDowned)
+            {
+                if (Ste.MousePos.X != Ste.LastMouseState.X) deltaAngle.Y = -(Ste.MousePos.X - Ste.LastMouseState.X) / Ste.Resolution_X * 4;
+                if (Ste.MousePos.Y != Ste.LastMouseState.Y) deltaAngle.X = (Ste.MousePos.Y - Ste.LastMouseState.Y) / Ste.Resolution_Y * 4;
+            }
+            angle += deltaAngle;
+            if (sphere == null)
+            {
+                var vertex = new Vertex[10001];
+                for (int y = 0; y < 100; y++)
+                {
+                    for (int x = 0; x < 100; x++)
+                    {
+                        float p = y / 100f * 3.14f;
+                        //纬度
+                        float cp = (float)Math.Cos(p);
+                        float sp = (float)Math.Sin(p);
+                        float t = x / 100f * 6.28f;
+                        //经度
+                        float ct = (float)Math.Cos(t);
+                        float st = (float)Math.Sin(t);
+                        vertex[100 * y + x] = new Vertex(new Vector3(sp * ct * 200, cp * 200, sp * st * 123 + zDis));
+                    }
+                }
+                vertex[10000] = new Vertex(new Vector3(0, -200, zDis));
+                var indice = new int[20000];
+                for (int i = 0; i < 10000; i++)
+                {
+                    indice[i * 2] = i;
+                    if (i + 100 < 10000) indice[i * 2 + 1] = i + 100;
+                    else indice[i * 2 + 1] = 10000;
+                }
+                sphere = new VertexDrawInfo(vertex, indice);
+                cache = new VertexDrawInfo(new Vertex[10001], indice);
+            }
+            var m = Matrix.CreateRotationY(angle.Y) * Matrix.CreateRotationX(angle.X);
+            for (int i = 0; i < 10001; i++)
+            {
+                var v = sphere.vertices[i].Position;
+                v.Z += zDis;
+                v = Vector3.Transform(v, m);
+                double z = 0;
+                if (v.Z < 0) z = -(float)Math.Sqrt(-v.Z);
+                else z = (float)Math.Sqrt(v.Z);
+                float zz = 200 + zDis;
+                float l = (v - new Vector3(0, 0, -zz)).Length();
+                cache.vertices[i] = new Vertex(Helper.Vector3(v.X / (z + zz) * 200, v.Y / (z + zz) * 200, 0) + new Vector3(Ste.Resolution / 2, 0),
+                    Color.White.LerpTo(Color.Gray, (float)Math.Sqrt(l), 17));
+            }
+            vertexBatch.Draw(cache);
+            vertexBatch.End();
             //Window.Title = u.mouseStatus.ToString() + mousePos[0].ToString();
             /*
             var p = Common.MouseState.position;
@@ -137,10 +197,11 @@ namespace Stellaris.Test
             //Draw Texts
             //dtt.DrawString(spriteBatch, "开始游戏\n啥也开始不了", (Common.Resolution - dtt.MeasureString("开始游戏\n啥也开始不了", 1)) / 2, Color.White, default, 1);
             //Draw Bullets
-            RenderTarget2D renderTarget2D = new RenderTarget2D(graphicsDevice, Ste.Resolution_X, Ste.Resolution_Y);
+            /*RenderTarget2D renderTarget2D = new RenderTarget2D(graphicsDevice, Ste.Resolution_X, Ste.Resolution_Y);
             graphicsDevice.SetRenderTarget(renderTarget2D);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             vertexBatch.Begin(PrimitiveType.TriangleList);
+            vertexBatch.SetDrawImmediately(false);
             spriteBatch.Begin();
             var b = vertexBatch;
             var text = "var rotation = (Ste.MouseState.Position - Ste.Resolution / 2).Angle()";
@@ -164,8 +225,8 @@ namespace Stellaris.Test
             //UIBase.DrawBorder(vertexBatch, new Vector2(50, 50), dtt.MeasureString("Stellaris测试", 1) + new Vector2(50, 50));*/
             //vertexBatch.End();
             //EntityManager.Draw(bullets, spriteBatch);
-            vertexBatch.End();
-            spriteBatch.End();
+            //vertexBatch.End();
+            //spriteBatch.End();
             /*
             if (mousePos[0] != mousePos[1])
             {
@@ -186,24 +247,7 @@ namespace Stellaris.Test
                 timerz = 1;
             }
             timerz *= 0.95f;
-            button.Update();
-            vertexBatch.Begin(PrimitiveType.TriangleList);
-            button.SetText("测试按钮", dtt2, Color.Black.LerpTo(Color.White, 1, 5), 1);
-            button.Draw(vertexBatch);
-            for (int i = 0; i < (Ste.MouseState.LeftDowned ? 6 : 5); i++)
-            {
-                //Border.DrawPaddingBorder(vertexBatch, new Vector2(100 - i * 2f, 100), 500 + i * 3, 150 + i * 3, 70 + i * 2, Color.Black * 0.03f);
-            }
-            //Border.DrawRoundedCornerBorder(vertexBatch, new Vector2(100, 100), 500, 150, 75, Color.White);
-            //Ripple.DrawRound(vertexBatch, 400 - (int)(timerz * 300), new Vector2(100, 100), Ste.MousePos - new Vector2(100, 100), 500, 150, Color.Transparent.LerpTo(Color.White, timerz, 3f), 75, 1, 10);
-            vertexBatch.End();
-            vertexBatch.Begin(PrimitiveType.LineStrip);
-            //vertexBatch.Draw(Border.GetBorderDrawInfo(PrimitiveType.LineStrip, new Vector2(100, 100), 500, 150, 75, Color.White));
-            vertexBatch.End();
-            spriteBatch.Begin();
-            dtt2.DrawString(spriteBatch, "我被shader克制了", new Vector2(10, 20));
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate);
+            /*
             z.Parameters["tex"].SetValue(renderTarget2D);
             z.Parameters["resolution"].SetValue(Ste.Resolution);
             z.Parameters["delta"].SetValue(Ste.MousePos.Y / Ste.Resolution_Y * 4);
@@ -215,7 +259,7 @@ namespace Stellaris.Test
             spriteBatch.Draw(renderTarget2D, Vector2.Zero, Color.White);
             //spriteBatch.Draw(renderTarget2D, new Vector2(0, 150), Color.White);
             spriteBatch.End();
-            renderTarget2D.Dispose();
+            renderTarget2D.Dispose();*/
             //Draw Mouse
             /*foreach (var vvv in v)
             {
